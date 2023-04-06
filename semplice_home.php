@@ -100,6 +100,7 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
 
                 $mostra_domini->closeCursor();
 
+                //TODO: non usare gli echo, vedi premium_home.php, stampa delle radio
                 foreach ($domini as $dominio) {
                     echo '<li><label class="switch"><input type="checkbox" name="domini_selezionati[]" value="' . $dominio["Parolachiave"] . '"';
                     //checkala solo se e' gia' tra i domini di interesse

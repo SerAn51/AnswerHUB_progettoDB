@@ -41,9 +41,73 @@ if (!(empty($_SESSION["email"]))) {
         <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
 
         <link rel="stylesheet" href="stile_css/checkbox_style.css">
+
+        <style>
+            * {
+                font-family: 'Poppins', sans-serif;
+                background: #0c2840;
+                color: #f3f7f9;
+            }
+
+            .space {
+                border: 2px solid #f3f7f9;
+                border-radius: 30px;
+                display: flex;
+                justify-content: center;
+                text-align: center;
+                width: auto;
+                padding: 10px;
+                margin: 20px;
+            }
+        </style>
     </head>
 
 <body>
+    <!--TODO:
+    - Creazione di un invito ad un sondaggio verso un utente della piattaforma,
+    - Inserimento di una nuova domanda-->
+    <!--Idea: gestione inviti fatta con una lista di utenti da invitare, questi utenti sono presi con una select che filtra gli utenti per dominio di interesse == dominio sondaggio-->
+
+    <!--CREAZIONE DI UN NUOVO SONDAGGIO-->
+    <!--
+        - Per Stato metto di default APERTO...appena lo creo è aperto,
+        - DataCreazione imposto in automatico oggi,
+        - Per ParolachiaveDominio uso una radio con la lista dei domini e ne seleziono uno,
+        - Per il creante sono un utente quindi inserisco l'email di sessione e null per il CFAziendacreante-->
+
+    <?php
+    $sql = "CALL MostraDomini()";
+    $mostra_domini = $pdo->prepare($sql);
+    $mostra_domini->execute();
+    $domini = $mostra_domini->fetchAll(PDO::FETCH_ASSOC);
+
+    $mostra_domini->closeCursor();
+    ?>
+    <div class="space">
+        <form action="script_php/crea_sondaggio.php" method="POST">
+            <h2>Crea sondaggio</h2>
+            <?php if (isset($_GET['error']) && ($_GET['error'] == 10)) {
+                echo "Errore, riprova";
+            } else if (isset($_GET['success']) && $_GET['success'] == 10) {
+                echo "Sondaggio creato con successo";
+            }
+            ?>
+            <input type="Text" name="titolo" id="titolo" required>
+            <label for="titolo">Titolo</label>
+            <input type="number" min="1" name="max_utenti" id="max_utenti" required>
+            <label for="max_utenti">Max utenti</label>
+            <input type="date" name="data_chiusura" id="data_chiusura" required>
+            <label for="data_chiusura">Data di chiusura</label>
+            <?php foreach ($domini as $dominio) : ?>
+                <label>
+                    <input type="radio" name="dominio" id="dominio" value="<?php echo $dominio['Parolachiave']; ?>">
+                    <?php echo $dominio['Parolachiave']; ?>
+                </label>
+            <?php endforeach; ?>
+            <input type="submit" name="crea" id="crea" value="Crea">
+        </form>
+    </div>
+
     <!--STATISTICHE (VISIBILI DA TUTTI GLI UTENTI)-->
     <!--inclue statistiche.php, si è optato per include in quanto le statistiche non sono fondamentali e se c'è un errore l'applicazione continua a funzionare, con require ci sarebbe un fatal error-->
     <?php
