@@ -10,6 +10,7 @@ $check_sondaggio->bindParam(':codice', $codice_sondaggio, PDO::PARAM_INT);
 $check_sondaggio->execute();
 $sondaggio = $check_sondaggio->fetch(PDO::FETCH_ASSOC);
 $check_sondaggio->closeCursor();
+//FIXME: quando manda_inviti.php viene eseguito, poi esegue questo codice.
 if (!$sondaggio) {
     header("Location: premium_home.php");
     exit;
@@ -56,10 +57,13 @@ $mostra_dati_sondaggio->closeCursor();
             padding: 10px;
             margin: 20px;
         }
+
+        li {
+            list-style: none;
+        }
     </style>
 </head>
 
-<!--TODO: non mostrare utenti che sono già stati invitati-->
 <body>
     <div class="space">
         <h2>Seleziona gli utenti da invitare per il sondaggio <?php echo $dati_sondaggio['Titolo']; ?></h2>
@@ -73,12 +77,18 @@ $mostra_dati_sondaggio->closeCursor();
         $utenti_interessati = $mostra_utenti_interessati->fetchAll(PDO::FETCH_ASSOC);
         $mostra_utenti_interessati->closeCursor();
         ?>
-        <form action="script.php/manda_inviti.php" method="POST">
+        <form action="script_php/manda_inviti.php" method="POST">
+            <?php if (isset($_GET['error']) && ($_GET['error'] == 10)) {
+                echo "Devi selezionare almeno un utente";
+            } else if (isset($_GET['success']) && $_GET['success'] == 10) {
+                echo "Utenti invitati con successo";
+            }
+            ?>
             <ul>
                 <?php foreach ($utenti_interessati as $utente_interessato) : ?>
                     <li>
-                        <input type="checkbox" name="utenti_selezionati[]" id="utenti_selezionati[] value=<?php $utente_interessato['Email'] ?>">
-                        <!--mostra Email Nome, Cognome, Annonascita, Luogonascita-->
+                        <input type="checkbox" name="utenti_selezionati[]" value="<?php echo $utente_interessato['Email'] ?>">
+                        <!-- mostra Email Nome, Cognome, Annonascita, Luogonascita -->
                         <label for="utente_interessato[]">
                             <?php echo $utente_interessato['Email'] . ' ' . $utente_interessato['Nome'];
                             echo ' ' . $utente_interessato['Cognome'] . ' ' . $utente_interessato['Annonascita'];
@@ -87,7 +97,8 @@ $mostra_dati_sondaggio->closeCursor();
                     </li>
                 <?php endforeach; ?>
             </ul>
-            <input type="submit" name="invia" id="invia" value="invia">
+            <input type="hidden" name="codice_sondaggio" value="<?php echo $codice_sondaggio; ?>"><!--Per inviare il codice_sondaggio tramite POST-->
+            <input type="submit" name="invita" id="invita" value="invita">
         </form>
 
     </div>
