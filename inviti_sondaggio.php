@@ -59,6 +59,7 @@ $mostra_dati_sondaggio->closeCursor();
     </style>
 </head>
 
+<!--TODO: non mostrare utenti che sono già stati invitati-->
 <body>
     <div class="space">
         <h2>Seleziona gli utenti da invitare per il sondaggio <?php echo $dati_sondaggio['Titolo']; ?></h2>
@@ -72,19 +73,23 @@ $mostra_dati_sondaggio->closeCursor();
         $utenti_interessati = $mostra_utenti_interessati->fetchAll(PDO::FETCH_ASSOC);
         $mostra_utenti_interessati->closeCursor();
         ?>
-        <ul>
-            <?php foreach ($utenti_interessati as $utente_interessato) : ?>
-                <li>
-                    <input type="checkbox" name="utente_interessato[]" id="utente_interessato[]">
-                    <!--mostra Email Nome, Cognome, Annonascita, Luogonascita-->
-                    <label for="utente_interessato[]">
-                        <?php echo $utente_interessato['Email'] . ' ' . $utente_interessato['Nome'];
-                        echo ' ' . $utente_interessato['Cognome'] . ' ' . $utente_interessato['Annonascita'];
-                        echo ' ' . $utente_interessato['Luogonascita'] ?>
-                    </label>
-                </li>
-            <?php endforeach; ?>
-        </ul>
+        <form action="script.php/manda_inviti.php" method="POST">
+            <ul>
+                <?php foreach ($utenti_interessati as $utente_interessato) : ?>
+                    <li>
+                        <input type="checkbox" name="utenti_selezionati[]" id="utenti_selezionati[] value=<?php $utente_interessato['Email'] ?>">
+                        <!--mostra Email Nome, Cognome, Annonascita, Luogonascita-->
+                        <label for="utente_interessato[]">
+                            <?php echo $utente_interessato['Email'] . ' ' . $utente_interessato['Nome'];
+                            echo ' ' . $utente_interessato['Cognome'] . ' ' . $utente_interessato['Annonascita'];
+                            echo ' ' . $utente_interessato['Luogonascita'] ?>
+                        </label>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+            <input type="submit" name="invia" id="invia" value="invia">
+        </form>
+
     </div>
     <a href="logout.php">Effettua il logout</a>
 </body>
