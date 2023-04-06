@@ -50,7 +50,7 @@ if (!(empty($_SESSION["email"]))) {
     include 'visualizza_statistiche.php';
     ?>
 
-    <a href="logout.php">Logout</a>
+    <a href="logout.php">Effettua il logout</a>
 </body>
 
 </html>
