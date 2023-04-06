@@ -66,7 +66,8 @@ if (!(empty($_SESSION["email"]))) {
     <!--TODO:
     - Creazione di un invito ad un sondaggio verso un utente della piattaforma,
     - Inserimento di una nuova domanda-->
-    <!--Idea: gestione inviti fatta con una lista di utenti da invitare, questi utenti sono presi con una select che filtra gli utenti per dominio di interesse == dominio sondaggio-->
+    <!--Idea: gestione inviti fatta con una lista di utenti da invitare, questi utenti sono presi con una select che filtra gli utenti per dominio di interesse == dominio sondaggio;
+inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad una pagina con la lista degli utenti da invitare, con checkbox-->
 
     <!--CREAZIONE DI UN NUOVO SONDAGGIO-->
     <!--
