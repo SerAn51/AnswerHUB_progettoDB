@@ -66,8 +66,6 @@ if (!(empty($_SESSION["email"]))) {
     <!--TODO:
     - Creazione di un invito ad un sondaggio verso un utente della piattaforma,
     - Inserimento di una nuova domanda-->
-    <!--Idea: gestione inviti fatta con una lista di utenti da invitare, questi utenti sono presi con una select che filtra gli utenti per dominio di interesse == dominio sondaggio;
-inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad una pagina con la lista degli utenti da invitare, con checkbox-->
 
     <!--CREAZIONE DI UN NUOVO SONDAGGIO-->
     <!--
@@ -77,8 +75,7 @@ inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad u
         - Per il creante sono un utente quindi inserisco l'email di sessione e null per il CFAziendacreante-->
 
     <?php
-    $sql = "CALL MostraDomini()";
-    $mostra_domini = $pdo->prepare($sql);
+    $mostra_domini = $pdo->prepare("CALL MostraDomini()");
     $mostra_domini->execute();
     $domini = $mostra_domini->fetchAll(PDO::FETCH_ASSOC);
 
@@ -107,6 +104,26 @@ inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad u
             <?php endforeach; ?>
             <input type="submit" name="crea" id="crea" value="Crea">
         </form>
+    </div>
+
+    <!--CREAZIONE DI UN INVITO AD UN SONDAGGIO VERSO UN UTENTE DELLA PIATTAFORMA-->
+    <!--Idea: gestione inviti fatta con una lista di utenti da invitare, questi utenti sono presi con una select che filtra gli utenti per dominio di interesse == dominio sondaggio;
+inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad una pagina con la lista degli utenti da invitare, con checkbox-->
+    <?php
+    $mostra_sondaggi_creati = $pdo->prepare("SELECT * FROM Sondaggio WHERE EmailUtentecreante = :email");
+    $mostra_sondaggi_creati->bindParam(':email', $_SESSION["email"], PDO::PARAM_STR);
+    $mostra_sondaggi_creati->execute();
+    $sondaggi_creati = $mostra_sondaggi_creati->fetchAll(PDO::FETCH_ASSOC);
+    $mostra_sondaggi_creati->closeCursor();
+
+    ?>
+    <div class="space">
+        <h2>Invita utenti</h2>
+        <?php foreach ($sondaggi_creati as $sondaggio_creato) : ?>
+            <label>
+                <a href="inviti_sondaggio.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>"><?php echo $sondaggio_creato['Titolo']; ?></a>
+            </label>
+        <?php endforeach; ?>
     </div>
 
     <!--STATISTICHE (VISIBILI DA TUTTI GLI UTENTI)-->
