@@ -60,6 +60,15 @@ $mostra_domande_sondaggio->closeCursor();
         li {
             list-style: none;
         }
+
+        #inputbox_max_caratteri_domanda_aperta {
+            display: none;
+        }
+
+        #checkbox_aperta:checked~#inputbox_max_caratteri_domanda_aperta {
+            display: block;
+            transition: .5s;
+        }
     </style>
 </head>
 
@@ -74,9 +83,34 @@ $mostra_domande_sondaggio->closeCursor();
     <div class="space">
         <!--Crea una nuova domanda-->
         <h2>Inserisci una nuova domanda</h2>
+        <p>I campi con * sono obbligatori</p>
         <!--L'inserimento deve avvenire in Domanda, in ComponenteSondaggioDomanda e
         se APERTA anche in DomandaAperta, altrimenti in DomandaChiusa
-        (in questo caso, si devono inserire le opzioni-->
+        (in questo caso, si devono inserire le opzioni...vedi space "Domande"-->
+        <form action="script_php/inserimento_domanda.php" method="POST">
+            <!--input box Testo-->
+            <input type="text" name="testo" id="testo" required>
+            <label for="testo">Testo domanda*<label>
+                    <!--input box Foto-->
+                    <input type="file" name="foto" id="foto">
+                    <label for="foto">Foto</label>
+                    <!--input box Punteggio-->
+                    <input type="number" min="0" name="punteggio" id="punteggio">
+                    <label for="punteggio">Punteggio</label>
+                    <!--checkbox per inserire max caratteri risposta se la domanda e' APERTA, altrimenti si da per scontato sia chiusa-->
+                    <label name="label_checkbox_aperta" id="label_checkbox_aperta" for="checkbox_aperta">Spunta se la domanda e' aperta</label>
+                    <input type="checkbox" name="checkbox_aperta" id="checkbox_aperta">
+                    <!--input box Codice amministratore-->
+                    <div name="inputbox_max_caratteri_domanda_aperta" id="inputbox_max_caratteri_domanda_aperta" class="inputbox">
+                        <!--TODO: gestire lato utente il max_caratteri-->
+                        <input type="number" min="1" max="3000" name="max_caratteri_domanda_aperta" id="max_caratteri_domanda_aperta">
+                        <label for="max_caratteri_domanda_aperta">Numero massimo di caratteri</label>
+                    <!--Mi trovo ad usare un form, invio anche il codice con post così da non dover gestire eventuali cambiamenti di url-->
+                    <input type="hidden" name="codice_sondaggio" id="codice_sondaggio" value=$codice_sondaggio>
+                    </div>
+                    <!--bottone crea domanda-->
+                    <input type="submit" name="crea" id="crea" value="Crea">
+        </form>
     </div>
 
     <a href="premium_home.php">Torna alla home</a>

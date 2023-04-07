@@ -83,7 +83,7 @@ if (!(empty($_SESSION["email"]))) {
             <label for="nome">Nome</label>
             <input type="text" name="descrizione" id="descrizione" required>
             <label for="descrizione">Descrizione</label>
-            <input type="file" name="foto" id="foto">
+            <input type="file" name="foto" id="foto" required>
             <label for="foto">Foto</label>
             <input type="number" min="0" name="punti_necessari" id="punti_necessari" required>
             <label for="punti_necessari">Punti necessari</label>
