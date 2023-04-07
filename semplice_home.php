@@ -134,7 +134,6 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
             $mostra_inviti_utente->bindParam(':param1', $email, PDO::PARAM_STR);
             $mostra_inviti_utente->execute();
             $info_inviti = $mostra_inviti_utente->fetchAll(PDO::FETCH_ASSOC);
-
             $mostra_inviti_utente->closeCursor();
 
             foreach ($info_inviti as $info_invito) {
