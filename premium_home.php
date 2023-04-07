@@ -126,6 +126,19 @@ inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad u
         <?php endforeach; ?>
     </div>
 
+    <!--INSERIMENTO DI UNA NUOVA DOMANDA-->
+    <!--Idee:
+    1) gestito dalla home con tutti i campi da compilare tra cui un menu a tendina che ti fa selezionare il sondaggio in cui inserire la domanda
+    2) seleziono il sondaggio dalla lista di sondaggi e gestitsco in una pagina a parte...in cui mostro anche tutte le altre domande per aiutare l'utente premium ad avere un'idea a 360 gradi del sondaggio-->
+    <div class="space">
+        <h2>Inserisci domanda</h2>
+        <?php foreach ($sondaggi_creati as $sondaggio_creato) : ?>
+            <label>
+                <a href="inserisci_domanda.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>"><?php echo $sondaggio_creato['Titolo']; ?></a>
+            </label>
+        <?php endforeach; ?>
+    </div>
+
     <!--STATISTICHE (VISIBILI DA TUTTI GLI UTENTI)-->
     <!--inclue statistiche.php, si è optato per include in quanto le statistiche non sono fondamentali e se c'è un errore l'applicazione continua a funzionare, con require ci sarebbe un fatal error-->
     <?php
