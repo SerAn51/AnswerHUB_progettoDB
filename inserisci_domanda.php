@@ -2,6 +2,7 @@
 
 require 'config_connessione.php'; // instaura la connessione con il db
 $codice_sondaggio = $_GET['cod_sondaggio'];
+var_dump($codice_sondaggio);
 
 // controllo per evitare che si cambi url e si faccia l'accesso ad un sondaggio di un altro utente premium, al massimo se cambio url per il get del codice posso mettere il codice di un sondaggio da me (utente premium) gestito:
 $check_sondaggio = $pdo->prepare("SELECT Codice FROM Sondaggio WHERE EmailUtentecreante = :email AND Codice = :codice");
@@ -88,6 +89,12 @@ $mostra_domande_sondaggio->closeCursor();
         se APERTA anche in DomandaAperta, altrimenti in DomandaChiusa
         (in questo caso, si devono inserire le opzioni...vedi space "Domande"-->
         <form action="script_php/inserimento_domanda.php" method="POST">
+            <?php if ((isset($_GET['error'])) && ($_GET['error'] == 10)) {
+                echo "Tipo immagine non valido, supportati: PNG, JPEG";
+            } else if (isset($_GET['success']) && $_GET['success'] == 10) {
+                echo "Domanda inserita con successo";
+            }
+            ?>
             <!--input box Testo-->
             <input type="text" name="testo" id="testo" required>
             <label for="testo">Testo domanda*<label>
@@ -105,8 +112,8 @@ $mostra_domande_sondaggio->closeCursor();
                         <!--TODO: gestire lato utente il max_caratteri-->
                         <input type="number" min="1" max="3000" name="max_caratteri_domanda_aperta" id="max_caratteri_domanda_aperta">
                         <label for="max_caratteri_domanda_aperta">Numero massimo di caratteri</label>
-                    <!--Mi trovo ad usare un form, invio anche il codice con post così da non dover gestire eventuali cambiamenti di url-->
-                    <input type="hidden" name="codice_sondaggio" id="codice_sondaggio" value=$codice_sondaggio>
+                        <!--Mi trovo ad usare un form, invio anche il codice con post così da non dover gestire eventuali cambiamenti di url-->
+                        <input type="hidden" name="codice_sondaggio" id="codice_sondaggio" value="<?php echo $codice_sondaggio; ?>">
                     </div>
                     <!--bottone crea domanda-->
                     <input type="submit" name="crea" id="crea" value="Crea">
