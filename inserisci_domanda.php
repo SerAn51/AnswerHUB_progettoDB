@@ -2,7 +2,6 @@
 
 require 'config_connessione.php'; // instaura la connessione con il db
 $codice_sondaggio = $_GET['cod_sondaggio'];
-var_dump($codice_sondaggio);
 
 // controllo per evitare che si cambi url e si faccia l'accesso ad un sondaggio di un altro utente premium, al massimo se cambio url per il get del codice posso mettere il codice di un sondaggio da me (utente premium) gestito:
 $check_sondaggio = $pdo->prepare("SELECT Codice FROM Sondaggio WHERE EmailUtentecreante = :email AND Codice = :codice");
@@ -88,7 +87,7 @@ $mostra_domande_sondaggio->closeCursor();
         <!--L'inserimento deve avvenire in Domanda, in ComponenteSondaggioDomanda e
         se APERTA anche in DomandaAperta, altrimenti in DomandaChiusa
         (in questo caso, si devono inserire le opzioni...vedi space "Domande"-->
-        <form action="script_php/inserimento_domanda.php" method="POST">
+        <form action="script_php/inserimento_domanda.php" method="POST" enctype="multipart/form-data">
             <?php if ((isset($_GET['error'])) && ($_GET['error'] == 10)) {
                 echo "Tipo immagine non valido, supportati: PNG, JPEG";
             } else if (isset($_GET['success']) && $_GET['success'] == 10) {

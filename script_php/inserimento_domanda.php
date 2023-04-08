@@ -28,7 +28,6 @@ if (isset($_POST["crea"])) {
     $codice_sondaggio = $_POST['codice_sondaggio'];
     //salvo il testo dal form
     $testo = $_POST['testo'];
-    echo "Ho impostato codice sondaggio e testo, rispettivamente: " . var_dump($codice_sondaggio) . " " . var_dump($testo);
 
     //salvo la foto dal form, se c'e' ed e' un formato consentito, altrimenti la setto a NULL
     //FIXME: non prende l'immagine, anche se la inserisco nel form, viene settata null
@@ -40,50 +39,37 @@ if (isset($_POST["crea"])) {
             $foto = file_get_contents($_FILES['foto']['tmp_name']);
         } else {
             // il tipo di file dell'immagine selezionata non è valido
-            echo "formato sbagliato";
-            /*
-        header("Location: ../inserisci_domanda.php?cod_sondaggio=$codice_sondaggio&error=10");
-        exit;
-        */
+            header("Location: ../inserisci_domanda.php?cod_sondaggio=$codice_sondaggio&error=10");
+            exit;
         }
     } else {
         $foto = NULL;
     }
-    echo "Ho impostato foto: " . var_dump($foto);
-
     //salvo il punteggio se e' stato impostato, altrimenti lo setto a NULL
     if (isset($_POST['punteggio']) && ($_POST['punteggio'] != "")) {
         $punteggio = $_POST['punteggio'];
     } else {
         $punteggio = NULL;
     }
-    echo "Ho impostato punteggio: " . var_dump($punteggio) . isset($punteggio);
 
     //setto cf_azienda_inserente a NULL perche' la domanda viene inserita dall'utente premium (di sessione)
     $cf_azienda_inserente = NULL;
-    echo "Ho impostato cf_azienda_inserente: " . var_dump($cf_azienda_inserente);
 
     if (isset($_POST['checkbox_aperta']) && $_POST['checkbox_aperta'] == 'on') { // controllo che la checkbox sia stata selezionata
         $max_caratteri_domanda_aperta = $_POST["max_caratteri_domanda_aperta"];
-        echo "(SONO IN APERTA) Ho impostato max_caratteri_domanda_aperta: " . var_dump($max_caratteri_domanda_aperta);
-            $aperta_chiusa = "APERTA";
-            echo "Ho impostato aperta_chiusa: " . var_dump($aperta_chiusa);
-            //InserisciDomanda(Testo varchar(3000), Foto longblob, Punteggio integer, ApertaChiusa ENUM ('APERTA', 'CHIUSA'), CFAziendainserente varchar(16), EmailUtenteinserente varchar(255), MaxCaratteriRisposta integer
-            inserisciDomanda($pdo, $testo, $foto, $punteggio, $aperta_chiusa, $cf_azienda_inserente, $_SESSION['email'], $max_caratteri_domanda_aperta, $codice_sondaggio);
-            echo "Domanda APERTA inserita";
-            /*
+        $aperta_chiusa = "APERTA";
+        //InserisciDomanda(Testo varchar(3000), Foto longblob, Punteggio integer, ApertaChiusa ENUM ('APERTA', 'CHIUSA'), CFAziendainserente varchar(16), EmailUtenteinserente varchar(255), MaxCaratteriRisposta integer
+        inserisciDomanda($pdo, $testo, $foto, $punteggio, $aperta_chiusa, $cf_azienda_inserente, $_SESSION['email'], $max_caratteri_domanda_aperta, $codice_sondaggio);
+        //reindirizza con un messaggio di successo
         header("Location: ../inserisci_domanda.php?cod_sondaggio=$codice_sondaggio&success=10");
-        exit;*/
+        exit;
     } else { // La checkbox non è stata selezionata
         $aperta_chiusa = "CHIUSA";
         $max_caratteri_domanda_aperta = 0;
-        echo "Ho impostato aperta_chiusa: " . var_dump($aperta_chiusa);
-        echo "(SONO IN CHIUSA) Ho impostato max_caratteri_domanda_aperta: " . var_dump($max_caratteri_domanda_aperta);
         //InserisciDomanda(Testo varchar(3000), Foto longblob, Punteggio integer, ApertaChiusa ENUM ('APERTA', 'CHIUSA'), CFAziendainserente varchar(16), EmailUtenteinserente varchar(255), MaxCaratteriRisposta integer
         inserisciDomanda($pdo, $testo, $foto, $punteggio, $aperta_chiusa, $cf_azienda_inserente, $_SESSION['email'], $max_caratteri_domanda_aperta, $codice_sondaggio);
-        echo "Domanda CHIUSA inserita";
-        /*
-    header("Location: ../inserisci_domanda.php?cod_sondaggio=$codice_sondaggio&success=10");
-    exit;*/
+        //reindirizza con un messaggio di successo
+        header("Location: ../inserisci_domanda.php?cod_sondaggio=$codice_sondaggio&success=10");
+        exit;
     }
 }
