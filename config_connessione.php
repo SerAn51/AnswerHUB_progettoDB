@@ -4,7 +4,8 @@
     //Istanzia variabili con dati per connettere db
     $connessione= "mysql:host=localhost;dbname=eformdb;charset=utf8mb4";
     $utente = "root";
-    $password = "ert23h";
+    $password = "erT23.hk";
+    //apri cartella da terminale ed esegui php -S localhost:8080
 
     try {
         $pdo = new PDO($connessione, $utente, $password);
