@@ -57,26 +57,26 @@ $mostra_opzioni_domanda->closeCursor();
     <link rel="stylesheet" href="stile_css/checkbox_style.css">
 
     <style>
-    * {
-        font-family: 'Poppins', sans-serif;
-        background: #0c2840;
-        color: #f3f7f9;
-    }
+        * {
+            font-family: 'Poppins', sans-serif;
+            background: #0c2840;
+            color: #f3f7f9;
+        }
 
-    .space {
-        border: 2px solid #f3f7f9;
-        border-radius: 30px;
-        display: flex;
-        justify-content: center;
-        text-align: center;
-        width: auto;
-        padding: 10px;
-        margin: 20px;
-    }
+        .space {
+            border: 2px solid #f3f7f9;
+            border-radius: 30px;
+            display: flex;
+            justify-content: center;
+            text-align: center;
+            width: auto;
+            padding: 10px;
+            margin: 20px;
+        }
 
-    li {
-        list-style: none;
-    }
+        li {
+            list-style: none;
+        }
     </style>
 </head>
 
@@ -84,30 +84,43 @@ $mostra_opzioni_domanda->closeCursor();
     <!--VISUALIZZA OPZIONI-->
     <div class="space">
         <h2>Opzioni</h2>
-        <?php var_dump($id_domanda);?>
         <ul>
-            <?php foreach($opzioni_domanda as $opzione) {?>
-            <li>
-             <?php echo $opzione['Numeroprogressivo'] . ' ' . $opzione['Testo'] . '<br>';?>
-            </li>
-            <?php }?>
+            <?php foreach ($opzioni_domanda as $opzione) { ?>
+                <li>
+                    <?php echo $opzione['Numeroprogressivo'] . ' ' . $opzione['Testo'] . '<br>'; ?>
+                </li>
+            <?php } ?>
         </ul>
     </div>
 
 
-    <!--AGGIUNGI UN'OPZIONE-->
+    <!--AGGIUNGI UN'OPZIONE, NB: quando invito, se non ci sono opzioni, mostra messaggio-->
+    <?php
+    $check_inviti = $pdo->prepare("SELECT * FROM Invito WHERE CodiceSondaggio = :codice_sondaggio");
+    $check_inviti->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
+    $check_inviti->execute();
+    $inviti = $check_inviti->fetchAll();
+    $check_inviti->closeCursor();
+    ?>
     <div class="space">
         <h2>Aggiungi opzione</h2>
         <?php if ((isset($_GET['success'])) && ($_GET['success'] == 10)) {
-                echo "Opzione inserita con successo";
-            }
+            echo "Opzione inserita con successo";
+        }
         ?>
-        <form action="script_php/aggiungi_opzione.php" method="POST">
-            <input type="text" name="testo_opzione" id="testo_opzione">
-            <label for="testo_opzione">Testo</label>
-            <input type="hidden" name="id_domanda_chiusa" id="id_domanda_chiusa" value="<?php echo $id_domanda;?>">
-            <input type="submit" name="aggiungi_opzione" id="aggiungi_opzione" value="Aggiungi opzione">
-        </form>
+        <?php
+        // se la query restituisce almeno una riga, vuol dire che ho invitato almeno un utente quindi non posso piu' inserire opzioni-->
+        if ($inviti && count($inviti) > 0) {
+            echo "E' stato gia' inviato almeno un utente, per questa domanda non e' piu' possibile inserire opzioni";
+        } else { ?>
+            <form action="script_php/aggiungi_opzione.php" method="POST">
+                <input type="text" name="testo_opzione" id="testo_opzione">
+                <label for="testo_opzione">Testo</label>
+                <input type="hidden" name="id_domanda_chiusa" id="id_domanda_chiusa" value="<?php echo $id_domanda; ?>">
+                <input type="submit" name="aggiungi_opzione" id="aggiungi_opzione" value="Aggiungi opzione">
+            </form>
+        <?php }
+        ?>
     </div>
 
     <a href="gestisci_domanda.php?cod_sondaggio=<?php echo $codice_sondaggio ?>">Torna indietro</a>
