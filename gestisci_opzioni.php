@@ -116,6 +116,7 @@ $mostra_opzioni_domanda->closeCursor();
             <form action="script_php/aggiungi_opzione.php" method="POST">
                 <input type="text" name="testo_opzione" id="testo_opzione">
                 <label for="testo_opzione">Testo</label>
+                <input type="hidden" name="codice_sondaggio" id="codice_sondaggio" value="<?php echo $codice_sondaggio; ?>">
                 <input type="hidden" name="id_domanda_chiusa" id="id_domanda_chiusa" value="<?php echo $id_domanda; ?>">
                 <input type="submit" name="aggiungi_opzione" id="aggiungi_opzione" value="Aggiungi opzione">
             </form>

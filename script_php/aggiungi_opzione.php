@@ -10,12 +10,14 @@ function inserisciOpzione($pdo, int $id_domanda_chiusa, string $testo_opzione)
     $prep_proc_inserisci_opzione->execute();
 }
 
+if (isset($_POST["aggiungi_opzione"])) {
+    $codice_sondaggio = $_POST['codice_sondaggio'];
+    $id_domanda_chiusa = $_POST['id_domanda_chiusa'];
+    $testo_opzione = $_POST['testo_opzione'];
 
-$id_domanda_chiusa = $_POST['id_domanda_chiusa'];
-$testo_opzione = $_POST['testo_opzione'];
+    inserisciOpzione($pdo, $id_domanda_chiusa, $testo_opzione);
 
-inserisciOpzione($pdo, $id_domanda_chiusa, $testo_opzione);
-
-header("Location: ../gestisci_opzioni.php?id_domanda=$id_domanda_chiusa&success=10");
-exit;
+    header("Location: ../gestisci_opzioni.php?cod_sondaggio=$codice_sondaggio&id_domanda=$id_domanda_chiusa&success=10");
+    exit;
+}
 ?>
