@@ -39,7 +39,7 @@ if (isset($_POST["crea"])) {
             $foto = file_get_contents($_FILES['foto']['tmp_name']);
         } else {
             // il tipo di file dell'immagine selezionata non è valido
-            header("Location: ../inserisci_domanda.php?cod_sondaggio=$codice_sondaggio&error=10");
+            header("Location: ../gestisci_domanda.php?cod_sondaggio=$codice_sondaggio&error=10");
             exit;
         }
     } else {
@@ -61,7 +61,7 @@ if (isset($_POST["crea"])) {
         //InserisciDomanda(Testo varchar(3000), Foto longblob, Punteggio integer, ApertaChiusa ENUM ('APERTA', 'CHIUSA'), CFAziendainserente varchar(16), EmailUtenteinserente varchar(255), MaxCaratteriRisposta integer
         inserisciDomanda($pdo, $testo, $foto, $punteggio, $aperta_chiusa, $cf_azienda_inserente, $_SESSION['email'], $max_caratteri_domanda_aperta, $codice_sondaggio);
         //reindirizza con un messaggio di successo
-        header("Location: ../inserisci_domanda.php?cod_sondaggio=$codice_sondaggio&success=10");
+        header("Location: ../gestisci_domanda.php?cod_sondaggio=$codice_sondaggio&success=10");
         exit;
     } else { // La checkbox non è stata selezionata
         $aperta_chiusa = "CHIUSA";
@@ -69,7 +69,7 @@ if (isset($_POST["crea"])) {
         //InserisciDomanda(Testo varchar(3000), Foto longblob, Punteggio integer, ApertaChiusa ENUM ('APERTA', 'CHIUSA'), CFAziendainserente varchar(16), EmailUtenteinserente varchar(255), MaxCaratteriRisposta integer
         inserisciDomanda($pdo, $testo, $foto, $punteggio, $aperta_chiusa, $cf_azienda_inserente, $_SESSION['email'], $max_caratteri_domanda_aperta, $codice_sondaggio);
         //reindirizza con un messaggio di successo
-        header("Location: ../inserisci_domanda.php?cod_sondaggio=$codice_sondaggio&success=10");
+        header("Location: ../gestisci_domanda.php?cod_sondaggio=$codice_sondaggio&success=10");
         exit;
     }
 }

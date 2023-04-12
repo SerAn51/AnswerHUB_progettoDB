@@ -5,7 +5,7 @@ $codice_sondaggio = $_GET['cod_sondaggio'];
 
 // controllo per evitare che si cambi url e si faccia l'accesso ad un sondaggio di un altro utente premium, al massimo se cambio url per il get del codice posso mettere il codice di un sondaggio da me (utente premium) gestito:
 $check_sondaggio = $pdo->prepare("SELECT Codice FROM Sondaggio WHERE EmailUtentecreante = :email AND Codice = :codice");
-$check_sondaggio->bindParam(':email', $_SESSION['email'], PDO::PARAM_INT);
+$check_sondaggio->bindParam(':email', $_SESSION['email'], PDO::PARAM_STR);
 $check_sondaggio->bindParam(':codice', $codice_sondaggio, PDO::PARAM_INT);
 $check_sondaggio->execute();
 $sondaggio = $check_sondaggio->fetch(PDO::FETCH_ASSOC);
@@ -80,15 +80,8 @@ $mostra_domande_sondaggio->closeCursor();
         <ul>
             <?php foreach($domande_sondaggio as $domanda) {?>
             <li>
-                <?php if($domanda ["ApertaChiusa"] == "CHIUSA") {?>
-                    <form action="gestisci_opzioni.php" method="POST">
-                        <label><?php echo $domanda['Testo'];?></label>
-                        <input type="hidden" name="codice_sondaggio" id="codice_sondaggio"
-                            value="<?php echo $codice_sondaggio; ?>">
-                            <input type="hidden" name="id_domanda" id="id_domanda"
-                            value="<?php echo $domanda['ID'];?>">
-                            <input type="submit" name="gestisci_opzioni" id="gestisci_opzioni" value="gestisci_opzioni">
-                    </form>
+                <?php if($domanda["ApertaChiusa"] == "CHIUSA") {?>
+                    <a href="gestisci_opzioni.php?cod_sondaggio=<?php echo $codice_sondaggio;?>&id_domanda=<?php echo $domanda['ID'];?>"><?php echo $domanda['Testo'];?></a>
                 <?php } else if($domanda ["ApertaChiusa"] == "APERTA"){?>
                 <?php echo $domanda['Testo'];?>
                 <?php }?>

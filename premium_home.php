@@ -134,7 +134,7 @@ inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad u
         <h2>Inserisci domanda</h2>
         <?php foreach ($sondaggi_creati as $sondaggio_creato) : ?>
             <label>
-                <a href="inserisci_domanda.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>"><?php echo $sondaggio_creato['Titolo']; ?></a>
+                <a href="gestisci_domanda.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>"><?php echo $sondaggio_creato['Titolo']; ?></a>
             </label>
         <?php endforeach; ?>
     </div>
