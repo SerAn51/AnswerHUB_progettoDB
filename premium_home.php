@@ -63,29 +63,26 @@ if (!(empty($_SESSION["email"]))) {
     </head>
 
 <body>
-    <!--TODO:
-    - Creazione di un invito ad un sondaggio verso un utente della piattaforma,
-    - Inserimento di una nuova domanda-->
 
     <!--CREAZIONE DI UN NUOVO SONDAGGIO-->
     <!--
         - Per Stato metto di default APERTO...appena lo creo è aperto,
         - DataCreazione imposto in automatico oggi,
         - Per ParolachiaveDominio uso una radio con la lista dei domini e ne seleziono uno,
-        - Per il creante sono un utente quindi inserisco l'email di sessione e null per il CFAziendacreante-->
-
+        - Per il creante sono un utente quindi inserisco l'email di sessione e null per il CFAziendacreante
+        - Mostra un messaggio di errore se sto creando un sondaggio di cui gia' esiste il nome-->
     <?php
     $mostra_domini = $pdo->prepare("CALL MostraDomini()");
     $mostra_domini->execute();
     $domini = $mostra_domini->fetchAll(PDO::FETCH_ASSOC);
-
     $mostra_domini->closeCursor();
+
     ?>
     <div class="space">
         <form action="script_php/crea_sondaggio.php" method="POST">
             <h2>Crea sondaggio</h2>
             <?php if (isset($_GET['error']) && ($_GET['error'] == 10)) {
-                echo "Errore, riprova";
+                echo "Errore, titolo gia' presente";
             } else if (isset($_GET['success']) && $_GET['success'] == 10) {
                 echo "Sondaggio creato con successo";
             }
