@@ -5,7 +5,7 @@ $codice_sondaggio = $_GET['cod_sondaggio'];
 
 // controllo per evitare che si cambi url e si faccia l'accesso ad un sondaggio di un altro utente premium, al massimo se cambio url per il get del codice posso mettere il codice di un sondaggio da me (utente premium) gestito:
 $check_sondaggio = $pdo->prepare("SELECT Codice FROM Sondaggio WHERE EmailUtentecreante = :email AND Codice = :codice");
-$check_sondaggio->bindParam(':email', $_SESSION['email'], PDO::PARAM_INT);
+$check_sondaggio->bindParam(':email', $_SESSION['email'], PDO::PARAM_STR);
 $check_sondaggio->bindParam(':codice', $codice_sondaggio, PDO::PARAM_INT);
 $check_sondaggio->execute();
 $sondaggio = $check_sondaggio->fetch(PDO::FETCH_ASSOC);
@@ -127,37 +127,45 @@ $mostra_dati_sondaggio->closeCursor();
 
             // Se i controlli vengono passati (la variabile $controllo non e' stata modificata in false), procedi
             if ($controllo) { ?>
-                <form action="script_php/manda_inviti.php" method="POST">
-                    <?php if (isset($_GET['error']) && ($_GET['error'] == 10)) {
-                        echo "Devi selezionare almeno un utente";
-                    } else if (isset($_GET['success']) && $_GET['success'] == 10) {
-                        echo "Utenti invitati con successo";
-                    } else if (isset($_GET['error']) && $_GET['error'] == 20) {
-                        echo "Per questo sondaggio hai già invitato tutti gli utenti possibili";
-                    } else if (isset($_GET['error']) && $_GET['error'] == 30) {
-                        echo "Hai selezionato troppi utenti, puoi selezionare" . " " . $_GET['num_selezionabili'] . " " . "utente/i";
-                    }
+                <!--Se non esistono utenti con interessati al dominio del sondaggio, mostra messaggio
+                (lo mostri solo se sono passati i controlli precedenti sull'esistenza di domande e opzioni per domande chiuse-->
+                <?php
+                if (count($utenti_interessati) == 0) {
+                    echo "Non ci sono utenti interessati al dominio di questo sondaggio (non sono considerati eventuali utenti interessati e gia' invitati)";
+                } else {
                     ?>
-                    <ul>
-                        <?php if (isset($utenti_interessati) && is_array($utenti_interessati)) {
-                            foreach ($utenti_interessati as $utente_interessato) { ?>
-                                <li>
-                                    <input type="checkbox" name="utenti_selezionati[]"
-                                        value="<?php echo $utente_interessato['Email'] ?>">
-                                    <!-- mostra Email Nome, Cognome, Annonascita, Luogonascita degli utenti interessati-->
-                                    <label for="utente_interessato[]">
-                                        <?php echo $utente_interessato['Email'] . ' ' . $utente_interessato['Nome'];
-                                        echo ' ' . $utente_interessato['Cognome'] . ' ' . $utente_interessato['Annonascita'];
-                                        echo ' ' . $utente_interessato['Luogonascita'] ?>
-                                    </label>
-                                </li>
-                            <?php }
-                        } ?>
-                    </ul>
-                    <input type="hidden" name="codice_sondaggio"
-                        value="<?php echo $codice_sondaggio; ?>"><!--Per inviare il codice_sondaggio tramite POST-->
-                    <input type="submit" name="invita" id="invita" value="invita">
-                </form>
+                    <form action="script_php/manda_inviti.php" method="POST">
+                        <?php if (isset($_GET['error']) && ($_GET['error'] == 10)) {
+                            echo "Devi selezionare almeno un utente";
+                        } else if (isset($_GET['success']) && $_GET['success'] == 10) {
+                            echo "Utenti invitati con successo";
+                        } else if (isset($_GET['error']) && $_GET['error'] == 20) {
+                            echo "Per questo sondaggio hai già invitato tutti gli utenti possibili";
+                        } else if (isset($_GET['error']) && $_GET['error'] == 30) {
+                            echo "Hai selezionato troppi utenti, puoi selezionare" . " " . $_GET['num_selezionabili'] . " " . "utente/i";
+                        }
+                        ?>
+                        <ul>
+                            <?php if (isset($utenti_interessati) && is_array($utenti_interessati)) {
+                                foreach ($utenti_interessati as $utente_interessato) { ?>
+                                    <li>
+                                        <input type="checkbox" name="utenti_selezionati[]"
+                                            value="<?php echo $utente_interessato['Email'] ?>">
+                                        <!-- mostra Email Nome, Cognome, Annonascita, Luogonascita degli utenti interessati-->
+                                        <label for="utente_interessato[]">
+                                            <?php echo $utente_interessato['Email'] . ' ' . $utente_interessato['Nome'];
+                                            echo ' ' . $utente_interessato['Cognome'] . ' ' . $utente_interessato['Annonascita'];
+                                            echo ' ' . $utente_interessato['Luogonascita'] ?>
+                                        </label>
+                                    </li>
+                                <?php }
+                            } ?>
+                        </ul>
+                        <input type="hidden" name="codice_sondaggio"
+                            value="<?php echo $codice_sondaggio; ?>"><!--Per inviare il codice_sondaggio tramite POST-->
+                        <input type="submit" name="invita" id="invita" value="Invita">
+                    </form>
+                <?php } ?>
             <?php } ?>
         <?php } ?>
     </div>

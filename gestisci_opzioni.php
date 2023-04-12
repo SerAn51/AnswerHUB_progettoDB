@@ -37,6 +37,13 @@ $mostra_opzioni_domanda->execute();
 $opzioni_domanda = $mostra_opzioni_domanda->fetchAll(PDO::FETCH_ASSOC);
 $mostra_opzioni_domanda->closeCursor();
 
+
+$check_inviti = $pdo->prepare("SELECT * FROM Invito WHERE CodiceSondaggio = :codice_sondaggio");
+$check_inviti->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
+$check_inviti->execute();
+$inviti = $check_inviti->fetchAll();
+$check_inviti->closeCursor();
+
 ?>
 
 <!DOCTYPE html>
@@ -81,20 +88,26 @@ $mostra_opzioni_domanda->closeCursor();
 </head>
 
 <body>
-    <!--VISUALIZZA OPZIONI-->
+    <!--VISUALIZZA E RIMUOVI OPZIONI (se nessun utente e' stato ancora invitato)-->
     <div class="space">
         <h2>Opzioni</h2>
         <ul>
             <?php foreach ($opzioni_domanda as $opzione) { ?>
                 <li>
                     <form action="script_php/rimuovi_opzione.php" method="POST">
-                    <label for="rimuovi">
-                        <?php echo $opzione['Numeroprogressivo'] . ' ' . $opzione['Testo']; ?>
-                    </label>
-                    <input type="hidden" name="codice_sondaggio" id="codice_sondaggio" value="<?php echo $codice_sondaggio?>">
-                    <input type="hidden" name="id_domanda" id="id_domanda" value="<?php echo $id_domanda?>">
-                    <input type="hidden" name="numero_progressivo" id="numero_progressivo" value="<?php echo $opzione['Numeroprogressivo'] ?>">
-                    <input type="submit" name="bottone" id="bottone" value="Rimuovi">
+                        <label for="bottone">
+                            <?php echo $opzione['Numeroprogressivo'] . ' ' . $opzione['Testo']; ?>
+                        </label>
+                        <?php
+                        // se la query restituisce almeno una riga, vuol dire che ho invitato almeno un utente quindi non posso piu' rimuovere opzioni-->
+                        if (!($inviti && count($inviti) > 0)) { ?>
+                            <input type="hidden" name="codice_sondaggio" id="codice_sondaggio"
+                                value="<?php echo $codice_sondaggio ?>">
+                            <input type="hidden" name="id_domanda" id="id_domanda" value="<?php echo $id_domanda ?>">
+                            <input type="hidden" name="numero_progressivo" id="numero_progressivo"
+                                value="<?php echo $opzione['Numeroprogressivo'] ?>">
+                            <input type="submit" name="bottone" id="bottone" value="Rimuovi">
+                        <?php } ?>
                     </form>
                 </li>
             <?php } ?>
@@ -103,13 +116,6 @@ $mostra_opzioni_domanda->closeCursor();
 
 
     <!--AGGIUNGI UN'OPZIONE, NB: quando invito, se non ci sono opzioni, mostra messaggio-->
-    <?php
-    $check_inviti = $pdo->prepare("SELECT * FROM Invito WHERE CodiceSondaggio = :codice_sondaggio");
-    $check_inviti->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
-    $check_inviti->execute();
-    $inviti = $check_inviti->fetchAll();
-    $check_inviti->closeCursor();
-    ?>
     <div class="space">
         <h2>Aggiungi opzione</h2>
         <?php if ((isset($_GET['success'])) && ($_GET['success'] == 10)) {
@@ -133,8 +139,6 @@ $mostra_opzioni_domanda->closeCursor();
         <?php }
         ?>
     </div>
-
-    <!--RIMUOVI OPZIONE-->
 
     <a href="gestisci_domanda.php?cod_sondaggio=<?php echo $codice_sondaggio ?>">Torna indietro</a>
     <a href="premium_home.php">Torna alla home</a>
