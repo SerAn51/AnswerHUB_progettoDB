@@ -87,7 +87,15 @@ $mostra_opzioni_domanda->closeCursor();
         <ul>
             <?php foreach ($opzioni_domanda as $opzione) { ?>
                 <li>
-                    <?php echo $opzione['Numeroprogressivo'] . ' ' . $opzione['Testo'] . '<br>'; ?>
+                    <form action="script_php/rimuovi_opzione.php" method="POST">
+                    <label for="rimuovi">
+                        <?php echo $opzione['Numeroprogressivo'] . ' ' . $opzione['Testo']; ?>
+                    </label>
+                    <input type="hidden" name="codice_sondaggio" id="codice_sondaggio" value="<?php echo $codice_sondaggio?>">
+                    <input type="hidden" name="id_domanda" id="id_domanda" value="<?php echo $id_domanda?>">
+                    <input type="hidden" name="numero_progressivo" id="numero_progressivo" value="<?php echo $opzione['Numeroprogressivo'] ?>">
+                    <input type="submit" name="bottone" id="bottone" value="Rimuovi">
+                    </form>
                 </li>
             <?php } ?>
         </ul>
@@ -106,7 +114,7 @@ $mostra_opzioni_domanda->closeCursor();
         <h2>Aggiungi opzione</h2>
         <?php if ((isset($_GET['success'])) && ($_GET['success'] == 10)) {
             echo "Opzione inserita con successo";
-        } else if ((isset($_GET['error'])) && ($_GET['error'] == 10)){
+        } else if ((isset($_GET['error'])) && ($_GET['error'] == 10)) {
             echo "Opzione gia' esistente";
         }
         ?>
@@ -116,7 +124,7 @@ $mostra_opzioni_domanda->closeCursor();
             echo "E' stato gia' inviato almeno un utente, per questa domanda non e' piu' possibile inserire opzioni";
         } else { ?>
             <form action="script_php/aggiungi_opzione.php" method="POST">
-                <input type="text" name="testo_opzione" id="testo_opzione">
+                <input type="text" name="testo_opzione" id="testo_opzione" required>
                 <label for="testo_opzione">Testo</label>
                 <input type="hidden" name="codice_sondaggio" id="codice_sondaggio" value="<?php echo $codice_sondaggio; ?>">
                 <input type="hidden" name="id_domanda_chiusa" id="id_domanda_chiusa" value="<?php echo $id_domanda; ?>">
@@ -125,6 +133,8 @@ $mostra_opzioni_domanda->closeCursor();
         <?php }
         ?>
     </div>
+
+    <!--RIMUOVI OPZIONE-->
 
     <a href="gestisci_domanda.php?cod_sondaggio=<?php echo $codice_sondaggio ?>">Torna indietro</a>
     <a href="premium_home.php">Torna alla home</a>
