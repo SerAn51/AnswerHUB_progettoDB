@@ -66,9 +66,11 @@ $mostra_dati_sondaggio->closeCursor();
 <body>
     <div class="space">
         <?php if (isset($dati_sondaggio) && is_array($dati_sondaggio)) { ?>
-            <h2>Seleziona gli utenti da invitare per il sondaggio <?php echo $dati_sondaggio['Titolo']; ?></h2>
+            <h2>Seleziona gli utenti da invitare per il sondaggio
+                <?php echo $dati_sondaggio['Titolo']; ?>
+            </h2>
             <!--mostri i dati di tutti gli utenti interessati al dominio di questo specifico sondaggio-->
-        <?php
+            <?php
             if (isset($dati_sondaggio) && is_array($dati_sondaggio)) {
                 $parola_chiave_dominio_sondaggio = $dati_sondaggio['ParolachiaveDominio'];
                 $mostra_utenti_interessati = $pdo->prepare("CALL MostraUtentiInteressati(:param1, :param2)");
@@ -80,36 +82,81 @@ $mostra_dati_sondaggio->closeCursor();
             }
         }
         ?>
-        <form action="script_php/manda_inviti.php" method="POST">
-            <?php if (isset($_GET['error']) && ($_GET['error'] == 10)) {
-                echo "Devi selezionare almeno un utente";
-            } else if (isset($_GET['success']) && $_GET['success'] == 10) {
-                echo "Utenti invitati con successo";
-            } else if (isset($_GET['error']) && $_GET['error'] == 20) {
-                echo "Per questo sondaggio hai già invitato tutti gli utenti possibili";
-            } else if (isset($_GET['error']) && $_GET['error'] == 30) {
-                echo "Hai selezionato troppi utenti, puoi selezionare" . " " . $_GET['num_selezionabili'] . " " . "utente/i";
-            }
-            ?>
-            <ul>
-                <?php if (isset($utenti_interessati) && is_array($utenti_interessati)) {
-                    foreach ($utenti_interessati as $utente_interessato) { ?>
-                        <li>
-                            <input type="checkbox" name="utenti_selezionati[]" value="<?php echo $utente_interessato['Email'] ?>">
-                            <!-- mostra Email Nome, Cognome, Annonascita, Luogonascita -->
-                            <label for="utente_interessato[]">
-                                <?php echo $utente_interessato['Email'] . ' ' . $utente_interessato['Nome'];
-                                echo ' ' . $utente_interessato['Cognome'] . ' ' . $utente_interessato['Annonascita'];
-                                echo ' ' . $utente_interessato['Luogonascita'] ?>
-                            </label>
-                        </li>
-                <?php }
-                } ?>
-            </ul>
-            <input type="hidden" name="codice_sondaggio" value="<?php echo $codice_sondaggio; ?>"><!--Per inviare il codice_sondaggio tramite POST-->
-            <input type="submit" name="invita" id="invita" value="invita">
-        </form>
 
+        <!--Ritorna un array non vuoto se esiste almeno una domanda-->
+        <?php
+        $check_domande = $pdo->prepare("SELECT * FROM Domanda JOIN ComponenteSondaggioDomanda ON ID = IDDomanda WHERE CodiceSondaggio = :codice_sondaggio");
+        $check_domande->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
+        $check_domande->execute();
+        $domande = $check_domande->fetchAll();
+        $check_domande->closeCursor();
+        ?>
+
+        <!--Ritorna un array delle domande chiuse del sondaggio-->
+        <?php
+        $check_domande_chiuse = $pdo->prepare("SELECT * FROM DomandaChiusa JOIN Domanda ON DomandaChiusa.ID = Domanda.ID JOIN ComponenteSondaggioDomanda ON Domanda.ID = ComponenteSondaggioDomanda.IDDomanda WHERE CodiceSondaggio = :codice_sondaggio");
+        $check_domande_chiuse->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
+        $check_domande_chiuse->execute();
+        $domande_chiuse = $check_domande_chiuse->fetchAll();
+        $check_domande_chiuse->closeCursor();
+        ?>
+
+        <!--Controlla se esistono domande per il sondaggio, altrimenti notifica l'utente e non rendere disponibile l'invio di inviti-->
+        <?php
+        $controllo = true;
+        if (empty($domande)) {
+            echo "Questo sondaggio non ha domande, aggiungi delle domande";
+            $controllo = false;
+        } else {
+            //Cicla tutte le domande chiuse, se ne esiste una che non ha opzioni, interrompe e mostra un messaggio di errore
+            foreach ($domande_chiuse as $domanda_chiusa) {
+                //Ritorna un array delle opzioni della domanda data in input
+                $check_opzioni_domanda = $pdo->prepare("SELECT * FROM Opzione WHERE IDDomandachiusa = :id_domanda_chiusa");
+                $check_opzioni_domanda->bindParam(':id_domanda_chiusa', $domanda_chiusa['DomandaChiusa.ID'], PDO::PARAM_INT);
+                $check_opzioni_domanda->execute();
+                $opzioni_domanda = $check_opzioni_domanda->fetchAll();
+                $check_opzioni_domanda->closeCursor();
+                if (empty($opzioni_domanda)) {
+                    echo 'La domanda "' . $domanda_chiusa['Testo'] . '" non ha opzioni, aggiungine almeno una';
+                    $controllo = false;
+                }
+            }
+
+            // Se i controlli vengono passati (la variabile $controllo non e' stata modificata in false), procedi
+            if ($controllo) { ?>
+                <form action="script_php/manda_inviti.php" method="POST">
+                    <?php if (isset($_GET['error']) && ($_GET['error'] == 10)) {
+                        echo "Devi selezionare almeno un utente";
+                    } else if (isset($_GET['success']) && $_GET['success'] == 10) {
+                        echo "Utenti invitati con successo";
+                    } else if (isset($_GET['error']) && $_GET['error'] == 20) {
+                        echo "Per questo sondaggio hai già invitato tutti gli utenti possibili";
+                    } else if (isset($_GET['error']) && $_GET['error'] == 30) {
+                        echo "Hai selezionato troppi utenti, puoi selezionare" . " " . $_GET['num_selezionabili'] . " " . "utente/i";
+                    }
+                    ?>
+                    <ul>
+                        <?php if (isset($utenti_interessati) && is_array($utenti_interessati)) {
+                            foreach ($utenti_interessati as $utente_interessato) { ?>
+                                <li>
+                                    <input type="checkbox" name="utenti_selezionati[]"
+                                        value="<?php echo $utente_interessato['Email'] ?>">
+                                    <!-- mostra Email Nome, Cognome, Annonascita, Luogonascita degli utenti interessati-->
+                                    <label for="utente_interessato[]">
+                                        <?php echo $utente_interessato['Email'] . ' ' . $utente_interessato['Nome'];
+                                        echo ' ' . $utente_interessato['Cognome'] . ' ' . $utente_interessato['Annonascita'];
+                                        echo ' ' . $utente_interessato['Luogonascita'] ?>
+                                    </label>
+                                </li>
+                            <?php }
+                        } ?>
+                    </ul>
+                    <input type="hidden" name="codice_sondaggio"
+                        value="<?php echo $codice_sondaggio; ?>"><!--Per inviare il codice_sondaggio tramite POST-->
+                    <input type="submit" name="invita" id="invita" value="invita">
+                </form>
+            <?php } ?>
+        <?php } ?>
     </div>
     <a href="premium_home.php">Torna alla home</a>
     <a href="logout.php">Effettua il logout</a>
