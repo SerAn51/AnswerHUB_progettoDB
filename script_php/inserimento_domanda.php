@@ -29,6 +29,23 @@ if (isset($_POST["crea"])) {
     //salvo il testo dal form
     $testo = $_POST['testo'];
 
+
+    //Un utente premium non può creare due opzioni con lo stesso testo (ignorando maiuscole e minuscole), questo perche'
+    //lato utente che risponde ai sondaggi si potrebbe creare confusione, sono ammesse opzioni con lo stesso testo a patto che siano appartenenti a due domande diverse
+    $proc_mostra_domande = $pdo->prepare("CALL MostraDomande(:param1)");
+    $proc_mostra_domande->bindParam(':param1', $codice_sondaggio, PDO::PARAM_INT);
+    $proc_mostra_domande->execute();
+    $domande = $proc_mostra_domande->fetchAll(PDO::FETCH_ASSOC);
+    $proc_mostra_domande->closeCursor();
+
+    foreach ($domande as $domanda) {
+        if (strcasecmp($domanda['Testo'], $testo) == 0) {
+            //testo domanda duplicato
+            header("Location: ../gestisci_domanda.php?cod_sondaggio=$codice_sondaggio&error=20");
+            exit;
+        }
+    }
+
     //salvo la foto dal form, se c'e' ed e' un formato consentito, altrimenti la setto a NULL
     //FIXME: non prende l'immagine, anche se la inserisco nel form, viene settata null
     if (isset($_FILES['foto']) && $_FILES['foto']['error'] !== UPLOAD_ERR_NO_FILE) { //il file è stato caricato e non è vuoto

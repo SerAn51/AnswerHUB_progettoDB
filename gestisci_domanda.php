@@ -113,8 +113,13 @@ $mostra_domande_sondaggio->closeCursor();
         (in questo caso, si devono inserire le opzioni...vedi space "Domande"-->
             <p>I campi con * sono obbligatori</p>
             <form action="script_php/inserimento_domanda.php" method="POST" enctype="multipart/form-data">
-                <?php if ((isset($_GET['error'])) && ($_GET['error'] == 10)) {
-                    echo "Tipo immagine non valido, supportati: PNG, JPEG";
+                <?php
+                if ((isset($_GET['error']))) {
+                    if ($_GET['error'] == 10) {
+                        echo "Tipo immagine non valido, supportati: PNG, JPEG";
+                    } else if ($_GET['error'] == 20) {
+                        echo "Domanda con stesso testo gia' esistente";
+                    }
                 } else if (isset($_GET['success']) && $_GET['success'] == 10) {
                     echo "Domanda inserita con successo";
                 }

@@ -106,6 +106,8 @@ $mostra_opzioni_domanda->closeCursor();
         <h2>Aggiungi opzione</h2>
         <?php if ((isset($_GET['success'])) && ($_GET['success'] == 10)) {
             echo "Opzione inserita con successo";
+        } else if ((isset($_GET['error'])) && ($_GET['error'] == 10)){
+            echo "Opzione gia' esistente";
         }
         ?>
         <?php

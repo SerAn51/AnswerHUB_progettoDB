@@ -28,7 +28,7 @@ if (isset($_POST["crea"])) {
     $dominio = $_POST["dominio"];
     $cf_azienda_creante = NULL;
 
-    //Un utente premium non può creare due sondaggi con lo stesso nome, questo perche'
+    //Un utente premium non può creare due sondaggi con lo stesso nome (ignorando maiuscole e minuscole), questo perche'
     //lato utente che risponde ai sondaggi si potrebbe creare confusione, sono ammessi sondaggi con lo stesso nome a patto che abbiano creatore diverso
     $proc_mostra_sondaggi = $pdo->prepare("CALL MostraSondaggi(:param1, :param2)");
     $proc_mostra_sondaggi->bindParam(':param1', $_SESSION['email'], PDO::PARAM_STR);
@@ -38,7 +38,7 @@ if (isset($_POST["crea"])) {
     $proc_mostra_sondaggi->closeCursor();
 
     foreach ($sondaggi as $sondaggio) {
-        if ($sondaggio['Titolo'] == $titolo) {
+        if (strcasecmp($sondaggio['Titolo'], $titolo) == 0) {
             header("Location: ../premium_home.php?error=10");
             exit;
         }
