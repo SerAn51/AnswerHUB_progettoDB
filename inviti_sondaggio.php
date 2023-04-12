@@ -108,17 +108,20 @@ $mostra_dati_sondaggio->closeCursor();
             echo "Questo sondaggio non ha domande, aggiungi delle domande";
             $controllo = false;
         } else {
-            //Cicla tutte le domande chiuse, se ne esiste una che non ha opzioni, interrompe e mostra un messaggio di errore
-            foreach ($domande_chiuse as $domanda_chiusa) {
-                //Ritorna un array delle opzioni della domanda data in input
-                $check_opzioni_domanda = $pdo->prepare("SELECT * FROM Opzione WHERE IDDomandachiusa = :id_domanda_chiusa");
-                $check_opzioni_domanda->bindParam(':id_domanda_chiusa', $domanda_chiusa['DomandaChiusa.ID'], PDO::PARAM_INT);
-                $check_opzioni_domanda->execute();
-                $opzioni_domanda = $check_opzioni_domanda->fetchAll();
-                $check_opzioni_domanda->closeCursor();
-                if (empty($opzioni_domanda)) {
-                    echo 'La domanda "' . $domanda_chiusa['Testo'] . '" non ha opzioni, aggiungine almeno una';
-                    $controllo = false;
+            if (!empty($domande_chiuse)) {
+                //Cicla tutte le domande chiuse, se ne esiste una che non ha opzioni, interrompe e mostra un messaggio di errore
+                foreach ($domande_chiuse as $domanda_chiusa) {
+                    //Ritorna un array delle opzioni della domanda data in input
+                    $id_domanda_chiusa = $domanda_chiusa['IDDomanda'];
+                    $check_opzioni_domanda = $pdo->prepare("SELECT * FROM Opzione WHERE IDDomandachiusa = :id_domanda_chiusa");
+                    $check_opzioni_domanda->bindParam(':id_domanda_chiusa', $id_domanda_chiusa, PDO::PARAM_INT);
+                    $check_opzioni_domanda->execute();
+                    $opzioni_domanda = $check_opzioni_domanda->fetchAll();
+                    $check_opzioni_domanda->closeCursor();
+                    if (empty($opzioni_domanda)) {
+                        echo 'La domanda "' . $domanda_chiusa['Testo'] . '" non ha opzioni, aggiungine almeno una';
+                        $controllo = false;
+                    }
                 }
             }
 
