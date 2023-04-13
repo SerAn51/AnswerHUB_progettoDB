@@ -20,6 +20,14 @@ $mostra_domande_sondaggio->bindParam(':codice', $codice_sondaggio, PDO::PARAM_IN
 $mostra_domande_sondaggio->execute();
 $domande_sondaggio = $mostra_domande_sondaggio->fetchAll(PDO::FETCH_ASSOC);
 $mostra_domande_sondaggio->closeCursor();
+
+
+$check_inviti = $pdo->prepare("SELECT * FROM Invito WHERE CodiceSondaggio = :codice_sondaggio");
+$check_inviti->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
+$check_inviti->execute();
+$inviti = $check_inviti->fetchAll();
+$check_inviti->closeCursor();
+
 ?>
 
 <!DOCTYPE html>
@@ -81,26 +89,37 @@ $mostra_domande_sondaggio->closeCursor();
         <ul>
             <?php foreach ($domande_sondaggio as $domanda) { ?>
                 <li>
-                    <?php if ($domanda["ApertaChiusa"] == "CHIUSA") { ?>
-                        <a
-                            href="gestisci_opzioni.php?cod_sondaggio=<?php echo $codice_sondaggio; ?>&id_domanda=<?php echo $domanda['ID']; ?>"><?php echo $domanda['Testo']; ?></a>
-                    <?php } else if ($domanda["ApertaChiusa"] == "APERTA") { ?>
-                        <?php echo $domanda['Testo']; ?>
-                    <?php } ?>
+                    <form action="script_php/rimuovi_domanda.php" method="POST">
+                        <?php if (isset($_GET['success']) && $_GET['success'] == 20) {
+                            echo "Domanda rimossa con successo";
+                        } ?>
+                        <?php if ($domanda["ApertaChiusa"] == "CHIUSA") { ?>
+                            <label for="bottone">
+                                <a
+                                    href="gestisci_opzioni.php?cod_sondaggio=<?php echo $codice_sondaggio; ?>&id_domanda=<?php echo $domanda['ID']; ?>"><?php echo $domanda['Testo']; ?></a>
+                            </label>
+                        <?php } else if ($domanda["ApertaChiusa"] == "APERTA") { ?>
+                            <?php echo $domanda['Testo']; ?>
+                        <?php } ?>
+                        <!--Che sia domanda chiusa o aperta, mostro un bottone per rimuovere la domanda-->
+                        <!--Nel momento in cui rimuovo domanda, mi si deve rimuovere la reference in:
+                        - ComponenteSondaggioDomanda
+                        - DomandaAperta o DomandaChiusa
+                        - In Opzione se eliminato una CHIUSA
+                        Questo viene gia' gestito dalle foreign key del db-->
+                        <?php if (!($inviti && count($inviti) > 0)) { ?>
+                            <input type="hidden" name="codice_sondaggio" id="codice_sondaggio"
+                                value="<?php echo $codice_sondaggio ?>">
+                            <input type="hidden" name="id_domanda" id="id_domanda" value="<?php echo $domanda['ID'] ?>">
+                            <input type="submit" name="bottone" id="bottone" value="Rimuovi">
+                        <?php } ?>
+                    </form>
                 </li>
             <?php } ?>
         </ul>
     </div>
 
     <!--CREA UNA NUOVA DOMANDA-->
-    <?php
-    $check_inviti = $pdo->prepare("SELECT * FROM Invito WHERE CodiceSondaggio = :codice_sondaggio");
-    $check_inviti->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
-    $check_inviti->execute();
-    $inviti = $check_inviti->fetchAll();
-    $check_inviti->closeCursor();
-    ?>
-
     <div class="space">
         <h2>Inserisci una nuova domanda</h2>
         <?php
