@@ -21,6 +21,19 @@ if (!(empty($_SESSION["email"]))) {
     header("Location: login.php"); //inoltre, cosi' che se provo ad andare in index dall'url, mi rimanda al login
 }
 
+//utile per mostrare la lista di sondaggi
+$mostra_sondaggi_creati = $pdo->prepare("SELECT * FROM Sondaggio WHERE EmailUtentecreante = :email");
+$mostra_sondaggi_creati->bindParam(':email', $_SESSION["email"], PDO::PARAM_STR);
+$mostra_sondaggi_creati->execute();
+$sondaggi_creati = $mostra_sondaggi_creati->fetchAll(PDO::FETCH_ASSOC);
+$mostra_sondaggi_creati->closeCursor();
+
+//utile per verificare che ci siano invitati al sondaggio
+$check_inviti = $pdo->prepare("SELECT * FROM Invito WHERE CodiceSondaggio = :codice_sondaggio");
+$check_inviti->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
+$check_inviti->execute();
+$inviti = $check_inviti->fetchAll();
+$check_inviti->closeCursor();
 ?>
 
 <!DOCTYPE html>
@@ -64,6 +77,32 @@ if (!(empty($_SESSION["email"]))) {
 
 <body>
 
+    <!--GESTIONE SONDAGGI-->
+    <div class="space">
+        <h2>Gestisci sondaggi</h2>
+        <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
+            <?php
+            //utile per verificare che ci siano invitati al sondaggio
+            $codice_sondaggio = $sondaggio_creato['Codice'];
+            $check_inviti = $pdo->prepare("SELECT * FROM Invito WHERE CodiceSondaggio = :codice_sondaggio");
+            $check_inviti->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
+            $check_inviti->execute();
+            $inviti = $check_inviti->fetchAll();
+            $check_inviti->closeCursor();
+            ?>
+            <!--TODO: rimuovi_sondaggio.php-->
+            <form action="script_php/rimuovi_sondaggio.php" method="POST">
+                <label>
+                    <?php echo $sondaggio_creato['Titolo']; ?>
+                </label>
+                <?php if (!($inviti && count($inviti) > 0)) { ?>
+                    <input type="hidden" name="codice_sondaggio" id="codice_sondaggio" value="<?php echo $codice_sondaggio ?>">
+                    <input type="submit" name="bottone" id="bottone" value="Rimuovi">
+                <?php } ?>
+            </form>
+        <?php } ?>
+    </div>
+
     <!--CREAZIONE DI UN NUOVO SONDAGGIO-->
     <!--
         - Per Stato metto di default APERTO...appena lo creo è aperto,
@@ -93,7 +132,7 @@ if (!(empty($_SESSION["email"]))) {
             <label for="max_utenti">Max utenti</label>
             <input type="date" name="data_chiusura" id="data_chiusura" required>
             <label for="data_chiusura">Data di chiusura</label>
-            <?php foreach ($domini as $dominio) : ?>
+            <?php foreach ($domini as $dominio): ?>
                 <label>
                     <input type="radio" name="dominio" id="dominio" value="<?php echo $dominio['Parolachiave']; ?>">
                     <?php echo $dominio['Parolachiave']; ?>
@@ -106,17 +145,9 @@ if (!(empty($_SESSION["email"]))) {
     <!--CREAZIONE DI UN INVITO AD UN SONDAGGIO VERSO UN UTENTE DELLA PIATTAFORMA-->
     <!--Idea: gestione inviti fatta con una lista di utenti da invitare, questi utenti sono presi con una select che filtra gli utenti per dominio di interesse == dominio sondaggio;
 inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad una pagina con la lista degli utenti da invitare, con checkbox-->
-    <?php
-    $mostra_sondaggi_creati = $pdo->prepare("SELECT * FROM Sondaggio WHERE EmailUtentecreante = :email");
-    $mostra_sondaggi_creati->bindParam(':email', $_SESSION["email"], PDO::PARAM_STR);
-    $mostra_sondaggi_creati->execute();
-    $sondaggi_creati = $mostra_sondaggi_creati->fetchAll(PDO::FETCH_ASSOC);
-    $mostra_sondaggi_creati->closeCursor();
-
-    ?>
     <div class="space">
         <h2>Invita utenti</h2>
-        <?php foreach ($sondaggi_creati as $sondaggio_creato) : ?>
+        <?php foreach ($sondaggi_creati as $sondaggio_creato): ?>
             <label>
                 <a href="inviti_sondaggio.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>"><?php echo $sondaggio_creato['Titolo']; ?></a>
             </label>
@@ -129,7 +160,7 @@ inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad u
     2) seleziono il sondaggio dalla lista di sondaggi e gestitsco in una pagina a parte...in cui mostro anche tutte le altre domande per aiutare l'utente premium ad avere un'idea a 360 gradi del sondaggio-->
     <div class="space">
         <h2>Inserisci domanda</h2>
-        <?php foreach ($sondaggi_creati as $sondaggio_creato) : ?>
+        <?php foreach ($sondaggi_creati as $sondaggio_creato): ?>
             <label>
                 <a href="gestisci_domanda.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>"><?php echo $sondaggio_creato['Titolo']; ?></a>
             </label>
