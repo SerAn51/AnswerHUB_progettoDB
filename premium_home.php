@@ -92,8 +92,8 @@ $check_inviti->closeCursor();
             ?>
             <!--TODO: rimuovi_sondaggio.php-->
             <!--Quando rimuovo da Sondaggio, deve rimuovere automaticamente anche da:
-        - ComponenteSondaggioDomanda, Invito (se ci sono inviti e almeno uno non e' in sospeso, non mostra l'opzione, quindi la possibilità che rimuovendo un sondaggio vengano eliminati gli inviti non esiste)
-    -->
+            - ComponenteSondaggioDomanda
+            - Invito (se ci sono inviti e almeno uno non e' in sospeso, non mostra l'opzione, quindi la possibilità che rimuovendo un sondaggio vengano eliminati gli inviti non esiste)-->
             <form action="script_php/elimina_sondaggio.php" method="POST">
 
                 <label>
@@ -104,7 +104,7 @@ $check_inviti->closeCursor();
                 // se non ci sono utenti invitati mostra il bottone per eliminare, se ci sono mostra i bottoni solo se nessuno ha ancora accettato l'invito
                 $tutti_sospesi = true;
 
-                // se la query restituisce almeno una riga, vuol dire che ho invitato almeno un utente quindi non posso piu' rimuovere opzioni-->
+                // se la query restituisce almeno una riga, vuol dire che ho invitato almeno un utente quindi non posso piu' rimuovere sondaggi-->
                 if (($inviti && count($inviti) > 0)) {
                     foreach ($inviti as $invito) {
                         if ($invito['Esito'] == "ACCETTATO") {
@@ -114,12 +114,12 @@ $check_inviti->closeCursor();
                     }
                 } ?>
                 <?php
-                // se non ci sono invitati la variabile booleana non e' stata modificata quindi accedo,
+                // se non ci sono invitati la variabile booleana non e' stata modificata quindi posso eliminare i sondaggi,
                 // se tutti gli invitati sono con Esito='Sospeso' oppure con Esito='Rifiutato' ho eseguito i controlli ma la variabile booleana non e' stata modificata, quindi posso eliminare il sondaggio
                 if ($tutti_sospesi) {
                     ?>
                     <input type="hidden" name="codice_sondaggio" id="codice_sondaggio" value="<?php echo $codice_sondaggio ?>">
-                    <input type="submit" name="bottone" id="bottone" value="Rimuovi">
+                    <input type="submit" name="bottone" id="bottone" value="Elimina">
                 <?php } ?>
 
             </form>

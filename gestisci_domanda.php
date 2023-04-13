@@ -123,7 +123,7 @@ $check_inviti->closeCursor();
                             }
                         } ?>
                         <?php
-                        
+
                         // se non ci sono invitati la variabile booleana non e' stata modificata quindi accedo,
                         // se tutti gli invitati sono con Esito='Sospeso' oppure con Esito='Rifiutato' ho eseguito i controlli ma la variabile booleana non e' stata modificata, quindi posso eliminare il sondaggio
                         if ($tutti_sospesi) {
@@ -131,7 +131,7 @@ $check_inviti->closeCursor();
                             <input type="hidden" name="codice_sondaggio" id="codice_sondaggio"
                                 value="<?php echo $codice_sondaggio ?>">
                             <input type="hidden" name="id_domanda" id="id_domanda" value="<?php echo $domanda['ID'] ?>">
-                            <input type="submit" name="bottone" id="bottone" value="Rimuovi">
+                            <input type="submit" name="bottone" id="bottone" value="Elimina">
                         <?php } ?>
                     </form>
                 </li>
@@ -142,14 +142,30 @@ $check_inviti->closeCursor();
     <!--CREA UNA NUOVA DOMANDA-->
     <div class="space">
         <h2>Inserisci una nuova domanda</h2>
+
         <?php
-        // se la query restituisce almeno una riga, vuol dire che ho invitato almeno un utente quindi non posso piu' inserire domande-->
-        if ($inviti && count($inviti) > 0) {
-            echo "E' stato gia' inviato almeno un utente, per questo sondaggio non e' piu' possibile inserire domande";
-        } else { ?>
+        // se non ci sono utenti invitati dai la possibilita' di inserire una nuova domanda;
+        // se ci sono, continua a dare la possibilità solo se nessuno ha ancora accettato l'invito
+        $tutti_sospesi_due = true;
+
+        // se la query restituisce almeno una riga, vuol dire che ho invitato almeno un utente quindi non posso piu' aggiungere domande-->
+        if (($inviti && count($inviti) > 0)) {
+            foreach ($inviti as $invito) {
+                if ($invito['Esito'] == "ACCETTATO") {
+                    $tutti_sospesi_due = false;
+                    break;
+                }
+            }
+        } ?>
+        <?php
+
+        // se non ci sono invitati la variabile booleana non e' stata modificata quindi posso aggiungere una domanda,
+        // se tutti gli invitati sono con Esito='Sospeso' oppure con Esito='Rifiutato' ho eseguito i controlli ma la variabile booleana non e' stata modificata, quindi posso aggiungere una domanda
+        if ($tutti_sospesi_due) {
+            ?>
             <!--L'inserimento deve avvenire in Domanda, in ComponenteSondaggioDomanda e
-        se APERTA anche in DomandaAperta, altrimenti in DomandaChiusa
-        (in questo caso, si devono inserire le opzioni...vedi space "Domande"-->
+            se APERTA anche in DomandaAperta, altrimenti in DomandaChiusa
+            (in questo caso, si devono inserire le opzioni...vedi space "Domande"-->
             <p>I campi con * sono obbligatori</p>
             <form action="script_php/inserimento_domanda.php" method="POST" enctype="multipart/form-data">
                 <?php
@@ -190,8 +206,10 @@ $check_inviti->closeCursor();
                         <!--bottone crea domanda-->
                         <input type="submit" name="crea" id="crea" value="Crea">
             </form>
-        <?php }
-        ?>
+        <?php } else {
+            echo "Un utente invitato ha accettato, per questo sondaggio non e' piu' possibile inserire domande";
+        } ?>
+
     </div>
 
     <a href="premium_home.php">Torna alla home</a>

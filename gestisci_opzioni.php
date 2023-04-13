@@ -125,7 +125,7 @@ $check_inviti->closeCursor();
                             <input type="hidden" name="id_domanda" id="id_domanda" value="<?php echo $id_domanda ?>">
                             <input type="hidden" name="numero_progressivo" id="numero_progressivo"
                                 value="<?php echo $opzione['Numeroprogressivo'] ?>">
-                            <input type="submit" name="bottone" id="bottone" value="Rimuovi">
+                            <input type="submit" name="bottone" id="bottone" value="Elimina">
                         <?php } ?>
                     </form>
                 </li>
@@ -134,7 +134,7 @@ $check_inviti->closeCursor();
     </div>
 
 
-    <!--AGGIUNGI UN'OPZIONE, NB: quando invito, se non ci sono opzioni, mostra messaggio-->
+    <!--AGGIUNGI UN'OPZIONE-->
     <div class="space">
         <h2>Aggiungi opzione</h2>
         <?php if ((isset($_GET['success'])) && ($_GET['success'] == 10)) {
@@ -143,11 +143,26 @@ $check_inviti->closeCursor();
             echo "Opzione gia' esistente";
         }
         ?>
+
         <?php
-        // se la query restituisce almeno una riga, vuol dire che ho invitato almeno un utente quindi non posso piu' inserire opzioni-->
-        if ($inviti && count($inviti) > 0) {
-            echo "E' stato gia' inviato almeno un utente, per questa domanda non e' piu' possibile inserire opzioni";
-        } else { ?>
+        // se non ci sono utenti invitati dai la possibilita' di inserire una nuova opzione;
+        // se ci sono, continua a dare la possibilità solo se nessuno ha ancora accettato l'invito
+        $tutti_sospesi_due = true;
+
+        // se la query restituisce almeno una riga, vuol dire che ho invitato almeno un utente quindi non posso piu' aggiungere opzioni-->
+        if (($inviti && count($inviti) > 0)) {
+            foreach ($inviti as $invito) {
+                if ($invito['Esito'] == "ACCETTATO") {
+                    $tutti_sospesi_due = false;
+                    break;
+                }
+            }
+        } ?>
+        <?php
+
+        // se non ci sono invitati la variabile booleana non e' stata modificata quindi posso aggiungere un'opzione,
+        // se tutti gli invitati sono con Esito='Sospeso' oppure con Esito='Rifiutato' ho eseguito i controlli ma la variabile booleana non e' stata modificata, quindi posso aggiungere un'opzione
+        if ($tutti_sospesi_due) { ?>
             <form action="script_php/aggiungi_opzione.php" method="POST">
                 <input type="text" name="testo_opzione" id="testo_opzione" required>
                 <label for="testo_opzione">Testo</label>
@@ -155,8 +170,9 @@ $check_inviti->closeCursor();
                 <input type="hidden" name="id_domanda_chiusa" id="id_domanda_chiusa" value="<?php echo $id_domanda; ?>">
                 <input type="submit" name="aggiungi_opzione" id="aggiungi_opzione" value="Aggiungi opzione">
             </form>
-        <?php }
-        ?>
+        <?php } else {
+            echo "Un utente invitato ha accettato, per questa domanda non e' piu' possibile inserire opzioni";
+        } ?>
     </div>
 
     <a href="gestisci_domanda.php?cod_sondaggio=<?php echo $codice_sondaggio ?>">Torna indietro</a>
