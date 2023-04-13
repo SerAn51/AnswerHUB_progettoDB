@@ -95,12 +95,31 @@ $check_inviti->closeCursor();
             <?php foreach ($opzioni_domanda as $opzione) { ?>
                 <li>
                     <form action="script_php/rimuovi_opzione.php" method="POST">
+
+                        <!--Etichetta per mostrare numero e nome dell'opzione-->
                         <label for="bottone">
                             <?php echo $opzione['Numeroprogressivo'] . ' ' . $opzione['Testo']; ?>
                         </label>
+
                         <?php
+                        // se non ci sono utenti invitati mostra il bottone per eliminare, se ci sono mostra i bottoni solo se nessuno ha ancora accettato l'invito
+                        $tutti_sospesi = true;
+
                         // se la query restituisce almeno una riga, vuol dire che ho invitato almeno un utente quindi non posso piu' rimuovere opzioni-->
-                        if (!($inviti && count($inviti) > 0)) { ?>
+                        if (($inviti && count($inviti) > 0)) {
+                            foreach ($inviti as $invito) {
+                                if ($invito['Esito'] == "ACCETTATO") {
+                                    $tutti_sospesi = false;
+                                    break;
+                                }
+                            }
+                        } ?>
+                        <?php
+
+                        // se non ci sono invitati la variabile booleana non e' stata modificata quindi accedo,
+                        // se tutti gli invitati sono con Esito='Sospeso' oppure con Esito='Rifiutato' ho eseguito i controlli ma la variabile booleana non e' stata modificata, quindi posso eliminare il sondaggio
+                        if ($tutti_sospesi) {
+                            ?>
                             <input type="hidden" name="codice_sondaggio" id="codice_sondaggio"
                                 value="<?php echo $codice_sondaggio ?>">
                             <input type="hidden" name="id_domanda" id="id_domanda" value="<?php echo $id_domanda ?>">

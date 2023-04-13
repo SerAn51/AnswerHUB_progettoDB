@@ -90,9 +90,11 @@ $check_inviti->closeCursor();
             <?php foreach ($domande_sondaggio as $domanda) { ?>
                 <li>
                     <form action="script_php/rimuovi_domanda.php" method="POST">
+                        <!--Eventuale messaggio di successo-->
                         <?php if (isset($_GET['success']) && $_GET['success'] == 20) {
                             echo "Domanda rimossa con successo";
                         } ?>
+                        <!--Nome del sondaggio-->
                         <?php if ($domanda["ApertaChiusa"] == "CHIUSA") { ?>
                             <label for="bottone">
                                 <a
@@ -107,7 +109,25 @@ $check_inviti->closeCursor();
                         - DomandaAperta o DomandaChiusa
                         - In Opzione se eliminato una CHIUSA
                         Questo viene gia' gestito dalle foreign key del db-->
-                        <?php if (!($inviti && count($inviti) > 0)) { ?>
+                        <?php
+                        // se non ci sono utenti invitati mostra il bottone per eliminare, se ci sono mostra i bottoni solo se nessuno ha ancora accettato l'invito
+                        $tutti_sospesi = true;
+
+                        // se la query restituisce almeno una riga, vuol dire che ho invitato almeno un utente quindi non posso piu' rimuovere opzioni-->
+                        if (($inviti && count($inviti) > 0)) {
+                            foreach ($inviti as $invito) {
+                                if ($invito['Esito'] == "ACCETTATO") {
+                                    $tutti_sospesi = false;
+                                    break;
+                                }
+                            }
+                        } ?>
+                        <?php
+                        
+                        // se non ci sono invitati la variabile booleana non e' stata modificata quindi accedo,
+                        // se tutti gli invitati sono con Esito='Sospeso' oppure con Esito='Rifiutato' ho eseguito i controlli ma la variabile booleana non e' stata modificata, quindi posso eliminare il sondaggio
+                        if ($tutti_sospesi) {
+                            ?>
                             <input type="hidden" name="codice_sondaggio" id="codice_sondaggio"
                                 value="<?php echo $codice_sondaggio ?>">
                             <input type="hidden" name="id_domanda" id="id_domanda" value="<?php echo $domanda['ID'] ?>">
