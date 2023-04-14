@@ -90,7 +90,7 @@ require 'config_connessione.php'; // instaura la connessione con il db
     </div>
 
 
-    <!--INVIO AUTOMATICO INVITI-->
+    <!--GESTIONE SONDAGGI: INVITO DI INVITI E INSERIMENTO DOMANDA-->
     <!--Idea: -->
     <?php
     //utile per mostrare la lista di sondaggi
@@ -113,7 +113,7 @@ require 'config_connessione.php'; // instaura la connessione con il db
             $check_inviti->closeCursor();
             ?>
             <label>
-                <?php echo $sondaggio_creato['Titolo']; ?>
+                <a href="gestisci_domanda.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>"><?php echo $sondaggio_creato['Titolo']; ?></a>
             </label>
 
             <?php
@@ -121,7 +121,7 @@ require 'config_connessione.php'; // instaura la connessione con il db
             $utenti_invitati = false;
             // se non ci sono utenti invitati mostra il bottone per eliminare, se ci sono mostra i bottoni solo se nessuno ha ancora accettato l'invito
             $tutti_sospesi = true;
-            
+
             // se la query restituisce almeno una riga, vuol dire che ho invitato almeno un utente quindi non posso piu' rimuovere sondaggi-->
             if (($inviti && count($inviti) > 0)) {
                 $utenti_invitati = true;
@@ -152,7 +152,7 @@ require 'config_connessione.php'; // instaura la connessione con il db
                 </form>
             <?php } ?>
 
-            
+
         <?php } ?>
     </div>
 

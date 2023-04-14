@@ -83,16 +83,19 @@ if (isset($_POST["invita"])) {
                 if (isset($utenti_interessati) && is_array($utenti_interessati)) {
                     foreach ($utenti_interessati as $utente_interessato) {
                         // gli utenti verranno invitati in ordine di aggiunta al db, cioè in ordine di chi ha per primo mostrato intresse per il sondaggio (politica fair)
-                        var_dump($utente_interessato['EmailUtente']);
                         $email_utente = $utente_interessato['EmailUtente'];
                         $cf_azienda_invitante = $_SESSION['cf_azienda'];
                         inserisci_invito_automaticamente($pdo, $email_utente, $codice_sondaggio, $cf_azienda_invitante);
                         $count++;
                         if ($count == $max_utenti) {
                             echo "utenti invitati";
+                            header("Location: ../azienda_home.php");
                             exit;
                         }
                     }
+                    // se non ho raggiunto il massimo ma ho invitato tutti gli utenti disponibili, comunque torno alla home
+                    header("Location: ../azienda_home.php");
+                    exit;
                 }
             }
         }

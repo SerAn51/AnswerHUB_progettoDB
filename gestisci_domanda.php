@@ -3,9 +3,16 @@
 require 'config_connessione.php'; // instaura la connessione con il db
 $codice_sondaggio = $_GET['cod_sondaggio'];
 
-// controllo per evitare che si cambi url e si faccia l'accesso ad un sondaggio di un altro utente premium, al massimo se cambio url per il get del codice posso mettere il codice di un sondaggio da me (utente premium) gestito:
-$check_sondaggio = $pdo->prepare("SELECT Codice FROM Sondaggio WHERE EmailUtentecreante = :email AND Codice = :codice");
-$check_sondaggio->bindParam(':email', $_SESSION['email'], PDO::PARAM_STR);
+// controllo per evitare che si cambi url e si faccia l'accesso ad un sondaggio di un altro utente premium/azienda, al massimo se cambio url per il get del codice posso mettere il codice di un sondaggio da me (utente premium/azienda) gestito:
+// se email non e' vuota vuol dire che ho richiamato gestisci_domanda come utente premium
+if (!(empty($_SESSION["email"]))) {
+    $check_sondaggio = $pdo->prepare("SELECT Codice FROM Sondaggio WHERE EmailUtentecreante = :email AND Codice = :codice");
+    $check_sondaggio->bindParam(':email', $_SESSION['email'], PDO::PARAM_STR);
+// altrimenti l'ho richiamato come azienda
+} else if (!(empty($_SESSION["cf_azienda"]))) {
+    $check_sondaggio = $pdo->prepare("SELECT Codice FROM Sondaggio WHERE CFAziendacreante = :cf_azienda AND Codice = :codice");
+    $check_sondaggio->bindParam(':cf_azienda', $_SESSION['cf_azienda'], PDO::PARAM_STR);
+}
 $check_sondaggio->bindParam(':codice', $codice_sondaggio, PDO::PARAM_INT);
 $check_sondaggio->execute();
 $sondaggio = $check_sondaggio->fetch(PDO::FETCH_ASSOC);

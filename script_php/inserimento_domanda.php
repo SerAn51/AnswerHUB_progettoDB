@@ -16,8 +16,13 @@ function inserisciDomanda($pdo, $testo, $foto, $punteggio, $aperta_chiusa, $cf_a
         $inserisci_domanda->bindParam(':param3', $punteggio, PDO::PARAM_NULL);
     }
     $inserisci_domanda->bindParam(':param4', $aperta_chiusa, PDO::PARAM_STR);
-    $inserisci_domanda->bindParam(':param5', $cf_azienda_inserente, PDO::PARAM_NULL);
-    $inserisci_domanda->bindParam(':param6', $email_utente_inserente, PDO::PARAM_STR);
+    if (!(empty($_SESSION["email"]))) {
+        $inserisci_domanda->bindParam(':param5', $cf_azienda_inserente, PDO::PARAM_NULL);
+        $inserisci_domanda->bindParam(':param6', $email_utente_inserente, PDO::PARAM_STR);
+    } else if (!(empty($_SESSION["cf_azienda"]))) {
+        $inserisci_domanda->bindParam(':param5', $cf_azienda_inserente, PDO::PARAM_STR);
+        $inserisci_domanda->bindParam(':param6', $email_utente_inserente, PDO::PARAM_NULL);
+    }
     $inserisci_domanda->bindParam(':param7', $max_caratteri_domanda_aperta, PDO::PARAM_INT);
     $inserisci_domanda->bindParam(':param8', $codice_sondaggio, PDO::PARAM_INT);
     $inserisci_domanda->execute();
@@ -69,14 +74,21 @@ if (isset($_POST["crea"])) {
         $punteggio = NULL;
     }
 
-    //setto cf_azienda_inserente a NULL perche' la domanda viene inserita dall'utente premium (di sessione)
-    $cf_azienda_inserente = NULL;
+    // se ho richiamato inserimento_domanda.php in quanto utente, email non è vuoto quindi imposto $cf_azienda_inserente e $email_utente_inserente di conseguenza
+    if (!(empty($_SESSION["email"]))) {
+        $cf_azienda_inserente = NULL; //setto cf_azienda_inserente a NULL perche' la domanda viene inserita dall'utente premium (di sessione)
+        $email_utente_inserente = $_SESSION["email"];
+        // altrimenti l'ho richiamato come azienda
+    } else if (!(empty($_SESSION["cf_azienda"]))) {
+        $cf_azienda_inserente = $_SESSION["cf_azienda"];
+        $email_utente_inserente = NULL; //setto email_utente_inserente a NULL perche' la domanda viene inserita dall'azienda (di sessione)
+    }
 
     if (isset($_POST['checkbox_aperta']) && $_POST['checkbox_aperta'] == 'on') { // controllo che la checkbox sia stata selezionata
         $max_caratteri_domanda_aperta = $_POST["max_caratteri_domanda_aperta"];
         $aperta_chiusa = "APERTA";
         //InserisciDomanda(Testo varchar(3000), Foto longblob, Punteggio integer, ApertaChiusa ENUM ('APERTA', 'CHIUSA'), CFAziendainserente varchar(16), EmailUtenteinserente varchar(255), MaxCaratteriRisposta integer
-        inserisciDomanda($pdo, $testo, $foto, $punteggio, $aperta_chiusa, $cf_azienda_inserente, $_SESSION['email'], $max_caratteri_domanda_aperta, $codice_sondaggio);
+        inserisciDomanda($pdo, $testo, $foto, $punteggio, $aperta_chiusa, $cf_azienda_inserente, $email_utente_inserente, $max_caratteri_domanda_aperta, $codice_sondaggio);
         //reindirizza con un messaggio di successo
         header("Location: ../gestisci_domanda.php?cod_sondaggio=$codice_sondaggio&success=10");
         exit;
@@ -84,7 +96,7 @@ if (isset($_POST["crea"])) {
         $aperta_chiusa = "CHIUSA";
         $max_caratteri_domanda_aperta = 0;
         //InserisciDomanda(Testo varchar(3000), Foto longblob, Punteggio integer, ApertaChiusa ENUM ('APERTA', 'CHIUSA'), CFAziendainserente varchar(16), EmailUtenteinserente varchar(255), MaxCaratteriRisposta integer
-        inserisciDomanda($pdo, $testo, $foto, $punteggio, $aperta_chiusa, $cf_azienda_inserente, $_SESSION['email'], $max_caratteri_domanda_aperta, $codice_sondaggio);
+        inserisciDomanda($pdo, $testo, $foto, $punteggio, $aperta_chiusa, $cf_azienda_inserente, $email_utente_inserente, $max_caratteri_domanda_aperta, $codice_sondaggio);
         //reindirizza con un messaggio di successo
         header("Location: ../gestisci_domanda.php?cod_sondaggio=$codice_sondaggio&success=10");
         exit;
