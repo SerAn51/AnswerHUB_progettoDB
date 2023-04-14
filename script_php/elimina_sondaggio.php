@@ -7,12 +7,14 @@ function eliminaSondaggio($pdo, $codice_sondaggio) {
     $elimina_sondaggio->execute();
 }
 
-if (isset($_POST["bottone"])) {
+if (isset($_POST["elimina"])) {
     $codice_sondaggio = $_POST['codice_sondaggio'];
 
     eliminaSondaggio($pdo, $codice_sondaggio);
 
-    header("Location: ../premium_home.php");
+    //dato che e' utilizzato sia da azienda che da utente premium,
+    //reindirizzo a index al cui interno gestisco il giusto reindirizzamento se verso la home dell'azienda o verso la home dell'utente
+    header("Location: ../index.php");
     exit;
 }
 ?>

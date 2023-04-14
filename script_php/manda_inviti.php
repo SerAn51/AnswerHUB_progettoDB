@@ -30,8 +30,6 @@ if (isset($_POST['invita'])) {
     $mostra_max_utenti->closeCursor();
     $max_utenti_sondaggio = $riga_max_utenti['MaxUtenti']; //salva l'intero
 
-    var_dump($max_utenti_sondaggio);
-
     // conta il numero di utenti già invitati (in passato) per questo sondaggio
     $conta_utenti_invitati = $pdo->prepare("SELECT COUNT(*) AS NumUtentiInvitati FROM Invito WHERE CodiceSondaggio = :codice");
     $conta_utenti_invitati->bindParam(':codice', $codice_sondaggio, PDO::PARAM_INT);

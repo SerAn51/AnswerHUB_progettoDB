@@ -89,6 +89,73 @@ require 'config_connessione.php'; // instaura la connessione con il db
         </form>
     </div>
 
+
+    <!--INVIO AUTOMATICO INVITI-->
+    <!--Idea: -->
+    <?php
+    //utile per mostrare la lista di sondaggi
+    $mostra_sondaggi_creati = $pdo->prepare("SELECT * FROM Sondaggio WHERE CFAziendacreante = :cf_azienda");
+    $mostra_sondaggi_creati->bindParam(':cf_azienda', $_SESSION["cf_azienda"], PDO::PARAM_STR);
+    $mostra_sondaggi_creati->execute();
+    $sondaggi_creati = $mostra_sondaggi_creati->fetchAll(PDO::FETCH_ASSOC);
+    $mostra_sondaggi_creati->closeCursor();
+    ?>
+    <div class="space">
+        <h2>Gestione sondaggi</h2>
+        <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
+            <?php
+            //utile per verificare che ci siano invitati al sondaggio
+            $codice_sondaggio = $sondaggio_creato['Codice'];
+            $check_inviti = $pdo->prepare("SELECT * FROM Invito WHERE CodiceSondaggio = :codice_sondaggio");
+            $check_inviti->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
+            $check_inviti->execute();
+            $inviti = $check_inviti->fetchAll();
+            $check_inviti->closeCursor();
+            ?>
+            <label>
+                <?php echo $sondaggio_creato['Titolo']; ?>
+            </label>
+
+            <?php
+            // se e' stato invitato almeno un utente, non mostrare piu' il bottone per invitare (a differenza del poter eliminare il sondaggio, lasciare in questo caso la possibilità di invitare non farebbe altro che duplicare gli inviti per gli stessi utenti, inutile ed inconsistente)
+            $utenti_invitati = false;
+            // se non ci sono utenti invitati mostra il bottone per eliminare, se ci sono mostra i bottoni solo se nessuno ha ancora accettato l'invito
+            $tutti_sospesi = true;
+            
+            // se la query restituisce almeno una riga, vuol dire che ho invitato almeno un utente quindi non posso piu' rimuovere sondaggi-->
+            if (($inviti && count($inviti) > 0)) {
+                $utenti_invitati = true;
+                foreach ($inviti as $invito) {
+                    if ($invito['Esito'] == "ACCETTATO") {
+                        $tutti_sospesi = false;
+                        break;
+                    }
+                }
+            } ?>
+            <?php
+            // se non ci sono invitati la variabile booleana non e' stata modificata quindi posso effettuare inviti
+            if (!$utenti_invitati) { ?>
+                <form action="script_php/manda_inviti_automatico.php" method="POST">
+                    <input type="hidden" name="codice_sondaggio" id="codice_sondaggio" value="<?php echo $codice_sondaggio; ?>">
+                    <input type="submit" name="invita" id="invita" value="Invita">
+                </form>
+            <?php } ?>
+
+            <?php
+            // se non ci sono invitati la variabile booleana non e' stata modificata quindi posso eliminare i sondaggi,
+            // se tutti gli invitati sono con Esito='Sospeso' oppure con Esito='Rifiutato' ho eseguito i controlli ma la variabile booleana non e' stata modificata, quindi posso eliminare il sondaggio
+            if ($tutti_sospesi) {
+                ?>
+                <form action="script_php/elimina_sondaggio.php" method="POST">
+                    <input type="hidden" name="codice_sondaggio" id="codice_sondaggio" value="<?php echo $codice_sondaggio; ?>">
+                    <input type="submit" name="elimina" id="elimina" value="Elimina">
+                </form>
+            <?php } ?>
+
+            
+        <?php } ?>
+    </div>
+
     <a href="logout.php">Effettua il logout</a>
 </body>
 

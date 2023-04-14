@@ -90,7 +90,6 @@ $check_inviti->closeCursor();
             $inviti = $check_inviti->fetchAll();
             $check_inviti->closeCursor();
             ?>
-            <!--TODO: rimuovi_sondaggio.php-->
             <!--Quando rimuovo da Sondaggio, deve rimuovere automaticamente anche da:
             - ComponenteSondaggioDomanda
             - Invito (se ci sono inviti e almeno uno non e' in sospeso, non mostra l'opzione, quindi la possibilità che rimuovendo un sondaggio vengano eliminati gli inviti non esiste)-->
@@ -119,7 +118,7 @@ $check_inviti->closeCursor();
                 if ($tutti_sospesi) {
                     ?>
                     <input type="hidden" name="codice_sondaggio" id="codice_sondaggio" value="<?php echo $codice_sondaggio ?>">
-                    <input type="submit" name="bottone" id="bottone" value="Elimina">
+                    <input type="submit" name="elimina" id="elimina" value="Elimina">
                 <?php } ?>
 
             </form>
@@ -170,11 +169,11 @@ $check_inviti->closeCursor();
 inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad una pagina con la lista degli utenti da invitare, con checkbox-->
     <div class="space">
         <h2>Invita utenti</h2>
-        <?php foreach ($sondaggi_creati as $sondaggio_creato): ?>
+        <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
             <label>
                 <a href="inviti_sondaggio.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>"><?php echo $sondaggio_creato['Titolo']; ?></a>
             </label>
-        <?php endforeach; ?>
+        <?php } ?>
     </div>
 
     <!--INSERIMENTO DI UNA NUOVA DOMANDA-->

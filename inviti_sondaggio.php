@@ -73,7 +73,7 @@ $mostra_dati_sondaggio->closeCursor();
             <?php
             if (isset($dati_sondaggio) && is_array($dati_sondaggio)) {
                 $parola_chiave_dominio_sondaggio = $dati_sondaggio['ParolachiaveDominio'];
-                $mostra_utenti_interessati = $pdo->prepare("CALL MostraUtentiInteressati(:param1, :param2)");
+                $mostra_utenti_interessati = $pdo->prepare("CALL MostraUtentiInteressatiSenzaInvito(:param1, :param2)");
                 $mostra_utenti_interessati->bindParam(':param1', $parola_chiave_dominio_sondaggio, PDO::PARAM_STR);
                 $mostra_utenti_interessati->bindParam(':param2', $codice_sondaggio, PDO::PARAM_INT);
                 $mostra_utenti_interessati->execute();
