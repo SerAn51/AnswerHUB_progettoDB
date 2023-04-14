@@ -46,7 +46,49 @@ require 'config_connessione.php'; // instaura la connessione con il db
 </head>
 
 <body>
-    <h1>Sono in home dell'azienda!</h1>
+    <h1>Home azienda
+        <?php echo $_SESSION['cf_azienda'] ?>
+    </h1>
+
+    <!--CREAZIONE DI UN NUOVO SONDAGGIO-->
+    <!--
+        - Per Stato metto di default APERTO...appena lo creo è aperto,
+        - DataCreazione imposto in automatico oggi,
+        - Per ParolachiaveDominio uso una radio con la lista dei domini e ne seleziono uno,
+        - Per il creante sono una azienda quindi inserisco il cf di sessione e null per il EmailUtentecreante
+        - Mostra un messaggio di errore se sto creando un sondaggio di cui gia' esiste il nome-->
+    <?php
+    $mostra_domini = $pdo->prepare("CALL MostraDomini()");
+    $mostra_domini->execute();
+    $domini = $mostra_domini->fetchAll(PDO::FETCH_ASSOC);
+    $mostra_domini->closeCursor();
+
+    ?>
+    <div class="space">
+        <form action="script_php/crea_sondaggio.php" method="POST">
+            <h2>Crea sondaggio</h2>
+            <?php if (isset($_GET['error']) && ($_GET['error'] == 10)) {
+                echo "Errore, titolo gia' presente";
+            } else if (isset($_GET['success']) && $_GET['success'] == 10) {
+                echo "Sondaggio creato con successo";
+            }
+            ?>
+            <input type="Text" name="titolo" id="titolo" required>
+            <label for="titolo">Titolo</label>
+            <input type="number" min="1" name="max_utenti" id="max_utenti" required>
+            <label for="max_utenti">Max utenti</label>
+            <input type="date" name="data_chiusura" id="data_chiusura" required>
+            <label for="data_chiusura">Data di chiusura</label>
+            <?php foreach ($domini as $dominio): ?>
+                <label>
+                    <input type="radio" name="dominio" id="dominio" value="<?php echo $dominio['Parolachiave']; ?>">
+                    <?php echo $dominio['Parolachiave']; ?>
+                </label>
+            <?php endforeach; ?>
+            <input type="submit" name="crea" id="crea" value="Crea">
+        </form>
+    </div>
+
     <a href="logout.php">Effettua il logout</a>
 </body>
 
