@@ -184,7 +184,7 @@ button:not(:active) {
     transition: 200ms;
 }
 
-/*Mostra l'inputtext per inserire il codice amministratore*/
+/*Mostra l'inputbox per inserire il codice amministratore*/
 #inputbox_codice_amm {
     display: none;
 }

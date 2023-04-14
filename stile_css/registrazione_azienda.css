@@ -28,8 +28,8 @@ section {
 
 .form-box {
     position: relative;
-    width: 400px;
-    height: 450px;
+    width: 450px;
+    height: 750px;
     background: transparent;
     border: 2px solid rgba(255, 255, 255, 0.5);
     border-radius: 30px;
@@ -41,11 +41,6 @@ section {
 
 h2 {
     font-size: 2em;
-    color: #f3f7f9;
-    text-align: center;
-}
-
-.checkbox {
     color: #f3f7f9;
     text-align: center;
 }
@@ -64,7 +59,7 @@ h2 {
     transform: translateY(-50%);
     color: #fff;
     font-size: 1em;
-    font-weight: bold;
+    font-weight: 550;
     pointer-events: none;
     transition: .3s;
 }
@@ -77,6 +72,11 @@ input:valid~label {
 input:focus~label {
     color: #00f2fe;
 }
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
 
 .inputbox input {
     width: 100%;
@@ -98,33 +98,34 @@ input:focus~label {
 }
 
 /*
-.submit {
-    
-    height: 40px;
-    border-radius: 30px;
-    background: #00f2fe;
-    color: #0c2840;
-    border: none;
-    outline: none;
-    cursor: pointer;
-    font-size: 1em;
-    font-weight: 600;
-}
-*/
-.register {
+        .submit {
+            width: 100%;
+            height: 40px;
+            border-radius: 30px;
+            background: #00f2fe;
+            color: #0c2840;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+        }
+        */
+
+.access {
     font-size: .9em;
     color: #fff;
     text-align: center;
     margin: 25px 0 10px;
 }
 
-.register p a {
+.access p a {
     text-decoration: none;
     color: #00f2fe;
     font-weight: 600;
 }
 
-.register p a:hover {
+.access p a:hover {
     text-decoration: underline;
 }
 
@@ -143,7 +144,7 @@ input:focus~label {
     color: green;
 }
 
-/*BOTTONE ACCEDI*/
+/*BOTTONE REGISTRATI*/
 button {
     display: flex;
     align-items: center;
@@ -183,39 +184,17 @@ button:not(:active) {
     transition: 200ms;
 }
 
-/*Alla spunta della checkbox, nascondi l'inputbox per l'email dell'utente e mostra quello per il CF dell'azienda*/
-#label_checkbox_accesso_azienda {
+/*Mostra l'inputbox per inserire il codice amministratore*/
+#inputbox_codice_amm {
+    display: none;
+}
+
+#checkbox_codice_amm:checked~#inputbox_codice_amm {
+    display: block;
+    transition: .5s;
+}
+
+/*stile checkbox per inserire il codice amministratore*/
+#label_checkbox_codice_amm {
     color: #f3f7f9;
-}
-
-#registrazione_utente {
-    display: block;
-}
-
-#registrazione_azienda {
-    display: none;
-}
-
-#inputbox_email_utente {
-    display: block;
-}
-
-#inputbox_accesso_azienda {
-    display: none;
-}
-
-#checkbox_accesso_azienda:checked~#inputbox_email_utente {
-    display: none;
-}
-
-#checkbox_accesso_azienda:checked~#inputbox_accesso_azienda {
-    display: block;
-}
-
-#checkbox_accesso_azienda:checked~#registrazione_utente {
-    display: none;
-}
-
-#checkbox_accesso_azienda:checked~#registrazione_azienda {
-    display: block;
 }
