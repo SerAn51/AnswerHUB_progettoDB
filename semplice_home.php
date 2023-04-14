@@ -76,7 +76,9 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
 </head>
 
 <body>
-    <h1>Ciao <?php echo $dati_utente["Nome"]; ?></h1>
+    <h1>Ciao
+        <?php echo $dati_utente["Nome"]; ?>
+    </h1>
 
     <!--COLLEGAMENTO E SCOLLEGAMENTO AD UN DOMINIO DI INTERESSE-->
     <div class="space">
@@ -116,7 +118,7 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
                 //Se la checkbox non è spuntata, controlla che sia presente tra i domini di interesse e, se lo e', elimina la riga.
                 //ho una lista di tutti i domini, selezionandone alcuni ho un'altra lista...quindi sottraendo questa a quella con tutti, ottengo quelli non selezionati.
                 //a questo punto posso prendere tutti quelli non selezionati e andarli a rimuovere dalla tabella se la parolachiave combacia.
-
+                
                 ?>
             </ul>
             <input type="submit" name="invia" id="invia" value="Collega domini">
@@ -127,6 +129,21 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
     <!--Idea: lista sondaggi accettati, cliccabili, che rimandano alla pagina con la lista di domande a cui rispondere.-->
     <div class="space">
         <h2>Rispondi ai sondaggi</h2>
+        <?php
+        $mostra_sondaggi_accettati = $pdo->prepare("CALL MostraSondaggiAccettati(:param1)");
+        $mostra_sondaggi_accettati->bindParam(':param1', $email, PDO::PARAM_STR);
+        $mostra_sondaggi_accettati->execute();
+        $sondaggi_accettati = $mostra_sondaggi_accettati->fetchAll(PDO::FETCH_ASSOC);
+        $mostra_sondaggi_accettati->closeCursor();
+        ?>
+
+        <?php foreach ($sondaggi_accettati as $sondaggio_accettato) { ?>
+            <form action="rispondi_sondaggio.php" method="POST">
+                <label for="rispondi">Titolo: <?php echo $sondaggio_accettato['Titolo']; ?> Creatore: <?php echo $sondaggio_accettato['Nome']; ?> <?php echo $sondaggio_accettato['EmailUtentecreante']; ?></label>
+                <input type="hidden" name="codice_sondaggio" id="codice_sondaggio" value="<?php echo $sondaggio_accettato['Codice'];?>">
+                <input type="submit" name="rispondi" id="rispondi" value="Rispondi">
+            </form>
+        <?php } ?>
     </div>
 
     <!--VISUALIZZAZIONE E ACCETTAZIONE/RIFIUTO DEGLI INVITI A PARTECIPARE AD UN SONDAGGIO-->

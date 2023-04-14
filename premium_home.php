@@ -154,12 +154,12 @@ $check_inviti->closeCursor();
             <label for="max_utenti">Max utenti</label>
             <input type="date" name="data_chiusura" id="data_chiusura" required>
             <label for="data_chiusura">Data di chiusura</label>
-            <?php foreach ($domini as $dominio): ?>
+            <?php foreach ($domini as $dominio) { ?>
                 <label>
                     <input type="radio" name="dominio" id="dominio" value="<?php echo $dominio['Parolachiave']; ?>">
                     <?php echo $dominio['Parolachiave']; ?>
                 </label>
-            <?php endforeach; ?>
+            <?php } ?>
             <input type="submit" name="crea" id="crea" value="Crea">
         </form>
     </div>
