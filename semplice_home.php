@@ -123,6 +123,12 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
         </form>
     </div>
 
+    <!--INSERIMENTO PER LE RISPOSTE DI UN SONDAGGIO-->
+    <!--Idea: lista sondaggi accettati, cliccabili, che rimandano alla pagina con la lista di domande a cui rispondere.-->
+    <div class="space">
+        <h2>Rispondi ai sondaggi</h2>
+    </div>
+
     <!--VISUALIZZAZIONE E ACCETTAZIONE/RIFIUTO DEGLI INVITI A PARTECIPARE AD UN SONDAGGIO-->
     <!--Idea: ho una lista di inviti, ogni invito ha un bottone per accettare (verde con una spunta) ed un bottone per rifiutare (rosso con una x)
         NB: se in un secondo momento rimuovo un dominio di interesse, gli inviti ai sondaggi ricevuti quando ero ancora interessato rimangono e posso ancora rispondere-->
