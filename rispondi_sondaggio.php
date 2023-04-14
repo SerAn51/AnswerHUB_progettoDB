@@ -111,6 +111,7 @@ if (isset($_POST["rispondi"])) {
                 <?php } ?>
             </div>
         <?php } ?>
+        <input type="submit" name="invia_risposte" id="invia_risposte" value="Invia risposte">
     </form>
 
 </body>
