@@ -113,7 +113,8 @@ if (isset($_POST["rispondi"])) {
         <?php } ?>
         <input type="submit" name="invia_risposte" id="invia_risposte" value="Invia risposte">
     </form>
-
+    <a href="semplice_home.php">Torna alla home</a>
+    <a href="logout.php">Effettua il logout</a>
 </body>
 
 </html>
