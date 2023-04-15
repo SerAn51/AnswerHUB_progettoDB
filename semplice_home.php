@@ -140,7 +140,24 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
         <?php foreach ($sondaggi_accettati as $sondaggio_accettato) { ?>
             <form action="rispondi_visualizza_sondaggio.php" method="POST">
                 <?php $codice_sondaggio = $sondaggio_accettato['Codice'];
-                $sondaggio_completato = $_SESSION['completato_sondaggio_' . $codice_sondaggio]?>
+
+                $risposte_domande_aperte = $pdo->prepare("CALL MostraRisposteDomandeAperteSondaggio(:param1)");
+                $risposte_domande_aperte->bindParam(':param1', $codice_sondaggio, PDO::PARAM_INT);
+                $risposte_domande_aperte->execute();
+                $risposte_domande_aperte->closeCursor();
+
+                $opzioni_domande_chiuse = $pdo->prepare("CALL MostraOpzioniDomandeChiuseSondaggio(:param1)");
+                $opzioni_domande_chiuse->bindParam(':param1', $codice_sondaggio, PDO::PARAM_INT);
+                $opzioni_domande_chiuse->execute();
+                $opzioni_domande_chiuse->closeCursor();
+
+                $sondaggio_completato = true;
+                // se entrambe le query ritornano una tabella vuota vuol dire che ancora non ho risposto al sondaggio
+                if (($risposte_domande_aperte->rowCount() === 0) && ($opzioni_domande_chiuse->rowCount() === 0)) {
+                    $sondaggio_completato = false;
+                }
+                ?>
+                
                 <label <?php echo $sondaggio_completato == true ? 'for="visualizza_risposte"' : 'for="rispondi"'; ?>>
                     Titolo:
                     <?php echo $sondaggio_accettato['Titolo']; ?>
