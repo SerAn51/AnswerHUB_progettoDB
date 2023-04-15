@@ -1,7 +1,7 @@
 <?php
 require 'config_connessione.php'; // instaura la connessione con il db
 
-if (isset($_POST["rispondi"])) {
+if ((isset($_POST["rispondi"])) || (isset($_POST["visualizza_risposte"]))) {
     $email = $_SESSION["email"];
     $codice_sondaggio = $_POST['codice_sondaggio'];
 
@@ -55,7 +55,6 @@ if (isset($_POST["rispondi"])) {
 </head>
 
 <body>
-    <!--TODO: controlla_risposte.php-->
     <form action="script_php/controlla_risposte.php" method="POST">
         <?php foreach ($domande_sondaggio as $domanda_sondaggio) { ?>
             <div class="space">
@@ -64,6 +63,7 @@ if (isset($_POST["rispondi"])) {
                 <h3>
                     <?php echo $domanda_sondaggio['Testo'] ?>
                 </h3>
+                <!--Mostra la foto, se c'e'-->
                 <?php
                 if (isset($domanda_sondaggio["Foto"])) { ?>
                     <?php
@@ -80,16 +80,20 @@ if (isset($_POST["rispondi"])) {
                     ?>
                     <img width="10%" src="data:<?php echo $mime_type; ?>;base64,<?php echo $base64; ?>">
                 <?php } ?>
+                <!--Mostra il punteggio-->
                 <?php echo $domanda_sondaggio['Punteggio'] ?>
-                <!--Mostra box per risposta o opzioni in base a APERTA o CHIUSA-->
+                
+                <!--Mostra box per risposta o mostra opzioni in base a APERTA o CHIUSA-->
                 <?php if ($domanda_sondaggio['ApertaChiusa'] == 'APERTA') { ?>
                     <?php
                     $max_caratteri_risposta = $pdo->prepare("SELECT * FROM DomandaAperta WHERE ID = ?");
                     $max_caratteri_risposta->execute([$id_domanda]);
                     $max_caratteri = $max_caratteri_risposta->fetch(PDO::FETCH_ASSOC);
+                    $textarea_name_id = 'risposte_aperte[' . $id_domanda . ']';
                     ?>
-                    <input type="textarea" maxlength="<?php echo $max_caratteri['MaxCaratteriRisposta']; ?>"
-                        name="risposta_aperta_<?php echo $id_domanda; ?>">
+                    <!--Salva il contenuto della textarea in un array associativo, l'indice e' l'id della domanda, il valore e' la risposta effettiva-->
+                    <textarea maxlength="<?php echo $max_caratteri['MaxCaratteriRisposta']; ?>"
+                        name="<?php echo $textarea_name_id; ?>" id="<?php echo $textarea_name_id; ?>"></textarea>
                 <?php } else if ($domanda_sondaggio['ApertaChiusa'] == 'CHIUSA') { ?>
                         <!--Prendi le opzioni e mostrale in una radio-->
                         <?php
@@ -98,19 +102,19 @@ if (isset($_POST["rispondi"])) {
                         $mostra_opzioni_domanda->execute();
                         $opzioni_domanda = $mostra_opzioni_domanda->fetchAll(PDO::FETCH_ASSOC);
                         $mostra_opzioni_domanda->closeCursor();
+                        $radio_name_id = 'opzioni_selezionate[' . $id_domanda . ']';
                         ?>
 
                     <?php foreach ($opzioni_domanda as $opzione) { ?>
                             <label for="opzione">
                             <?php echo $opzione['Testo']; ?>
                             </label>
-                            <input type="radio" name="opzione" id="opzione" value="<?php echo $opzione['Numeroprogressivo']; ?>">
-
+                            <input type="radio" name="<?php echo $radio_name_id ?>" id="<?php echo $radio_name_id ?>" value="<?php echo $opzione['Numeroprogressivo']; ?>">
                     <?php } ?>
-                        <input type="hidden" name="id_domanda" id="id_domanda" value="<?php echo $id_domanda; ?>">
                 <?php } ?>
             </div>
         <?php } ?>
+        <input type="hidden" name="codice_sondaggio" id="codice_sondaggio" value="<?php echo $codice_sondaggio; ?>">
         <input type="submit" name="invia_risposte" id="invia_risposte" value="Invia risposte">
     </form>
     <a href="semplice_home.php">Torna alla home</a>

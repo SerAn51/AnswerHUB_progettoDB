@@ -125,7 +125,7 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
         </form>
     </div>
 
-    <!--INSERIMENTO PER LE RISPOSTE DI UN SONDAGGIO-->
+    <!--INSERIMENTO PER LE RISPOSTE DI UN SONDAGGIO O VISUALIZZAZIONE RISPOSTE SONDAGGIO COMPLETATO-->
     <!--Idea: lista sondaggi accettati, cliccabili, che rimandano alla pagina con la lista di domande a cui rispondere.-->
     <div class="space">
         <h2>Rispondi ai sondaggi</h2>
@@ -138,10 +138,22 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
         ?>
 
         <?php foreach ($sondaggi_accettati as $sondaggio_accettato) { ?>
-            <form action="rispondi_sondaggio.php" method="POST">
-                <label for="rispondi">Titolo: <?php echo $sondaggio_accettato['Titolo']; ?> Creatore: <?php echo $sondaggio_accettato['Nome']; ?> <?php echo $sondaggio_accettato['EmailUtentecreante']; ?></label>
-                <input type="hidden" name="codice_sondaggio" id="codice_sondaggio" value="<?php echo $sondaggio_accettato['Codice'];?>">
-                <input type="submit" name="rispondi" id="rispondi" value="Rispondi">
+            <form action="rispondi_visualizza_sondaggio.php" method="POST">
+                <?php $codice_sondaggio = $sondaggio_accettato['Codice'];
+                $sondaggio_completato = $_SESSION['completato_sondaggio_' . $codice_sondaggio]?>
+                <label <?php echo $sondaggio_completato == true ? 'for="visualizza_risposte"' : 'for="rispondi"'; ?>>
+                    Titolo:
+                    <?php echo $sondaggio_accettato['Titolo']; ?>
+                    Creatore:
+                    <?php echo $sondaggio_accettato['Nome']; ?>
+                    <?php echo $sondaggio_accettato['EmailUtentecreante']; ?>
+                </label>
+                <input type="hidden" name="codice_sondaggio" id="codice_sondaggio" value="<?php echo $codice_sondaggio ?>">
+                <?php if ($sondaggio_completato) { // se e' true significa il sondaggio e' stato gia' completato?>
+                    <input type="submit" name="visualizza_risposte" id="visualizza_risposte" value="Visualizza risposte">
+                <?php } else { ?>
+                    <input type="submit" name="rispondi" id="rispondi" value="Rispondi">
+                <?php } ?>
             </form>
         <?php } ?>
     </div>
