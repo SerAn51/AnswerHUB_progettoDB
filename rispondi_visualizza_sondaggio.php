@@ -55,7 +55,76 @@ if ((isset($_POST["rispondi"])) || (isset($_POST["visualizza_risposte"]))) {
 </head>
 
 <body>
-    <form action="script_php/controlla_risposte.php" method="POST">
+    <!--Se ho cliccato il bottone rispondi...-->
+    <?php if (isset($_POST["rispondi"])) { ?>
+        <form action="script_php/controlla_risposte.php" method="POST">
+            <?php foreach ($domande_sondaggio as $domanda_sondaggio) { ?>
+                <div class="space">
+                    <!--Mostra domanda-->
+                    <?php $id_domanda = $domanda_sondaggio['ID']; ?>
+                    <h3>
+                        <?php echo $domanda_sondaggio['Testo'] ?>
+                    </h3>
+                    <!--Mostra la foto, se c'e'-->
+                    <?php
+                    if (isset($domanda_sondaggio["Foto"])) { ?>
+                        <?php
+                        // leggi il contenuto del blob dal database
+                        $blob = $domanda_sondaggio["Foto"];
+
+                        // decodifica il contenuto del blob in una stringa base64
+                        $base64 = base64_encode($blob);
+
+                        // determina il tipo di immagine dal contenuto del blob con la funzione getimagesizefromstring e prendendo
+                        //il valore della chiave mime che dice il tipo dell'immagine
+                        $image_info = getimagesizefromstring($blob);
+                        $mime_type = $image_info["mime"];
+                        ?>
+                        <img width="10%" src="data:<?php echo $mime_type; ?>;base64,<?php echo $base64; ?>">
+                    <?php } ?>
+                    <!--Mostra il punteggio-->
+                    <?php echo $domanda_sondaggio['Punteggio'] ?>
+
+                    <!--Mostra box per risposta o mostra opzioni in base a APERTA o CHIUSA-->
+                    <?php if ($domanda_sondaggio['ApertaChiusa'] == 'APERTA') { ?>
+                        <?php
+                        $max_caratteri_risposta = $pdo->prepare("SELECT * FROM DomandaAperta WHERE ID = ?");
+                        $max_caratteri_risposta->execute([$id_domanda]);
+                        $max_caratteri = $max_caratteri_risposta->fetch(PDO::FETCH_ASSOC);
+                        $textarea_name_id = 'risposte_aperte[' . $id_domanda . ']';
+                        ?>
+                        <!--Salva il contenuto della textarea in un array associativo, l'indice e' l'id della domanda, il valore e' la risposta effettiva-->
+                        <textarea maxlength="<?php echo $max_caratteri['MaxCaratteriRisposta']; ?>"
+                            name="<?php echo $textarea_name_id; ?>" id="<?php echo $textarea_name_id; ?>"></textarea>
+                    <?php } else if ($domanda_sondaggio['ApertaChiusa'] == 'CHIUSA') { ?>
+                            <!--Prendi le opzioni e mostrale in una radio-->
+                            <?php
+                            $mostra_opzioni_domanda = $pdo->prepare("CALL MostraOpzioni(:id_domanda)");
+                            $mostra_opzioni_domanda->bindParam(':id_domanda', $id_domanda, PDO::PARAM_INT);
+                            $mostra_opzioni_domanda->execute();
+                            $opzioni_domanda = $mostra_opzioni_domanda->fetchAll(PDO::FETCH_ASSOC);
+                            $mostra_opzioni_domanda->closeCursor();
+                            $radio_name_id = 'opzioni_selezionate[' . $id_domanda . ']';
+                            ?>
+
+                        <?php foreach ($opzioni_domanda as $opzione) { ?>
+                                <label for="opzione">
+                                <?php echo $opzione['Testo']; ?>
+                                </label>
+                                <input type="radio" name="<?php echo $radio_name_id ?>" id="<?php echo $radio_name_id ?>"
+                                    value="<?php echo $opzione['Numeroprogressivo']; ?>">
+                        <?php } ?>
+                    <?php } ?>
+                </div>
+            <?php } ?>
+            <input type="hidden" name="codice_sondaggio" id="codice_sondaggio" value="<?php echo $codice_sondaggio; ?>">
+            <input type="submit" name="invia_risposte" id="invia_risposte" value="Invia risposte">
+        </form>
+    <?php } ?>
+
+
+    <!--...altrimenti, se ho clccato il bottone visualizza risposte-->
+    <?php if (isset($_POST["visualizza_risposte"])) { ?>
         <?php foreach ($domande_sondaggio as $domanda_sondaggio) { ?>
             <div class="space">
                 <!--Mostra domanda-->
@@ -82,41 +151,31 @@ if ((isset($_POST["rispondi"])) || (isset($_POST["visualizza_risposte"]))) {
                 <?php } ?>
                 <!--Mostra il punteggio-->
                 <?php echo $domanda_sondaggio['Punteggio'] ?>
-                
-                <!--Mostra box per risposta o mostra opzioni in base a APERTA o CHIUSA-->
+                <!--Mostra risposta aperta o mostra opzione selezionata, in base a domanda APERTA o CHIUSA-->
                 <?php if ($domanda_sondaggio['ApertaChiusa'] == 'APERTA') { ?>
                     <?php
-                    $max_caratteri_risposta = $pdo->prepare("SELECT * FROM DomandaAperta WHERE ID = ?");
-                    $max_caratteri_risposta->execute([$id_domanda]);
-                    $max_caratteri = $max_caratteri_risposta->fetch(PDO::FETCH_ASSOC);
-                    $textarea_name_id = 'risposte_aperte[' . $id_domanda . ']';
+                    $mostra_risposta = $pdo->prepare("CALL MostraRispostaAperta(:id_domanda_aperta)");
+                    $mostra_risposta->bindParam(':id_domanda_aperta', $id_domanda, PDO::PARAM_INT);
+                    $mostra_risposta->execute();
+                    $risposta = $mostra_risposta->fetch(PDO::FETCH_ASSOC);
+                    $mostra_risposta->closeCursor();
+                    echo $risposta['Testo'];
                     ?>
-                    <!--Salva il contenuto della textarea in un array associativo, l'indice e' l'id della domanda, il valore e' la risposta effettiva-->
-                    <textarea maxlength="<?php echo $max_caratteri['MaxCaratteriRisposta']; ?>"
-                        name="<?php echo $textarea_name_id; ?>" id="<?php echo $textarea_name_id; ?>"></textarea>
                 <?php } else if ($domanda_sondaggio['ApertaChiusa'] == 'CHIUSA') { ?>
-                        <!--Prendi le opzioni e mostrale in una radio-->
-                        <?php
-                        $mostra_opzioni_domanda = $pdo->prepare("CALL MostraOpzioni(:id_domanda)");
-                        $mostra_opzioni_domanda->bindParam(':id_domanda', $id_domanda, PDO::PARAM_INT);
-                        $mostra_opzioni_domanda->execute();
-                        $opzioni_domanda = $mostra_opzioni_domanda->fetchAll(PDO::FETCH_ASSOC);
-                        $mostra_opzioni_domanda->closeCursor();
-                        $radio_name_id = 'opzioni_selezionate[' . $id_domanda . ']';
-                        ?>
-
-                    <?php foreach ($opzioni_domanda as $opzione) { ?>
-                            <label for="opzione">
-                            <?php echo $opzione['Testo']; ?>
-                            </label>
-                            <input type="radio" name="<?php echo $radio_name_id ?>" id="<?php echo $radio_name_id ?>" value="<?php echo $opzione['Numeroprogressivo']; ?>">
-                    <?php } ?>
+                    <?php
+                    $mostra_opzione_selezionata = $pdo->prepare("CALL MostraOpzioneSelezionata(:id_domanda_chiusa)");
+                    $mostra_opzione_selezionata->bindParam(':id_domanda_chiusa', $id_domanda, PDO::PARAM_INT);
+                    $mostra_opzione_selezionata->execute();
+                    $opzione_selezionata = $mostra_opzione_selezionata->fetch(PDO::FETCH_ASSOC);
+                    $mostra_opzione_selezionata->closeCursor();
+                    echo $opzione_selezionata['Testo'];
+                    ?>
                 <?php } ?>
             </div>
         <?php } ?>
-        <input type="hidden" name="codice_sondaggio" id="codice_sondaggio" value="<?php echo $codice_sondaggio; ?>">
-        <input type="submit" name="invia_risposte" id="invia_risposte" value="Invia risposte">
-    </form>
+    <?php } ?>
+
+
     <a href="semplice_home.php">Torna alla home</a>
     <a href="logout.php">Effettua il logout</a>
 </body>
