@@ -95,7 +95,7 @@ if ((isset($_POST["rispondi"])) || (isset($_POST["visualizza_risposte"]))) {
                         ?>
                         <!--Salva il contenuto della textarea in un array associativo, l'indice e' l'id della domanda, il valore e' la risposta effettiva-->
                         <textarea maxlength="<?php echo $max_caratteri['MaxCaratteriRisposta']; ?>"
-                            name="<?php echo $textarea_name_id; ?>" id="<?php echo $textarea_name_id; ?>"></textarea>
+                            name="<?php echo $textarea_name_id; ?>" id="<?php echo $textarea_name_id; ?>" required></textarea>
                     <?php } else if ($domanda_sondaggio['ApertaChiusa'] == 'CHIUSA') { ?>
                             <!--Prendi le opzioni e mostrale in una radio-->
                             <?php
@@ -112,7 +112,7 @@ if ((isset($_POST["rispondi"])) || (isset($_POST["visualizza_risposte"]))) {
                                 <?php echo $opzione['Testo']; ?>
                                 </label>
                                 <input type="radio" name="<?php echo $radio_name_id ?>" id="<?php echo $radio_name_id ?>"
-                                    value="<?php echo $opzione['Numeroprogressivo']; ?>">
+                                    value="<?php echo $opzione['Numeroprogressivo']; ?>" required>
                         <?php } ?>
                     <?php } ?>
                 </div>
