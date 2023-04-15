@@ -162,14 +162,31 @@ if ((isset($_POST["rispondi"])) || (isset($_POST["visualizza_risposte"]))) {
                     echo $risposta['Testo'];
                     ?>
                 <?php } else if ($domanda_sondaggio['ApertaChiusa'] == 'CHIUSA') { ?>
-                    <?php
-                    $mostra_opzione_selezionata = $pdo->prepare("CALL MostraOpzioneSelezionata(:id_domanda_chiusa)");
-                    $mostra_opzione_selezionata->bindParam(':id_domanda_chiusa', $id_domanda, PDO::PARAM_INT);
-                    $mostra_opzione_selezionata->execute();
-                    $opzione_selezionata = $mostra_opzione_selezionata->fetch(PDO::FETCH_ASSOC);
-                    $mostra_opzione_selezionata->closeCursor();
-                    echo $opzione_selezionata['Testo'];
-                    ?>
+                        <?php
+                        $mostra_opzione_selezionata = $pdo->prepare("CALL MostraOpzioneSelezionata(:id_domanda_chiusa)");
+                        $mostra_opzione_selezionata->bindParam(':id_domanda_chiusa', $id_domanda, PDO::PARAM_INT);
+                        $mostra_opzione_selezionata->execute();
+                        $opzione_selezionata = $mostra_opzione_selezionata->fetch(PDO::FETCH_ASSOC);
+                        $mostra_opzione_selezionata->closeCursor();
+
+                        $mostra_opzioni_non_selezionate = $pdo->prepare("CALL MostraOpzioniNonSelezionate(:id_domanda_chiusa)");
+                        $mostra_opzioni_non_selezionate->bindParam(':id_domanda_chiusa', $id_domanda, PDO::PARAM_INT);
+                        $mostra_opzioni_non_selezionate->execute();
+                        $opzioni_non_selezionate = $mostra_opzioni_non_selezionate->fetchAll(PDO::FETCH_ASSOC);
+                        $mostra_opzioni_non_selezionate->closeCursor();
+                        ?>
+
+                        <!--Le opzioni vengono rappresentate con una radio, selezionate o deselezionate in base a quale opzione e' stata scelta (graficamente non si vede molto)-->
+                        <input type="radio" name="opzione_selezionata_<?php echo $id_domanda ?>" checked disabled>
+                        <label for="opzione_selezionata">
+                        <?php echo $opzione_selezionata['Testo']; ?>
+                        </label>
+                    <?php foreach ($opzioni_non_selezionate as $opzione_non_selezionata) { ?>
+                            <input type="radio" name="opzione_non_selezionata<?php echo $id_domanda ?>" disabled>
+                            <label for="opzione_non_selezionata">
+                            <?php echo $opzione_non_selezionata['Testo']; ?>
+                            </label>
+                    <?php } ?>
                 <?php } ?>
             </div>
         <?php } ?>
