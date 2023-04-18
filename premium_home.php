@@ -142,8 +142,12 @@ $check_inviti->closeCursor();
     <div class="space">
         <form action="script_php/crea_sondaggio.php" method="POST">
             <h2>Crea sondaggio</h2>
-            <?php if (isset($_GET['error']) && ($_GET['error'] == 10)) {
-                echo "Errore, titolo gia' presente";
+            <?php if (isset($_GET['error'])) {
+                if ($_GET['error'] == 10) {
+                    echo "Errore, titolo gia' presente";
+                } else if ($_GET['error'] == 20) {
+                    echo "Errore, imposta una successiva a quella odierna";
+                }
             } else if (isset($_GET['success']) && $_GET['success'] == 10) {
                 echo "Sondaggio creato con successo";
             }

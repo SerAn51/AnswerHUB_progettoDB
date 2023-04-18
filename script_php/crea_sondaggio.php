@@ -26,16 +26,26 @@ function crea_sondaggio($pdo, $titolo, $max_utenti, $data_chiusura, $dominio, $c
 }
 
 if (isset($_POST["crea"])) {
-    $titolo = $_POST["titolo"];
-    $max_utenti = $_POST["max_utenti"];
-    $data_chiusura = $_POST["data_chiusura"];
-    $dominio = $_POST["dominio"];
-
     // se la variabile di sessione email non e' vuota, vuol dire che il crea sondaggio e' stato chiamato da un utente premium
     $utente_o_azienda = true; //se true sono un utente che vuole creare un sondaggio, passero' la mail di sessione
     if (!(empty($_SESSION["cf_azienda"]))) {
         $utente_o_azienda = false; // se la cf_azienda di sessione esiste, allora sono un'azienda e passero' la cf_azienda di sessione come cf_azienda_creante
     }
+
+    $titolo = $_POST["titolo"];
+    $max_utenti = $_POST["max_utenti"];
+    $data_chiusura = $_POST["data_chiusura"];
+    if (strtotime($data_chiusura) <= time()) {
+        // la data di chiusura è antecedente o uguale alla data odierna
+        if ($utente_o_azienda) {
+            header("Location: ../premium_home.php?error=20");
+        } else {
+            header("Location: ../azienda_home.php?error=20");
+        }
+        exit;
+    }
+    
+    $dominio = $_POST["dominio"];
 
     //Un utente premium non può creare due sondaggi con lo stesso nome (ignorando maiuscole e minuscole), questo perche'
 //lato utente che risponde ai sondaggi si potrebbe creare confusione, sono ammessi sondaggi con lo stesso nome a patto che abbiano creatore diverso

@@ -79,6 +79,12 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
     <h1>Ciao
         <?php echo $dati_utente["Nome"]; ?>
     </h1>
+    <h2>
+        Diventa utente premium:
+        <form action="script_php/diventa_premium.php" method="POST">
+            <input type="submit" name="diventa_premium" id="diventa_premium" value="Abbonati per diventare un utente premium">
+        </form>
+    </h2>
 
     <!--COLLEGAMENTO E SCOLLEGAMENTO AD UN DOMINIO DI INTERESSE-->
     <div class="space">

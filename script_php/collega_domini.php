@@ -5,21 +5,19 @@ require '../config_connessione.php'; // instaura la connessione con il db
 function rimuoviInteresse($pdo, string $email, string $parola_chiave)
 {
     //Delete nella tabella Interessato che rimuove la riga con questa email e questa password
-    $proc_rimuovi_interesse = "CALL RimuoviInteresse(:param1, :param2)";
-    $prep_proc_rimuovi_interesse = $pdo->prepare($proc_rimuovi_interesse);
-    $prep_proc_rimuovi_interesse->bindParam(':param1', $email, PDO::PARAM_STR);
-    $prep_proc_rimuovi_interesse->bindParam(':param2', $parola_chiave, PDO::PARAM_STR);
-    $prep_proc_rimuovi_interesse->execute();
+    $rimuovi_interesse = $pdo->prepare("CALL RimuoviInteresse(:param1, :param2)");
+    $rimuovi_interesse->bindParam(':param1', $email, PDO::PARAM_STR);
+    $rimuovi_interesse->bindParam(':param2', $parola_chiave, PDO::PARAM_STR);
+    $rimuovi_interesse->execute();
 }
 
 function inserisciInteresse($pdo, string $email, string $parola_chiave)
 {
     //Insert nella tabella Interessato che mette come EmailUtente la mail di sessione e come ParolachiaveDominio il valore di questo foreach
-    $proc_inserisci_interesse = "CALL InserisciInteresse(:param1, :param2)";
-    $prep_proc_inserisci_interesse = $pdo->prepare($proc_inserisci_interesse);
-    $prep_proc_inserisci_interesse->bindParam(':param1', $email, PDO::PARAM_STR);
-    $prep_proc_inserisci_interesse->bindParam(':param2', $parola_chiave, PDO::PARAM_STR);
-    $prep_proc_inserisci_interesse->execute();
+    $inserisci_interesse = $pdo->prepare("CALL InserisciInteresse(:param1, :param2)");
+    $inserisci_interesse->bindParam(':param1', $email, PDO::PARAM_STR);
+    $inserisci_interesse->bindParam(':param2', $parola_chiave, PDO::PARAM_STR);
+    $inserisci_interesse->execute();
 }
 
 //COLLEGAMENTO DOMINIO INTERESSE
