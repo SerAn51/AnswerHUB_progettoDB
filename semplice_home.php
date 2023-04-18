@@ -56,6 +56,17 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
             list-style: none;
         }
 
+        /*Mostra l'inputbox per inserire il codice amministratore*/
+        #inputbox_codice_amm {
+            display: none;
+        }
+
+        #checkbox_codice_amm:checked~#inputbox_codice_amm {
+            display: block;
+            transition: .5s;
+        }
+
+        /*Gestione messaggi*/
         .accettato,
         .rifiutato {
             margin: 5px;
@@ -82,10 +93,30 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
     <h2>
         Diventa utente premium:
         <form action="script_php/diventa_premium.php" method="POST">
-            <input type="submit" name="diventa_premium" id="diventa_premium" value="Abbonati per diventare un utente premium">
+            <input type="submit" name="diventa_premium" id="diventa_premium"
+                value="Abbonati per diventare un utente premium">
         </form>
     </h2>
-
+    <h2>
+        Spunta per registrarti come amministratore:
+        <form action="script_php/diventa_amministratore.php" method="POST">
+            <?php
+            if ((isset($_GET['error'])) && ($_GET['error'] == 10)) {
+                echo "Codice errato";
+            }
+            ?>
+            <!--checkbox per inserire codice amministratore-->
+            <label name="label_checkbox_codice_amm" id="label_checkbox_codice_amm" for="checkbox_codice_amm">
+                <input type="checkbox" name="checkbox_codice_amm" id="checkbox_codice_amm">
+                <!--input box Codice amministratore-->
+                <div name="inputbox_codice_amm" id="inputbox_codice_amm" class="inputbox">
+                    <input type="text" name="codice_amm" id="codice_amm">
+                    <label for="codice_amm">Codice fornito</label>
+                    <input type="submit" name="diventa_amministratore" id="diventa_ammnistratore"
+                        value="Abbonati per diventare un utente premium">
+                </div>
+        </form>
+    </h2>
     <!--COLLEGAMENTO E SCOLLEGAMENTO AD UN DOMINIO DI INTERESSE-->
     <div class="space">
         <form action="script_php/collega_domini.php" method="POST">
@@ -163,7 +194,7 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
                     $sondaggio_completato = false;
                 }
                 ?>
-                
+
                 <label <?php echo $sondaggio_completato == true ? 'for="visualizza_risposte"' : 'for="rispondi"'; ?>>
                     Titolo:
                     <?php echo $sondaggio_accettato['Titolo']; ?>
