@@ -178,13 +178,15 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
             <form action="rispondi_visualizza_sondaggio.php" method="POST">
                 <?php $codice_sondaggio = $sondaggio_accettato['Codice'];
 
-                $risposte_domande_aperte = $pdo->prepare("CALL MostraRisposteDomandeAperteSondaggio(:param1)");
-                $risposte_domande_aperte->bindParam(':param1', $codice_sondaggio, PDO::PARAM_INT);
+                $risposte_domande_aperte = $pdo->prepare("CALL MostraRisposteDomandeAperteSondaggio(:param1, :param2)");
+                $risposte_domande_aperte->bindParam(':param1', $email, PDO::PARAM_STR);
+                $risposte_domande_aperte->bindParam(':param2', $codice_sondaggio, PDO::PARAM_INT);
                 $risposte_domande_aperte->execute();
                 $risposte_domande_aperte->closeCursor();
 
-                $opzioni_domande_chiuse = $pdo->prepare("CALL MostraOpzioniDomandeChiuseSondaggio(:param1)");
-                $opzioni_domande_chiuse->bindParam(':param1', $codice_sondaggio, PDO::PARAM_INT);
+                $opzioni_domande_chiuse = $pdo->prepare("CALL MostraOpzioniDomandeChiuseSondaggio(:param1, :param2)");
+                $opzioni_domande_chiuse->bindParam(':param1', $email, PDO::PARAM_STR);
+                $opzioni_domande_chiuse->bindParam(':param2', $codice_sondaggio, PDO::PARAM_INT);
                 $opzioni_domande_chiuse->execute();
                 $opzioni_domande_chiuse->closeCursor();
 
