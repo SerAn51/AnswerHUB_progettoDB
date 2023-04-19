@@ -59,11 +59,61 @@ if (!(empty($_SESSION["email"]))) {
                 padding: 10px;
                 margin: 20px;
             }
+
+            ul {
+                list-style: none;
+            }
         </style>
     </head>
 
 <body>
-    <h1>Ciao <?php echo $dati_utente["Nome"]; ?></h1>
+    <h1>Ciao
+        <?php echo $dati_utente["Nome"]; ?>
+    </h1>
+
+    <!--INSERIMENTO DI UN NUOVO DOMINIO-->
+    <div class="space">
+        <h2>Inserisci un nuovo dominio</h2>
+        <form action="script_php/inserimento_dominio.php" method="POST">
+            <?php if (isset($_GET['error']) && ($_GET['error'] == 20)) {
+                echo "Errore, riprova";
+            } else if (isset($_GET['success']) && $_GET['success'] == 20) {
+                echo "Dominio inserito con successo";
+            }
+            ?>
+            <input type="text" name="parola_chiave" id="parola_chiave" required>
+            <label for="parola_chiave">Parola Chiave</label>
+            <input type="text" name="descrizione" id="descrizione" required>
+            <label for="descrizione">Descrizione</label>
+            <input type="submit" name="inserisci" id="inserisci" value="Inserisci">
+        </form>
+    </div>
+
+    <!--LISTA DOMINI-->
+    <div class="space">
+        <h2>Domini</h2>
+        <?php
+        $mostra_domini = $pdo->prepare("CALL MostraDomini()");
+        $mostra_domini->execute();
+        $domini = $mostra_domini->fetchAll(PDO::FETCH_ASSOC);
+        $mostra_domini->closeCursor();
+        ?>
+        <?php if (empty($domini)) {
+            echo "Non ci sono domini";
+        } else { ?>
+            <ul>
+                <?php
+                foreach ($domini as $dominio) {
+                    ?>
+                    <li>
+                        <?php echo $dominio['Parolachiave'] . ' ' . $dominio['Descrizione']; ?>
+                    </li>
+                    <?php
+                }
+                ?>
+            </ul>
+        <?php } ?>
+    </div>
 
     <!--INSERIMENTO DI UN NUOVO PREMIO: due input, uno per chiedere l'altro di conferma, fa una insert in Premio-->
     <div class="space">
@@ -90,29 +140,6 @@ if (!(empty($_SESSION["email"]))) {
             <input type="submit" name="inserisci" id="inserisci" value="Inserisci">
         </form>
     </div>
-
-    <!--INSERIMENTO DI UN NUOVO DOMINIO-->
-    <div class="space">
-        <h2>Inserisci un nuovo dominio</h2>
-        <form action="script_php/inserimento_dominio.php" method="POST">
-            <?php if (isset($_GET['error']) && ($_GET['error'] == 20)) {
-                echo "Errore, riprova";
-            } else if (isset($_GET['success']) && $_GET['success'] == 20) {
-                echo "Dominio inserito con successo";
-            }
-            ?>
-            <input type="text" name="parola_chiave" id="parola_chiave" required>
-            <label for="parola_chiave">Parola Chiave</label>
-            <input type="text" name="descrizione" id="descrizione" required>
-            <label for="descrizione">Descrizione</label>
-            <input type="submit" name="inserisci" id="inserisci" value="Inserisci">
-        </form>
-    </div>
-
-    <!--TODO:
-    - Gestire meglio i messaggi
-    - Gestire assegnazione premi (i due FIXME nel codice MySQL)
-    -->
 
     <!--STATISTICHE (VISIBILI DA TUTTI GLI UTENTI)-->
     <!--inclue statistiche.php, si è optato per include in quanto le statistiche non sono fondamentali e se c'è un errore l'applicazione continua a funzionare, con require ci sarebbe un fatal error-->
