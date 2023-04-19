@@ -178,6 +178,17 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
             <form action="rispondi_visualizza_sondaggio.php" method="POST">
                 <?php $codice_sondaggio = $sondaggio_accettato['Codice'];
 
+                $creatore = $sondaggio_accettato['EmailUtentecreante']; // di base impostiamo come creatore la la mail dell'utente...
+                // ...se, pero', e' null; allora il sondaggio è stato creato da un'azienda (lo controlliamo per sicurezza),
+                // dunque impostiamo come creatore il nome dell'azienda usando il CF che conosciamo per ricavarne il nome
+                if (!isset($sondaggio_accettato['EmailUtentecreante']) && isset($sondaggio_accettato['CFAziendacreante'])) {
+                    $mostra_dati_azienda = $pdo->prepare("SELECT * FROM Azienda WHERE CF = :cf_azienda");
+                    $mostra_dati_azienda->bindParam(':cf_azienda', $sondaggio_accettato['CFAziendacreante'], PDO::PARAM_STR);
+                    $mostra_dati_azienda->execute();
+                    $dati_azienda = $mostra_dati_azienda->fetch(PDO::FETCH_ASSOC);
+                    $mostra_dati_azienda->closeCursor();
+                    $creatore = $dati_azienda['Nome'];
+                }
                 $risposte_domande_aperte = $pdo->prepare("CALL MostraRisposteDomandeAperteSondaggio(:param1, :param2)");
                 $risposte_domande_aperte->bindParam(':param1', $email, PDO::PARAM_STR);
                 $risposte_domande_aperte->bindParam(':param2', $codice_sondaggio, PDO::PARAM_INT);
@@ -201,8 +212,7 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
                     Titolo:
                     <?php echo $sondaggio_accettato['Titolo']; ?>
                     Creatore:
-                    <?php echo $sondaggio_accettato['Nome']; ?>
-                    <?php echo $sondaggio_accettato['EmailUtentecreante']; ?>
+                    <?php echo $creatore; ?>
                 </label>
                 <input type="hidden" name="codice_sondaggio" id="codice_sondaggio" value="<?php echo $codice_sondaggio ?>">
                 <?php if ($sondaggio_completato) { // se e' true significa il sondaggio e' stato gia' completato?>
