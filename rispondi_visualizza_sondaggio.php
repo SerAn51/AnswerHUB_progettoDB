@@ -63,7 +63,16 @@ if ((isset($_POST["rispondi"])) || (isset($_POST["visualizza_risposte"]))) {
                     <!--Mostra domanda-->
                     <?php $id_domanda = $domanda_sondaggio['ID']; ?>
                     <h3>
-                        <?php echo $domanda_sondaggio['Testo'] ?>
+                        <?php echo $domanda_sondaggio['Testo']; ?>
+                        <!--Se la domanda è aperta, mostro il massimo numero di caratteri-->
+                        <?php if ($domanda_sondaggio['ApertaChiusa'] == "APERTA") { ?>
+                            <?php
+                            $max_caratteri_risposta = $pdo->prepare("SELECT * FROM DomandaAperta WHERE ID = ?");
+                            $max_caratteri_risposta->execute([$id_domanda]);
+                            $max_caratteri = $max_caratteri_risposta->fetch(PDO::FETCH_ASSOC);
+                            ?>
+                            <?php echo ' (max caratteri: ' . $max_caratteri['MaxCaratteriRisposta'] . ')'; ?>
+                        <?php } ?>
                     </h3>
                     <!--Mostra la foto, se c'e'-->
                     <?php
@@ -88,9 +97,6 @@ if ((isset($_POST["rispondi"])) || (isset($_POST["visualizza_risposte"]))) {
                     <!--Mostra box per risposta o mostra opzioni in base a APERTA o CHIUSA-->
                     <?php if ($domanda_sondaggio['ApertaChiusa'] == 'APERTA') { ?>
                         <?php
-                        $max_caratteri_risposta = $pdo->prepare("SELECT * FROM DomandaAperta WHERE ID = ?");
-                        $max_caratteri_risposta->execute([$id_domanda]);
-                        $max_caratteri = $max_caratteri_risposta->fetch(PDO::FETCH_ASSOC);
                         $textarea_name_id = 'risposte_aperte[' . $id_domanda . ']';
                         ?>
                         <!--Salva il contenuto della textarea in un array associativo, l'indice e' l'id della domanda, il valore e' la risposta effettiva-->
@@ -131,6 +137,15 @@ if ((isset($_POST["rispondi"])) || (isset($_POST["visualizza_risposte"]))) {
                 <?php $id_domanda = $domanda_sondaggio['ID']; ?>
                 <h3>
                     <?php echo $domanda_sondaggio['Testo'] ?>
+                    <!--Se la domanda è aperta, mostro il massimo numero di caratteri-->
+                    <?php if ($domanda_sondaggio['ApertaChiusa'] == "APERTA") { ?>
+                        <?php
+                        $max_caratteri_risposta = $pdo->prepare("SELECT * FROM DomandaAperta WHERE ID = ?");
+                        $max_caratteri_risposta->execute([$id_domanda]);
+                        $max_caratteri = $max_caratteri_risposta->fetch(PDO::FETCH_ASSOC);
+                        ?>
+                        <?php echo ' (max caratteri: ' . $max_caratteri['MaxCaratteriRisposta'] . ')'; ?>
+                    <?php } ?>
                 </h3>
                 <!--Mostra la foto, se c'e'-->
                 <?php
