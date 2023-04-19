@@ -5,13 +5,10 @@
 }
 
 body {
-    /*background: #0c2840;
+    /*background: #0c2840;*/
     background-image: url("../images/login_background_2.jpg");
     background-repeat: no-repeat;
     background-size: 100%;
-    */
-    background: rgb(7, 22, 36);
-    background: linear-gradient(48deg, rgba(7, 22, 36, 1) 0%, rgba(12, 40, 64, 1) 51%, rgba(51, 161, 255, 1) 100%);
 }
 
 section {

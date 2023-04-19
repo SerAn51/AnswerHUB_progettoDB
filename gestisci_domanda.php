@@ -8,7 +8,7 @@ $codice_sondaggio = $_GET['cod_sondaggio'];
 if (!(empty($_SESSION["email"]))) {
     $check_sondaggio = $pdo->prepare("SELECT Codice FROM Sondaggio WHERE EmailUtentecreante = :email AND Codice = :codice");
     $check_sondaggio->bindParam(':email', $_SESSION['email'], PDO::PARAM_STR);
-// altrimenti l'ho richiamato come azienda
+    // altrimenti l'ho richiamato come azienda
 } else if (!(empty($_SESSION["cf_azienda"]))) {
     $check_sondaggio = $pdo->prepare("SELECT Codice FROM Sondaggio WHERE CFAziendacreante = :cf_azienda AND Codice = :codice");
     $check_sondaggio->bindParam(':cf_azienda', $_SESSION['cf_azienda'], PDO::PARAM_STR);
@@ -93,14 +93,14 @@ $check_inviti->closeCursor();
     <div class="space">
         <!--Mostra tutte le domande: lista di domande, le chiuse sono cliccabili e rimandano ad una pagina che mostra le opzioni e il form per inserire opzioni-->
         <h2>Domande</h2>
+        <!--Eventuale messaggio di successo-->
+        <?php if (isset($_GET['success']) && $_GET['success'] == 20) {
+            echo "Domanda rimossa con successo";
+        } ?>
         <ul>
             <?php foreach ($domande_sondaggio as $domanda) { ?>
                 <li>
                     <form action="script_php/rimuovi_domanda.php" method="POST">
-                        <!--Eventuale messaggio di successo-->
-                        <?php if (isset($_GET['success']) && $_GET['success'] == 20) {
-                            echo "Domanda rimossa con successo";
-                        } ?>
                         <!--Nome del sondaggio-->
                         <?php if ($domanda["ApertaChiusa"] == "CHIUSA") { ?>
                             <label for="bottone">

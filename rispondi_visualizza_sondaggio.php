@@ -154,7 +154,6 @@ if ((isset($_POST["rispondi"])) || (isset($_POST["visualizza_risposte"]))) {
                 <!--Mostra risposta aperta o mostra opzione selezionata, in base a domanda APERTA o CHIUSA-->
                 <?php if ($domanda_sondaggio['ApertaChiusa'] == 'APERTA') { ?>
                     <?php
-                    //FIXME: devo selezionare anche in base all'utente
                     $mostra_risposta = $pdo->prepare("CALL MostraRispostaAperta(:email, :id_domanda_aperta)");
                     $mostra_risposta->bindParam(':email', $email, PDO::PARAM_STR);
                     $mostra_risposta->bindParam(':id_domanda_aperta', $id_domanda, PDO::PARAM_INT);
@@ -165,7 +164,6 @@ if ((isset($_POST["rispondi"])) || (isset($_POST["visualizza_risposte"]))) {
                     ?>
                 <?php } else if ($domanda_sondaggio['ApertaChiusa'] == 'CHIUSA') { ?>
                         <?php
-                        //FIXME: devo selezionare anche in base all'utente
                         $mostra_opzione_selezionata = $pdo->prepare("CALL MostraOpzioneSelezionata(:email, :id_domanda_chiusa)");
                         $mostra_opzione_selezionata->bindParam(':email', $email, PDO::PARAM_STR);
                         $mostra_opzione_selezionata->bindParam(':id_domanda_chiusa', $id_domanda, PDO::PARAM_INT);

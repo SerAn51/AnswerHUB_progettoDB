@@ -125,6 +125,16 @@ $check_inviti->closeCursor();
         <?php } ?>
     </div>
 
+    <!--VISUALIZZA LE RISPOSTE DI UN SINDAGGIO-->
+    <div class="space">
+        <h2>VISUALIZZA RISPOSTE SONDAGGIO</h2>
+        <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
+            <label>
+                <a href="visualizza_risposte_sondaggio.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>"><?php echo $sondaggio_creato['Titolo']; ?></a>
+            </label>
+        <?php } ?>
+    </div>
+
     <!--CREAZIONE DI UN NUOVO SONDAGGIO-->
     <!--
         - Per Stato metto di default APERTO...appena lo creo è aperto,
