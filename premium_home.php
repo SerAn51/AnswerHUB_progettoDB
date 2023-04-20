@@ -29,11 +29,14 @@ $sondaggi_creati = $mostra_sondaggi_creati->fetchAll(PDO::FETCH_ASSOC);
 $mostra_sondaggi_creati->closeCursor();
 
 //utile per verificare che ci siano invitati al sondaggio
+/*
 $check_inviti = $pdo->prepare("SELECT * FROM Invito WHERE CodiceSondaggio = :codice_sondaggio");
 $check_inviti->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
 $check_inviti->execute();
 $inviti = $check_inviti->fetchAll();
 $check_inviti->closeCursor();
+var_dump($codice_sondaggio);
+*/
 ?>
 
 <!DOCTYPE html>
@@ -76,6 +79,22 @@ $check_inviti->closeCursor();
     </head>
 
 <body>
+
+    <!--STATISTICHE AGGREGATE SONDAGGIO-->
+    <div class="space">
+        <h2>Statistiche aggregate sondaggio</h2>
+        <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
+            <?php $codice_sondaggio = $sondaggio_creato['Codice']; ?>
+            <form action="visualizza_statistiche_aggregate.php" method="POST">
+                <label>
+                    <?php echo $sondaggio_creato['Titolo']; ?>
+                </label>
+
+                <input type="hidden" name="codice_sondaggio" id="codice_sondaggio" value="<?php echo $codice_sondaggio ?>">
+                <input type="submit" name="statistiche_aggregate" id="statistiche_aggregate" value="Visualizza statistiche aggregate">
+            </form>
+        <?php } ?>
+    </div>
 
     <!--GESTIONE SONDAGGI-->
     <div class="space">
