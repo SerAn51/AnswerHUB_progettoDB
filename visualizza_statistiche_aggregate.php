@@ -1,6 +1,16 @@
 <?php
 require 'config_connessione.php'; // instaura la connessione con il db
 
+if (isset($_POST["statistiche_aggregate"])) {
+    $codice_sondaggio = $_POST['codice_sondaggio'];
+
+
+    $mostra_domande_sondaggio = $pdo->prepare("CALL MostraDomande(:codice)");
+    $mostra_domande_sondaggio->bindParam(':codice', $codice_sondaggio, PDO::PARAM_INT);
+    $mostra_domande_sondaggio->execute();
+    $domande_sondaggio = $mostra_domande_sondaggio->fetchAll(PDO::FETCH_ASSOC);
+    $mostra_domande_sondaggio->closeCursor();
+}
 ?>
 
 <!DOCTYPE html>
@@ -46,58 +56,121 @@ require 'config_connessione.php'; // instaura la connessione con il db
 
 <body>
 
-    <?php if (isset($_POST["statistiche_aggregate"])) { ?>
-        <?php $codice_sondaggio = $_POST['codice_sondaggio']; ?>
+    <!--NUMERO DI RISPOSTE PER OGNI DOMANDA-->
+    <div class="space">
+        <h3>
+            Numero di risposte per ogni domanda (quanti utenti hanno risposto?)
+        </h3>
 
-        <!--NUMERO DI RISPOSTE PER OGNI DOMANDA-->
-        <div class="space">
-            <h3>
-                Numero di risposte per ogni domanda (quanti utenti hanno risposto?)
-            </h3>
+        <!--Se il sondaggio non ha domande, mostri un messaggio-->
+        <?php if (empty($domande_sondaggio)) {
+            echo "Il sondaggio non contiene domande";
+        } else { ?>
             <?php
-            $mostra_domande_sondaggio = $pdo->prepare("CALL MostraDomande(:codice)");
-            $mostra_domande_sondaggio->bindParam(':codice', $codice_sondaggio, PDO::PARAM_INT);
-            $mostra_domande_sondaggio->execute();
-            $domande_sondaggio = $mostra_domande_sondaggio->fetchAll(PDO::FETCH_ASSOC);
-            $mostra_domande_sondaggio->closeCursor();
-            ?>
-
-            <!--Se il sondaggio non ha domande, mostri un messaggio-->
-            <?php if (empty($domande_sondaggio)) {
-                echo "Il sondaggio non contiene domande";
-            } else { ?>
-                <?php
-                foreach ($domande_sondaggio as $domanda_sondaggio) {
-                    if ($domanda_sondaggio['ApertaChiusa'] == "APERTA") {
-                        //prendi ID e usalo in una query che ritorna le risposte
-                        $conta_numero_risposte = $pdo->prepare("CALL ContaNumeroRisposteDomandaAperta(:id_domanda_aperta)");
-                        $conta_numero_risposte->bindParam(':id_domanda_aperta', $domanda_sondaggio['ID'], PDO::PARAM_INT);
-                        $conta_numero_risposte->execute();
-                        $numero_risposte = $conta_numero_risposte->fetch(PDO::FETCH_ASSOC);
-                        $conta_numero_risposte->closeCursor();
-                    } else {
-                        $conta_numero_risposte = $pdo->prepare("CALL ContaNumeroRisposteDomandaChiusa(:id_domanda_chiusa)");
-                        $conta_numero_risposte->bindParam(':id_domanda_chiusa', $domanda_sondaggio['ID'], PDO::PARAM_INT);
-                        $conta_numero_risposte->execute();
-                        $numero_risposte = $conta_numero_risposte->fetch(PDO::FETCH_ASSOC);
-                        $conta_numero_risposte->closeCursor();
-                    }
-                    echo $domanda_sondaggio['Testo'] . ": " . $numero_risposte['NumeroRisposte'];
+            foreach ($domande_sondaggio as $domanda_sondaggio) {
+                if ($domanda_sondaggio['ApertaChiusa'] == "APERTA") {
+                    //prendi ID e usalo in una query che ritorna le risposte
+                    $conta_numero_risposte = $pdo->prepare("CALL ContaNumeroRisposteDomandaAperta(:id_domanda_aperta)");
+                    $conta_numero_risposte->bindParam(':id_domanda_aperta', $domanda_sondaggio['ID'], PDO::PARAM_INT);
+                    $conta_numero_risposte->execute();
+                    $numero_risposte = $conta_numero_risposte->fetch(PDO::FETCH_ASSOC);
+                    $conta_numero_risposte->closeCursor();
+                } else {
+                    $conta_numero_risposte = $pdo->prepare("CALL ContaNumeroRisposteDomandaChiusa(:id_domanda_chiusa)");
+                    $conta_numero_risposte->bindParam(':id_domanda_chiusa', $domanda_sondaggio['ID'], PDO::PARAM_INT);
+                    $conta_numero_risposte->execute();
+                    $numero_risposte = $conta_numero_risposte->fetch(PDO::FETCH_ASSOC);
+                    $conta_numero_risposte->closeCursor();
                 }
-                ?>
-            <?php } ?>
-        </div>
+                echo $domanda_sondaggio['Testo'] . ": " . $numero_risposte['NumeroRisposte'];
+            }
+            ?>
+        <?php } ?>
+    </div>
 
-        <!--DISTRIBUZIONE DELLE RISPOSTE SULLE VARIE OPZIONI-->
-        <div class="space">
-            <h3>
-                Distribuzione delle risposte sulle varie opzioni
-            </h3>
-            <!--idea: conto le opzioni selezionate e creo un array associativo che come chiave ha il numero progressivo dell'opzione e come valore ha il numero di occorrenze.
-        A quel punto ne calcolo la percentuale-->
-            
-        </div>
-    <?php } ?>
+    <!--DISTRIBUZIONE DELLE RISPOSTE SULLE VARIE OPZIONI-->
+    <div class="space">
+        <h3>
+            Distribuzione delle risposte sulle varie opzioni
+        </h3>
+        <?php if (empty($domande_sondaggio)) {
+            echo "Il sondaggio non contiene domande";
+        } else { ?>
+            <?php
+            foreach ($domande_sondaggio as $domanda_sondaggio) { ?>
+                <?php if ($domanda_sondaggio['ApertaChiusa'] == 'CHIUSA') { ?>
+                    <?php echo $domanda_sondaggio['Testo'] . ':<br>'; ?>
+                    <?php
+                    // FIXME: forse inutile perché basta contare il numero di elementi del $array_associativo_opzioni
+                    $conta_numero_risposte_totali = $pdo->prepare("CALL ContaNumeroRisposteDomandaChiusa(:id_domanda_chiusa)");
+                    $conta_numero_risposte_totali->bindParam(':id_domanda_chiusa', $domanda_sondaggio['ID'], PDO::PARAM_INT);
+                    $conta_numero_risposte_totali->execute();
+                    $numero_risposte_totali = $conta_numero_risposte_totali->fetch(PDO::FETCH_ASSOC);
+                    $conta_numero_risposte_totali->closeCursor();
+                    $num_risp_tot = $numero_risposte_totali['NumeroRisposte'];
+                    /*
+                    echo "numero_risposte_totali:";
+                    var_dump($num_risp_tot);
+                    echo "<br>";
+                    */
+
+                    // prende le opzioni di una domanda
+                    $mostra_opzioni_domanda_chiusa = $pdo->prepare("CALL MostraOpzioni(:id_domanda_chiusa)");
+                    $mostra_opzioni_domanda_chiusa->bindParam(':id_domanda_chiusa', $domanda_sondaggio['ID'], PDO::PARAM_INT);
+                    $mostra_opzioni_domanda_chiusa->execute();
+                    $opzioni_domanda_chiusa = $mostra_opzioni_domanda_chiusa->fetchAll(PDO::FETCH_ASSOC);
+                    $mostra_opzioni_domanda_chiusa->closeCursor();
+
+                    // creo un array associativo vuoto
+                    //$array_associativo_opzioni = array();
+
+                    // per ogni opzione della domanda chiusa conta il numero di occorrenze e ne calcola la percentuale rispetto al numero totale di risposte
+                    //popola l'array associativo con chiave il numero progressivo dell'opzione, come valore verrà assegnato il numero di risposte con quella opzione (il numero di occorrenze del numero progressivo)
+                    foreach ($opzioni_domanda_chiusa as $opzione_domanda_chiusa) {
+                        // imposto la chiave "Numeroprogressivo" senza valore
+                        //$array_associativo_opzioni["{$opzione_domanda_chiusa['Numeroprogressivo']}"] = null;
+
+                        // interroga il db per contare il numero di risposte che occorrono per ogni opzione
+                        $conta_numero_risposte_opzione = $pdo->prepare("CALL ContaNumeroOccorrenzeOpzione(:id_domanda_chiusa, :numero_progressivo)");
+                        $conta_numero_risposte_opzione->bindParam(':id_domanda_chiusa', $domanda_sondaggio['ID'], PDO::PARAM_INT);
+                        $conta_numero_risposte_opzione->bindParam(':numero_progressivo', $opzione_domanda_chiusa['Numeroprogressivo'], PDO::PARAM_INT);
+                        $conta_numero_risposte_opzione->execute();
+                        $numero_risposte_opzione = $conta_numero_risposte_opzione->fetch(PDO::FETCH_ASSOC);
+                        $conta_numero_risposte_opzione->closeCursor();
+
+                        $num_risp_opz = $numero_risposte_opzione['NumeroOccorrenze'];
+                        /*
+                        echo "numero risposte per opzione: ". $opzione_domanda_chiusa['Testo'];
+                        var_dump($num_risp_opz);
+                        echo "<br>";
+                        */
+
+                        echo $opzione_domanda_chiusa['Testo'] . ': ' . ($num_risp_opz * 100) / $num_risp_tot . '% <br>';
+
+                        // popolo di conseguenza l'array associativo, assegnando il valore (numero occorrenze) alla chiave (numero progressivo dell'opzione)
+                        /*$array_associativo_opzioni = [
+                            "{$opzione_domanda_chiusa['Numeroprogressivo']}" => "$num_risp_opz"
+                        ];*/
+                    }
+                    ?>
+
+                    <!--
+                    Le opzioni vengono rappresentate con una radio, selezionate o deselezionate in base a quale opzione e' stata scelta (graficamente non si vede molto)
+                    <input type="radio" name="opzione_selezionata_<?php echo $id_domanda ?>" checked disabled>
+                    <label for="opzione_selezionata">
+                        <?php //echo $opzione_selezionata['Testo']; ?>
+                    </label>
+                    <?php //foreach ($opzioni_non_selezionate as $opzione_non_selezionata) { ?>
+                        <input type="radio" name="opzione_non_selezionata<?php echo $id_domanda ?>" disabled>
+                        <label for="opzione_non_selezionata">
+                            <?php //echo $opzione_non_selezionata['Testo']; ?>
+                        </label>
+                    <?php// } ?>
+                    -->
+                <?php } ?>
+            <?php } ?>
+        <?php } ?>
+    </div>
     <a href="premium_home.php">Torna alla home</a>
 </body>
 
