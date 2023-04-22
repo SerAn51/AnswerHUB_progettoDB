@@ -43,21 +43,73 @@ if (!(empty($_SESSION["email"]))) {
 
         <link rel="stylesheet" href="stile_css/checkbox_style.css">
         <style>
-            * {
+            body {
+                background-color: #0F2849;
                 font-family: 'Poppins', sans-serif;
-                background: #0c2840;
-                color: #f3f7f9;
+                height: 100vh;
+                display: grid;
+                grid-template-columns: 1fr;
+                /*Divido le colonne in 300px per la sidebar, 1 frazione per tutto il resto*/
+                grid-template-rows: 10px 1fr 10px;
+                /*Divido le righe in una da 60px che sarà l'header, e 1fr per il contenuto main*/
+                grid-template-areas:
+                    "side header"
+                    "side main"
+                    "side footer";
+
+            }
+
+            .header {
+                background-color: #0F2849;
+                grid-area: header;
+            }
+
+            .footer {
+                background-color: #0F2849;
+                grid-area: footer;
+            }
+
+            .main {
+                border-radius: 30px;
+                background-color: #f1f1fa;
+
+                padding: 20px;
+                margin: 20px;
+                grid-area: main;
+
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                /*Divido il main in 3 colonne*/
+                grid-template-rows: 1fr;
+                grid-template-areas:
+                    "c1 c2 c3";
+                gap: 10px;
             }
 
             .space {
-                border: 2px solid #f3f7f9;
+                background-color: #ffffff;
+                color: #0c2840;
                 border-radius: 30px;
+                /*border: 2px solid #f3f7f9;*/
+                box-shadow: 0 0 50px #ccc;
                 display: flex;
                 justify-content: center;
                 text-align: center;
                 width: auto;
                 padding: 10px;
                 margin: 20px;
+            }
+
+            .space:nth-child(1) {
+                grid-area: c1;
+            }
+
+            .space:nth-child(2) {
+                grid-area: c2;
+            }
+
+            .space:nth-child(3) {
+                grid-area: c3;
             }
 
             ul {
@@ -67,87 +119,100 @@ if (!(empty($_SESSION["email"]))) {
     </head>
 
 <body>
-    <h1>Ciao
-        <?php echo $dati_utente["Nome"]; ?>
-    </h1>
+    <header class="header">
+        <h3>Ciao
+            <?php echo $dati_utente["Nome"]; ?>
+        </h3>
+        <a href="logout.php">Logout</a>
+    </header>
 
-    <!--INSERIMENTO DI UN NUOVO DOMINIO-->
-    <div class="space">
-        <h2>Inserisci un nuovo dominio</h2>
-        <form action="script_php/inserimento_dominio.php" method="POST">
-            <?php if (isset($_GET['error']) && ($_GET['error'] == 20)) {
-                echo "Errore, riprova";
-            } else if (isset($_GET['success']) && $_GET['success'] == 20) {
-                echo "Dominio inserito con successo";
-            }
-            ?>
-            <input type="text" name="parola_chiave" id="parola_chiave" required>
-            <label for="parola_chiave">Parola Chiave</label>
-            <input type="text" name="descrizione" id="descrizione" required>
-            <label for="descrizione">Descrizione</label>
-            <input type="submit" name="inserisci" id="inserisci" value="Inserisci">
-        </form>
-    </div>
-
-    <!--LISTA DOMINI-->
-    <div class="space">
-        <h2>Domini</h2>
-        <?php
-        $mostra_domini = $pdo->prepare("CALL MostraDomini()");
-        $mostra_domini->execute();
-        $domini = $mostra_domini->fetchAll(PDO::FETCH_ASSOC);
-        $mostra_domini->closeCursor();
-        ?>
-        <?php if (empty($domini)) {
-            echo "Non ci sono domini";
-        } else { ?>
-            <ul>
-                <?php
-                foreach ($domini as $dominio) {
-                    ?>
-                    <li>
-                        <?php echo $dominio['Parolachiave'] . ' ' . $dominio['Descrizione']; ?>
-                    </li>
-                    <?php
+    <main class="main">
+        <!--INSERIMENTO DI UN NUOVO DOMINIO-->
+        <div class="space">
+            <form action="script_php/inserimento_dominio.php" method="POST">
+                <h2>Inserisci un nuovo dominio</h2>
+                <?php if (isset($_GET['error']) && ($_GET['error'] == 20)) {
+                    echo "Errore, riprova";
+                } else if (isset($_GET['success']) && $_GET['success'] == 20) {
+                    echo "Dominio inserito con successo";
                 }
                 ?>
-            </ul>
-        <?php } ?>
-    </div>
+                <label for="parola_chiave">Parola Chiave</label>
+                <input type="text" name="parola_chiave" id="parola_chiave" required>
+                <br>
+                <label for="descrizione">Descrizione</label>
+                <input type="text" name="descrizione" id="descrizione" required>
+                <br>
+                <input type="submit" name="inserisci" id="inserisci" value="Inserisci">
+            </form>
+        </div>
 
-    <!--INSERIMENTO DI UN NUOVO PREMIO: due input, uno per chiedere l'altro di conferma, fa una insert in Premio-->
-    <div class="space">
-        <h2>Inserisci un nuovo premio</h2>
-        <form action="script_php/inserimento_premio.php" method="POST" enctype="multipart/form-data">
-            <?php if (isset($_GET['error'])) {
-                if ($_GET['error'] == 10) {
-                    echo "Formato non corretto, accettati: PNG, JPEG";
-                } else if ($_GET['error'] == 11) {
-                    echo "Non hai inserito la foto";
-                }
-            } else if (isset($_GET['success']) && $_GET['success'] == 10) {
-                echo "Premio inserito con successo";
-            }
+        <!--LISTA DOMINI-->
+        <div class="space">
+            <?php
+            $mostra_domini = $pdo->prepare("CALL MostraDomini()");
+            $mostra_domini->execute();
+            $domini = $mostra_domini->fetchAll(PDO::FETCH_ASSOC);
+            $mostra_domini->closeCursor();
             ?>
-            <input type="text" name="nome" id="nome" required>
-            <label for="nome">Nome</label>
-            <input type="text" name="descrizione" id="descrizione" required>
-            <label for="descrizione">Descrizione</label>
-            <input type="file" name="foto" id="foto" required>
-            <label for="foto">Foto</label>
-            <input type="number" min="0" name="punti_necessari" id="punti_necessari" required>
-            <label for="punti_necessari">Punti necessari</label>
-            <input type="submit" name="inserisci" id="inserisci" value="Inserisci">
-        </form>
-    </div>
+            <?php if (empty($domini)) {
+                echo "Non ci sono domini";
+            } else { ?>
+                <ul>
+                    <h2>Domini</h2>
+                    <?php
+                    foreach ($domini as $dominio) {
+                        ?>
+                        <li>
+                            <?php echo $dominio['Parolachiave'] . ' ' . $dominio['Descrizione']; ?>
+                        </li>
+                        <?php
+                    }
+                    ?>
+                </ul>
+            <?php } ?>
+        </div>
 
-    <!--STATISTICHE (VISIBILI DA TUTTI GLI UTENTI)-->
-    <!--inclue statistiche.php, si è optato per include in quanto le statistiche non sono fondamentali e se c'è un errore l'applicazione continua a funzionare, con require ci sarebbe un fatal error-->
-    <?php
-    include 'visualizza_statistiche.php';
-    ?>
+        <!--INSERIMENTO DI UN NUOVO PREMIO: due input, uno per chiedere l'altro di conferma, fa una insert in Premio-->
+        <div class="space">
+            <form action="script_php/inserimento_premio.php" method="POST" enctype="multipart/form-data">
+                <h2>Inserisci un nuovo premio</h2>
+                <?php if (isset($_GET['error'])) {
+                    if ($_GET['error'] == 10) {
+                        echo "Formato non corretto, accettati: PNG, JPEG";
+                    } else if ($_GET['error'] == 11) {
+                        echo "Non hai inserito la foto";
+                    }
+                } else if (isset($_GET['success']) && $_GET['success'] == 10) {
+                    echo "Premio inserito con successo";
+                }
+                ?>
+                <label for="nome">Nome</label>
+                <input type="text" name="nome" id="nome" required>
+                <br>
+                <label for="descrizione">Descrizione</label>
+                <input type="text" name="descrizione" id="descrizione" required>
+                <br>
+                <label for="foto">Foto</label>
+                <input type="file" name="foto" id="foto" required>
+                <br>
+                <label for="punti_necessari">Punti necessari</label>
+                <input type="number" min="0" name="punti_necessari" id="punti_necessari" required>
+                <br>
+                <input type="submit" name="inserisci" id="inserisci" value="Inserisci">
+            </form>
+        </div>
 
-    <a href="logout.php">Logout</a>
+        <!--STATISTICHE (VISIBILI DA TUTTI GLI UTENTI)-->
+        <!--inclue statistiche.php, si è optato per include in quanto le statistiche non sono fondamentali e se c'è un errore l'applicazione continua a funzionare, con require ci sarebbe un fatal error-->
+        <?php
+        include 'visualizza_statistiche.php';
+        ?>
+    </main>
+
+    <section class="footer">
+
+    </section>
 </body>
 
 </html>

@@ -1,7 +1,7 @@
 <!--VISUALIZZARE I PREMI DISPONIBILI-->
 <div class="space">
-    <h2>Premi disponibili</h2>
     <ul>
+        <h2>Premi disponibili</h2>
         <?php
         //array con tutti i premi vinti dall'utente di sessione
         $prep_proc_premi = $pdo->prepare('CALL VisualizzaPremi()');
@@ -32,8 +32,8 @@
 
 <!--VISUALIZZARE LA CLASSIFICA DEGLI UTENTI IN BASE AL CAMPO TOTALEBONUS-->
 <div class="space">
-    <h2>Classifica utenti</h2>
     <ul>
+        <h2>Classifica utenti</h2>
         <?php
         //array con tutti i premi vinti dall'utente di sessione
         $prep_proc_classifica = $pdo->prepare('CALL VisualizzaClassifica()');
