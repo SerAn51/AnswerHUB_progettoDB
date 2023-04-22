@@ -107,36 +107,102 @@ if (isset($_POST["statistiche_aggregate"])) {
                     $conta_numero_risposte_totali->execute();
                     $numero_risposte_totali = $conta_numero_risposte_totali->fetch(PDO::FETCH_ASSOC);
                     $conta_numero_risposte_totali->closeCursor();
-                    $num_risp_tot = $numero_risposte_totali['NumeroRisposte'];
 
-                    // prende le opzioni di una domanda
-                    $mostra_opzioni_domanda_chiusa = $pdo->prepare("CALL MostraOpzioni(:id_domanda_chiusa)");
-                    $mostra_opzioni_domanda_chiusa->bindParam(':id_domanda_chiusa', $domanda_sondaggio['ID'], PDO::PARAM_INT);
-                    $mostra_opzioni_domanda_chiusa->execute();
-                    $opzioni_domanda_chiusa = $mostra_opzioni_domanda_chiusa->fetchAll(PDO::FETCH_ASSOC);
-                    $mostra_opzioni_domanda_chiusa->closeCursor();
+                    if (empty($numero_risposte_totali)) {
+                        echo "Non ci sono risposte";
+                    } else {
+                        $num_risp_tot = $numero_risposte_totali['NumeroRisposte'];
 
-                    // per ogni opzione della domanda chiusa conta il numero di occorrenze e ne calcola la percentuale rispetto al numero totale di risposte
-                    foreach ($opzioni_domanda_chiusa as $opzione_domanda_chiusa) {
+                        // prende le opzioni di una domanda
+                        $mostra_opzioni_domanda_chiusa = $pdo->prepare("CALL MostraOpzioni(:id_domanda_chiusa)");
+                        $mostra_opzioni_domanda_chiusa->bindParam(':id_domanda_chiusa', $domanda_sondaggio['ID'], PDO::PARAM_INT);
+                        $mostra_opzioni_domanda_chiusa->execute();
+                        $opzioni_domanda_chiusa = $mostra_opzioni_domanda_chiusa->fetchAll(PDO::FETCH_ASSOC);
+                        $mostra_opzioni_domanda_chiusa->closeCursor();
 
-                        // interroga il db per contare il numero di risposte che occorrono per ogni opzione
-                        $conta_numero_risposte_opzione = $pdo->prepare("CALL ContaNumeroOccorrenzeOpzione(:id_domanda_chiusa, :numero_progressivo)");
-                        $conta_numero_risposte_opzione->bindParam(':id_domanda_chiusa', $domanda_sondaggio['ID'], PDO::PARAM_INT);
-                        $conta_numero_risposte_opzione->bindParam(':numero_progressivo', $opzione_domanda_chiusa['Numeroprogressivo'], PDO::PARAM_INT);
-                        $conta_numero_risposte_opzione->execute();
-                        $numero_risposte_opzione = $conta_numero_risposte_opzione->fetch(PDO::FETCH_ASSOC);
-                        $conta_numero_risposte_opzione->closeCursor();
+                        // per ogni opzione della domanda chiusa conta il numero di occorrenze e ne calcola la percentuale rispetto al numero totale di risposte
+                        foreach ($opzioni_domanda_chiusa as $opzione_domanda_chiusa) {
 
-                        $num_risp_opz = $numero_risposte_opzione['NumeroOccorrenze'];
+                            // interroga il db per contare il numero di risposte che occorrono per ogni opzione
+                            $conta_numero_risposte_opzione = $pdo->prepare("CALL ContaNumeroOccorrenzeOpzione(:id_domanda_chiusa, :numero_progressivo)");
+                            $conta_numero_risposte_opzione->bindParam(':id_domanda_chiusa', $domanda_sondaggio['ID'], PDO::PARAM_INT);
+                            $conta_numero_risposte_opzione->bindParam(':numero_progressivo', $opzione_domanda_chiusa['Numeroprogressivo'], PDO::PARAM_INT);
+                            $conta_numero_risposte_opzione->execute();
+                            $numero_risposte_opzione = $conta_numero_risposte_opzione->fetch(PDO::FETCH_ASSOC);
+                            $conta_numero_risposte_opzione->closeCursor();
 
-                        // stampa la percentuale
-                        echo $opzione_domanda_chiusa['Testo'] . ': ' . ($num_risp_opz * 100) / $num_risp_tot . '% <br>';
+                            $num_risp_opz = $numero_risposte_opzione['NumeroOccorrenze'];
+
+                            // stampa la percentuale
+                            try {
+                                $percentuale = ($num_risp_opz * 100) / $num_risp_tot;
+                                echo $opzione_domanda_chiusa['Testo'] . ': ';
+                                echo $percentuale . '% <br>';
+                            } catch (DivisionByZeroError $e) {
+                                echo 'Nessuna risposta. <br>';
+                                break;
+                            }
+
+                        }
                     }
                     ?>
                 <?php } ?>
             <?php } ?>
         <?php } ?>
     </div>
+
+    <!--DISTRIBUZIONE DELLE RISPOSTE SULLE VARIE OPZIONI-->
+    <div class="space">
+        <h3>
+            Valore medio/minimo e massimo del numero di caratteri
+        </h3>
+
+        <?php if (empty($domande_sondaggio)) {
+            echo "Il sondaggio non contiene domande";
+        } else { ?>
+            <?php
+            foreach ($domande_sondaggio as $domanda_sondaggio) { ?>
+                <?php if ($domanda_sondaggio['ApertaChiusa'] == 'APERTA') { ?>
+                    <?php echo $domanda_sondaggio['Testo'] . ':<br>'; ?>
+                    <?php
+
+                    //interrogo il database per prendere tutte le risposte ad una domanda aperta
+                    $mostra_risposte = $pdo->prepare("CALL MostraRisposte(:id_domanda_aperta)");
+                    $mostra_risposte->bindParam(':id_domanda_aperta', $domanda_sondaggio['ID'], PDO::PARAM_INT);
+                    $mostra_risposte->execute();
+                    $risposte = $mostra_risposte->fetchAll(PDO::FETCH_ASSOC);
+                    $mostra_risposte->closeCursor();
+
+                    if (empty($risposte)) {
+                        echo "Non ci sono risposte";
+                    } else {
+
+                        $num_risposte = 0;
+                        $totale_lunghezza = 0;
+                        $min = PHP_INT_MAX; // valore massimo predefinito di PHP
+                        $max = 0;
+                        foreach ($risposte as $risposta) {
+                            $num_risposte += 1;
+                            $testo = $risposta['Testo'];
+                            $lunghezza = strlen($testo);
+                            $totale_lunghezza += $lunghezza;
+                            if ($lunghezza < $min) {
+                                $min = $lunghezza;
+                            }
+                            if ($lunghezza > $max) {
+                                $max = $lunghezza;
+                            }
+                        }
+                        echo "Media: " . $totale_lunghezza / $num_risposte;
+                        echo "Minimo: " . $min;
+                        echo "Massimo: " . $max;
+                    }
+                    ?>
+                <?php } ?>
+            <?php } ?>
+        <?php } ?>
+    </div>
+
     <a href="premium_home.php">Torna alla home</a>
 </body>
 
