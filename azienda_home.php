@@ -1,5 +1,13 @@
 <?php
 require 'config_connessione.php'; // instaura la connessione con il db
+
+//utile per mostrare la lista di sondaggi
+$mostra_sondaggi_creati = $pdo->prepare("SELECT * FROM Sondaggio WHERE CFAziendacreante = :cf_azienda");
+$mostra_sondaggi_creati->bindParam(':cf_azienda', $_SESSION["cf_azienda"], PDO::PARAM_STR);
+$mostra_sondaggi_creati->execute();
+$sondaggi_creati = $mostra_sondaggi_creati->fetchAll(PDO::FETCH_ASSOC);
+$mostra_sondaggi_creati->closeCursor();
+
 ?>
 
 <!DOCTYPE html>
@@ -50,6 +58,23 @@ require 'config_connessione.php'; // instaura la connessione con il db
         <?php echo $_SESSION['cf_azienda'] ?>
     </h1>
 
+    <!--STATISTICHE AGGREGATE SONDAGGIO-->
+    <div class="space">
+        <h2>Statistiche aggregate sondaggio</h2>
+        <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
+            <?php $codice_sondaggio = $sondaggio_creato['Codice']; ?>
+            <form action="visualizza_statistiche_aggregate.php" method="POST">
+                <label>
+                    <?php echo $sondaggio_creato['Titolo']; ?>
+                </label>
+
+                <input type="hidden" name="codice_sondaggio" id="codice_sondaggio" value="<?php echo $codice_sondaggio ?>">
+                <input type="submit" name="statistiche_aggregate" id="statistiche_aggregate"
+                    value="Visualizza statistiche aggregate">
+            </form>
+        <?php } ?>
+    </div>
+
     <!--CREAZIONE DI UN NUOVO SONDAGGIO-->
     <!--
         - Per Stato metto di default APERTO...appena lo creo è aperto,
@@ -95,15 +120,6 @@ require 'config_connessione.php'; // instaura la connessione con il db
 
 
     <!--GESTIONE SONDAGGI: INVITO DI INVITI E INSERIMENTO DOMANDA-->
-    <!--Idea: -->
-    <?php
-    //utile per mostrare la lista di sondaggi
-    $mostra_sondaggi_creati = $pdo->prepare("SELECT * FROM Sondaggio WHERE CFAziendacreante = :cf_azienda");
-    $mostra_sondaggi_creati->bindParam(':cf_azienda', $_SESSION["cf_azienda"], PDO::PARAM_STR);
-    $mostra_sondaggi_creati->execute();
-    $sondaggi_creati = $mostra_sondaggi_creati->fetchAll(PDO::FETCH_ASSOC);
-    $mostra_sondaggi_creati->closeCursor();
-    ?>
     <div class="space">
         <h2>Gestione sondaggi</h2>
         <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
