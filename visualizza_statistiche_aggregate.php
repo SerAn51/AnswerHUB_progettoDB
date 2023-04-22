@@ -101,18 +101,13 @@ if (isset($_POST["statistiche_aggregate"])) {
                 <?php if ($domanda_sondaggio['ApertaChiusa'] == 'CHIUSA') { ?>
                     <?php echo $domanda_sondaggio['Testo'] . ':<br>'; ?>
                     <?php
-                    // FIXME: forse inutile perché basta contare il numero di elementi del $array_associativo_opzioni
+
                     $conta_numero_risposte_totali = $pdo->prepare("CALL ContaNumeroRisposteDomandaChiusa(:id_domanda_chiusa)");
                     $conta_numero_risposte_totali->bindParam(':id_domanda_chiusa', $domanda_sondaggio['ID'], PDO::PARAM_INT);
                     $conta_numero_risposte_totali->execute();
                     $numero_risposte_totali = $conta_numero_risposte_totali->fetch(PDO::FETCH_ASSOC);
                     $conta_numero_risposte_totali->closeCursor();
                     $num_risp_tot = $numero_risposte_totali['NumeroRisposte'];
-                    /*
-                    echo "numero_risposte_totali:";
-                    var_dump($num_risp_tot);
-                    echo "<br>";
-                    */
 
                     // prende le opzioni di una domanda
                     $mostra_opzioni_domanda_chiusa = $pdo->prepare("CALL MostraOpzioni(:id_domanda_chiusa)");
@@ -121,14 +116,8 @@ if (isset($_POST["statistiche_aggregate"])) {
                     $opzioni_domanda_chiusa = $mostra_opzioni_domanda_chiusa->fetchAll(PDO::FETCH_ASSOC);
                     $mostra_opzioni_domanda_chiusa->closeCursor();
 
-                    // creo un array associativo vuoto
-                    //$array_associativo_opzioni = array();
-
                     // per ogni opzione della domanda chiusa conta il numero di occorrenze e ne calcola la percentuale rispetto al numero totale di risposte
-                    //popola l'array associativo con chiave il numero progressivo dell'opzione, come valore verrà assegnato il numero di risposte con quella opzione (il numero di occorrenze del numero progressivo)
                     foreach ($opzioni_domanda_chiusa as $opzione_domanda_chiusa) {
-                        // imposto la chiave "Numeroprogressivo" senza valore
-                        //$array_associativo_opzioni["{$opzione_domanda_chiusa['Numeroprogressivo']}"] = null;
 
                         // interroga il db per contare il numero di risposte che occorrono per ogni opzione
                         $conta_numero_risposte_opzione = $pdo->prepare("CALL ContaNumeroOccorrenzeOpzione(:id_domanda_chiusa, :numero_progressivo)");
@@ -139,34 +128,11 @@ if (isset($_POST["statistiche_aggregate"])) {
                         $conta_numero_risposte_opzione->closeCursor();
 
                         $num_risp_opz = $numero_risposte_opzione['NumeroOccorrenze'];
-                        /*
-                        echo "numero risposte per opzione: ". $opzione_domanda_chiusa['Testo'];
-                        var_dump($num_risp_opz);
-                        echo "<br>";
-                        */
 
+                        // stampa la percentuale
                         echo $opzione_domanda_chiusa['Testo'] . ': ' . ($num_risp_opz * 100) / $num_risp_tot . '% <br>';
-
-                        // popolo di conseguenza l'array associativo, assegnando il valore (numero occorrenze) alla chiave (numero progressivo dell'opzione)
-                        /*$array_associativo_opzioni = [
-                            "{$opzione_domanda_chiusa['Numeroprogressivo']}" => "$num_risp_opz"
-                        ];*/
                     }
                     ?>
-
-                    <!--
-                    Le opzioni vengono rappresentate con una radio, selezionate o deselezionate in base a quale opzione e' stata scelta (graficamente non si vede molto)
-                    <input type="radio" name="opzione_selezionata_<?php echo $id_domanda ?>" checked disabled>
-                    <label for="opzione_selezionata">
-                        <?php //echo $opzione_selezionata['Testo']; ?>
-                    </label>
-                    <?php //foreach ($opzioni_non_selezionate as $opzione_non_selezionata) { ?>
-                        <input type="radio" name="opzione_non_selezionata<?php echo $id_domanda ?>" disabled>
-                        <label for="opzione_non_selezionata">
-                            <?php //echo $opzione_non_selezionata['Testo']; ?>
-                        </label>
-                    <?php// } ?>
-                    -->
                 <?php } ?>
             <?php } ?>
         <?php } ?>
