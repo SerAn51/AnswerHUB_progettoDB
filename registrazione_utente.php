@@ -2,13 +2,14 @@
 require 'config_connessione.php'; // instaura la connessione con il db
 
 require 'config_conn_mongodb.php'; // instaura la connessione con mongodb, creando db e collezione se non esiste
+use MongoDB\BSON\UTCDateTime;
 
 //con accesso fatto, se provo a cambiare url e mettere registration.php reindirizza a index.php
 if (!(empty($_SESSION["email"]))) {
     header("Location: index.php");
 }
 
-function inserisciUtente($pdo, $email, $password, $nome, $cognome, $data_nascita, $luogo_nascita, $tipo_utente)
+function inserisciUtente($pdo, $email, $password, $nome, $cognome, $data_nascita, $luogo_nascita, $tipo_utente, $collezione_log)
 {
     $sql = "CALL InserisciUtente(:param1, :param2, :param3, :param4, :param5, :param6, :param7)";
     $stmt = $pdo->prepare($sql);
@@ -20,6 +21,24 @@ function inserisciUtente($pdo, $email, $password, $nome, $cognome, $data_nascita
     $stmt->bindParam(':param6', $luogo_nascita, PDO::PARAM_STR);
     $stmt->bindParam(':param7', $tipo_utente, PDO::PARAM_STR);
     $stmt->execute();
+
+    // Informazione da inserire nella collezione di log
+    $informazione_log = array(
+        "data" => new MongoDB\BSON\UTCDateTime(),
+        "azione" => "Inserimento utente",
+        "dettagli" => array(
+            "email" => $email,
+            "nome" => $nome,
+            "cognome" => $cognome,
+            "data_nascita" => $data_nascita,
+            "luogo_nascita" => $luogo_nascita,
+            "tipo_utente" => $tipo_utente
+        )
+    );
+
+    // Inserimento dell'informazione nella collezione di log
+    $result = $collezione_log->insertOne($informazione_log);
+
 
 }
 
@@ -62,7 +81,7 @@ if (isset($_POST["submit"])) { // se submit avviene con successo
                     }
                 } else { // La checkbox non è stata selezionata
                     $tipo_utente = "SEMPLICE";
-                    inserisciUtente($pdo, $email, $password, $nome, $cognome, $data_nascita, $luogo_nascita, $tipo_utente);
+                    inserisciUtente($pdo, $email, $password, $nome, $cognome, $data_nascita, $luogo_nascita, $tipo_utente, $collezione_log);
                     $messaggio = "Registrazione avvenuta con successo";
                     $tipo_messaggio = "successo";
                 }
