@@ -115,7 +115,7 @@ var_dump($codice_sondaggio);
                 background-color: #ffffff;
                 color: #0c2840;
                 border-radius: 30px;
-                /*border: 2px solid #f3f7f9;*/
+                /*border: 2px solid #0F2849;*/
                 box-shadow: 0 0 50px #ccc;
                 display: flex;
                 justify-content: center;

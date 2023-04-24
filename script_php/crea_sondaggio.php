@@ -1,7 +1,10 @@
 <?php
 require '../config_connessione.php'; // instaura la connessione con il db
 
-function crea_sondaggio($pdo, $titolo, $max_utenti, $data_chiusura, $dominio, $cf_azienda_creante, $email_utente_creante, $utente_o_azienda)
+require '../config_conn_mongodb.php'; // instaura la connessione con mongodb, creando db e collezione se non esiste
+use MongoDB\BSON\UTCDateTime;
+
+function crea_sondaggio($pdo, $titolo, $max_utenti, $data_chiusura, $dominio, $cf_azienda_creante, $email_utente_creante, $utente_o_azienda, $collezione_log)
 {
     $stato = 'APERTO';
     $data_creazione = date('Y-m-d H:i:s', time()); //da timestamp a formato Y-m-d H:i:s usato da MySQL
@@ -23,6 +26,24 @@ function crea_sondaggio($pdo, $titolo, $max_utenti, $data_chiusura, $dominio, $c
         $proc_crea_sondaggio->bindParam(':param8', $email_utente_creante, PDO::PARAM_NULL);
     }
     $proc_crea_sondaggio->execute();
+
+    // Informazione da inserire nella collezione di log
+    $informazione_log = array(
+        "data" => new MongoDB\BSON\UTCDateTime(),
+        "azione" => "Inserimento sondaggio",
+        "dettagli" => array(
+            "titolo" => $titolo,
+            "max_utenti" => $max_utenti,
+            "data_creazione" => $data_creazione,
+            "data_chiusura" => $data_chiusura,
+            "parola_chiave_dominio" => $dominio,
+            "cf_azienda_creante" => $cf_azienda_creante,
+            "email_utente_creante" => $email_utente_creante
+        )
+    );
+
+    // Inserimento dell'informazione nella collezione di log
+    $collezione_log->insertOne($informazione_log);
 }
 
 if (isset($_POST["crea"])) {
@@ -77,7 +98,7 @@ if (isset($_POST["crea"])) {
         }
     }
 
-    crea_sondaggio($pdo, $titolo, $max_utenti, $data_chiusura, $dominio, $cf_azienda_creante, $email_utente_creante, $utente_o_azienda);
+    crea_sondaggio($pdo, $titolo, $max_utenti, $data_chiusura, $dominio, $cf_azienda_creante, $email_utente_creante, $utente_o_azienda, $collezione_log);
 
     if ($utente_o_azienda) {
         header("Location: ../premium_home.php?success=10");

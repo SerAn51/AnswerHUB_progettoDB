@@ -2,6 +2,9 @@
 
 require '../config_connessione.php'; // instaura la connessione con il db
 
+require '../config_conn_mongodb.php'; // instaura la connessione con mongodb, creando db e collezione se non esiste
+use MongoDB\BSON\UTCDateTime;
+
 function rimuoviInteresse($pdo, string $email, string $parola_chiave)
 {
     //Delete nella tabella Interessato che rimuove la riga con questa email e questa password
@@ -11,13 +14,26 @@ function rimuoviInteresse($pdo, string $email, string $parola_chiave)
     $rimuovi_interesse->execute();
 }
 
-function inserisciInteresse($pdo, string $email, string $parola_chiave)
+function inserisciInteresse($pdo, string $email, string $parola_chiave, $collezione_log)
 {
     //Insert nella tabella Interessato che mette come EmailUtente la mail di sessione e come ParolachiaveDominio il valore di questo foreach
     $inserisci_interesse = $pdo->prepare("CALL InserisciInteresse(:param1, :param2)");
     $inserisci_interesse->bindParam(':param1', $email, PDO::PARAM_STR);
     $inserisci_interesse->bindParam(':param2', $parola_chiave, PDO::PARAM_STR);
     $inserisci_interesse->execute();
+
+    // Informazione da inserire nella collezione di log
+    $informazione_log = array(
+        "data" => new MongoDB\BSON\UTCDateTime(),
+        "azione" => "Inserimento interesse dominio",
+        "dettagli" => array(
+            "email_utente" => $email,
+            "parola_chiave_dominio" => $parola_chiave
+        )
+    );
+
+    // Inserimento dell'informazione nella collezione di log
+    $collezione_log->insertOne($informazione_log);
 }
 
 //COLLEGAMENTO DOMINIO INTERESSE
@@ -60,7 +76,7 @@ if (isset($_POST["invia"])) {
                     }
                 } //se esistono domini selezionati in passato, saranno stati salvati come un array, quindi fai il controllo per non inserirli due volte
                 if (!$check_domini_salvati_in_passato) { //se non sono un array vuol dire che in passato l'utente non ha mai selezionato nulla quindi posso inserire tutti quelli ora selezionati senza controlli
-                    inserisciInteresse($pdo, $_SESSION["email"], $parola_chiave);
+                    inserisciInteresse($pdo, $_SESSION["email"], $parola_chiave, $collezione_log);
                     echo "Interesse inserito";
                 }
             }

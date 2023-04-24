@@ -37,9 +37,7 @@ function inserisciUtente($pdo, $email, $password, $nome, $cognome, $data_nascita
     );
 
     // Inserimento dell'informazione nella collezione di log
-    $result = $collezione_log->insertOne($informazione_log);
-
-
+    $collezione_log->insertOne($informazione_log);
 }
 
 if (isset($_POST["submit"])) { // se submit avviene con successo
