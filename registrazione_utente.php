@@ -1,6 +1,8 @@
 <?php
 require 'config_connessione.php'; // instaura la connessione con il db
 
+require 'config_conn_mongodb.php'; // instaura la connessione con mongodb, creando db e collezione se non esiste
+
 //con accesso fatto, se provo a cambiare url e mettere registration.php reindirizza a index.php
 if (!(empty($_SESSION["email"]))) {
     header("Location: index.php");
@@ -19,32 +21,6 @@ function inserisciUtente($pdo, $email, $password, $nome, $cognome, $data_nascita
     $stmt->bindParam(':param7', $tipo_utente, PDO::PARAM_STR);
     $stmt->execute();
 
-    /*
-    // Connessione al database MySQL
-    $pdo = new PDO("mysql:host=localhost;dbname=my_database", "username", "password");
-    // Esecuzione della stored procedure con input
-    $stmt = $pdo->prepare("CALL my_stored_procedure(?,?)");
-    $stmt->execute([$input1, $input2]);
-    // Connessione al database MongoDB
-    $mongo = new MongoDB\Client("mongodb://localhost:27017");
-    // Select del database e della collection
-    $collection = $mongo->my_database->my_collection;
-    // Creazione del documento di log
-    $logDoc = [
-    "event" => "Stored procedure eseguita con successo",
-    "input1" => $input1,
-    "input2" => $input2,
-    "timestamp" => new MongoDB\BSON\UTCDateTime()
-    ];
-    // Inserimento del documento di log nella collection MongoDB
-    $insertResult = $collection->insertOne($logDoc);
-    // Controllo dell'esito dell'operazione di inserimento
-    if($insertResult->getInsertedCount() == 1) {
-    echo "Log inserito correttamente";
-    } else {
-    echo "Errore durante l'inserimento del log";
-    }
-    */
 }
 
 if (isset($_POST["submit"])) { // se submit avviene con successo
