@@ -151,11 +151,42 @@ var_dump($codice_sondaggio);
 
             ul {
                 list-style: none;
+                margin: 0;
+                padding: 0;
             }
 
             form {
-                text-align: center;
-                display: inline-block;
+                display: flex;
+                flex-direction: column;
+                /* Opzionale: allinea gli elementi in verticale */
+                align-items: center;
+                /* Allinea gli elementi in orizzontale */
+                justify-content: center;
+                /* Allinea gli elementi in verticale */
+            }
+
+            input,
+            label,
+            button {
+                margin-top: 0.70rem;
+                margin-bottom: 0.70rem;
+            }
+
+            .item {
+                display: flex;
+                align-items: center;
+                /* Allinea verticalmente */
+                gap: 10px;
+                /* Aggiunge uno spazio tra i due elementi */
+            }
+
+            .item .delete_button {
+                margin-left: auto;
+                /* Sposta il pulsante a destra */
+            }
+
+            .item .titolo {
+                text-transform: uppercase;
             }
         </style>
     </head>
@@ -334,8 +365,8 @@ inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad u
                         <!--Quando rimuovo da Sondaggio, deve rimuovere automaticamente anche da:
                         - ComponenteSondaggioDomanda
                         - Invito (se ci sono inviti e almeno uno non e' in sospeso, non mostra l'opzione, quindi la possibilità che rimuovendo un sondaggio vengano eliminati gli inviti non esiste)-->
-                        <li>
-                            <label>
+                        <li class="item">
+                            <label class="titolo">
                                 <!--<form action="script_php/elimina_sondaggio.php" method="POST">-->
                                 <?php echo $sondaggio_creato['Titolo']; ?>
                             </label>
