@@ -63,6 +63,7 @@ var_dump($codice_sondaggio);
         <link rel="stylesheet" href="stile_css/crea_sondaggio_button.css">
         <link rel="stylesheet" href="stile_css/bottone_elimina_sondaggio.css">
         <link rel="stylesheet" href="stile_css/bottone_invita.css">
+        <link rel="stylesheet" href="stile_css/bottone_logout.css">
 
         <style>
             body {
@@ -74,7 +75,7 @@ var_dump($codice_sondaggio);
                 display: grid;
                 grid-template-columns: 1fr;
                 /*Divido le colonne in 300px per la sidebar, 1 frazione per tutto il resto*/
-                grid-template-rows: 10px 1fr 10px;
+                grid-template-rows: 100px 1fr 10px;
                 /*Divido le righe in una da 60px che sarà l'header, e 1fr per il contenuto main*/
                 grid-template-areas:
                     "side header"
@@ -84,8 +85,30 @@ var_dump($codice_sondaggio);
             }
 
             .header {
-                background-color: #0F2849;
+                border-radius: 30px;
+                background-color: #f1f1fa;
                 grid-area: header;
+
+                padding: 10px;
+                margin-left: 20px;
+                margin-right: 20px;
+                margin-top: 20px;
+                margin-bottom: 10px;
+
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+            }
+
+            .header a {
+                text-decoration: none;
+                margin-right: 20px;
+            }
+
+            header h2 {
+                color: #0F2849;
+                margin-left: 20px;
             }
 
             .footer {
@@ -194,7 +217,27 @@ var_dump($codice_sondaggio);
 <body>
 
     <header class="header">
-        <a href="logout.php">Effettua il logout</a>
+        <h2>Ciao
+            <?php echo $dati_utente["Nome"]; ?>
+        </h2>
+        <a href="logout.php">
+            <button class="logout_btn">
+                <p class="paragraph"> Logout </p>
+                <span class="logout_icon-wrapper">
+                    <svg class="logout_icon" width="30px" height="30px" viewBox="0 0 24 24" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                        <g id="SVGRepo_iconCarrier">
+                            <path
+                                d="M14 4L17.5 4C20.5577 4 20.5 8 20.5 12C20.5 16 20.5577 20 17.5 20H14M3 12L15 12M3 12L7 8M3 12L7 16"
+                                stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            </path>
+                        </g>
+                    </svg>
+                </span>
+            </button>
+        </a>
     </header>
 
     <main class="main">

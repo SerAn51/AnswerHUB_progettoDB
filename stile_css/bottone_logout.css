@@ -1,0 +1,79 @@
+.logout_btn {
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
+    border: none;
+    position: relative;
+    border-radius: 30px;
+    -webkit-box-shadow: 1px 1px 5px .2px #00000035;
+    box-shadow: 1px 1px 5px .2px #00000035;
+    -webkit-transition: .2s linear;
+    transition: .2s linear;
+    transition-delay: .2s;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: space-between;
+    background: #fff;
+}
+
+.logout_btn:hover {
+    width: 150px;
+    transition-delay: .2s;
+}
+
+.logout_btn:hover>.paragraph {
+    visibility: visible;
+    opacity: 1;
+    -webkit-transition-delay: .4s;
+    transition-delay: .4s;
+}
+
+.logout_btn:hover>.logout_icon-wrapper .logout_icon {
+    transform: scale(1.1);
+}
+
+.logout_btn:hover>.logout_icon-wrapper .logout_icon path {
+    stroke: #0F2849;
+}
+
+.paragraph {
+    color: #0F2849;
+    visibility: hidden;
+    opacity: 0;
+    font-size: 18px;
+    margin-right: 20px;
+    padding-left: 20px;
+    -webkit-transition: .2s linear;
+    transition: .2s linear;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.logout_icon-wrapper {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logout_icon {
+    transform: scale(.9);
+    transition: .2s linear;
+}
+
+.logout_icon path {
+    stroke: #0F2849;
+    stroke-width: 2px;
+    -webkit-transition: .2s linear;
+    transition: .2s linear;
+}
