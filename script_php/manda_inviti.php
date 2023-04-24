@@ -1,7 +1,10 @@
 <?php
 require '../config_connessione.php'; // instaura la connessione con il db
-//EmailUtente, CodiceSondaggio, CFAziendainvitante, EmailUtenteinvitante)
-function inserisci_invito($pdo, $email_utente, $codice_sondaggio, $email_utente_invitante)
+
+require '../config_conn_mongodb.php'; // instaura la connessione con mongodb, creando db e collezione se non esiste
+use MongoDB\BSON\UTCDateTime;
+
+function inserisci_invito($pdo, $email_utente, $codice_sondaggio, $email_utente_invitante, $collezione_log)
 {
     $CF_azienda_invitante = NULL;
 
@@ -11,6 +14,20 @@ function inserisci_invito($pdo, $email_utente, $codice_sondaggio, $email_utente_
     $proc_inserisci_invito->bindParam(':param3', $CF_azienda_invitante, PDO::PARAM_NULL);
     $proc_inserisci_invito->bindParam(':param4', $email_utente_invitante, PDO::PARAM_STR);
     $proc_inserisci_invito->execute();
+
+    // Informazione da inserire nella collezione di log
+    $informazione_log = array(
+        "data" => new MongoDB\BSON\UTCDateTime(),
+        "azione" => "Inserimento nuovo invito premium",
+        "dettagli" => array(
+            "email_utente" => $email_utente,
+            "codice_sondaggio" => $codice_sondaggio,
+            "email_utente_invitante" => $email_utente_invitante
+        )
+    );
+
+    // Inserimento dell'informazione nella collezione di log
+    $collezione_log->insertOne($informazione_log);
 }
 
 //FIXME: fa accettare l'invito anche se il numero massimo di utenti per sondaggio è già stato raggiunto
@@ -56,7 +73,7 @@ if (isset($_POST['invita'])) {
                 foreach ($utenti_selezionati as $utente_selezionato) {
                     // Invio invito all'utente con email $utente_selezionato
                     // Codice per l'invio dell'invito
-                    inserisci_invito($pdo, $utente_selezionato, $codice_sondaggio, $_SESSION['email']);
+                    inserisci_invito($pdo, $utente_selezionato, $codice_sondaggio, $_SESSION['email'], $collezione_log);
                 }
                 //necessario specificare anche il codice sondaggio per non avere true al primo controllo di inviti_sondaggio.php e venire reindirizzati a premium_home.php
                 header("Location: ../inviti_sondaggio.php?cod_sondaggio=$codice_sondaggio&success=10");

@@ -1,7 +1,10 @@
 <?php
 require '../config_connessione.php'; // instaura la connessione con il db
 
-function inserisciDomanda($pdo, $testo, $foto, $punteggio, $aperta_chiusa, $cf_azienda_inserente, $email_utente_inserente, $max_caratteri_domanda_aperta, $codice_sondaggio)
+require '../config_conn_mongodb.php'; // instaura la connessione con mongodb, creando db e collezione se non esiste
+use MongoDB\BSON\UTCDateTime;
+
+function inserisciDomanda($pdo, $testo, $foto, $punteggio, $aperta_chiusa, $cf_azienda_inserente, $email_utente_inserente, $max_caratteri_domanda_aperta, $codice_sondaggio, $collezione_log)
 {
     $inserisci_domanda = $pdo->prepare("CALL InserisciDomanda(:param1, :param2, :param3, :param4, :param5, :param6, :param7, :param8)");
     $inserisci_domanda->bindParam(':param1', $testo, PDO::PARAM_STR);
@@ -26,6 +29,24 @@ function inserisciDomanda($pdo, $testo, $foto, $punteggio, $aperta_chiusa, $cf_a
     $inserisci_domanda->bindParam(':param7', $max_caratteri_domanda_aperta, PDO::PARAM_INT);
     $inserisci_domanda->bindParam(':param8', $codice_sondaggio, PDO::PARAM_INT);
     $inserisci_domanda->execute();
+
+    // Informazione da inserire nella collezione di log
+    $informazione_log = array(
+        "data" => new MongoDB\BSON\UTCDateTime(),
+        "azione" => "Inserimento nuova domanda",
+        "dettagli" => array(
+            "testo" => $testo,
+            "punteggio" => $punteggio,
+            "aperta_chiusa" => $aperta_chiusa,
+            "cf_azienda_inserente" => $cf_azienda_inserente,
+            "email_utente_inserente" => $email_utente_inserente,
+            "max_caratteri_domanda_aperta" => $max_caratteri_domanda_aperta,
+            "codice_sondaggio" => $codice_sondaggio
+        )
+    );
+
+    // Inserimento dell'informazione nella collezione di log
+    $collezione_log->insertOne($informazione_log);
 }
 
 if (isset($_POST["crea"])) {
@@ -88,7 +109,7 @@ if (isset($_POST["crea"])) {
         $max_caratteri_domanda_aperta = $_POST["max_caratteri_domanda_aperta"];
         $aperta_chiusa = "APERTA";
         //InserisciDomanda(Testo varchar(3000), Foto longblob, Punteggio integer, ApertaChiusa ENUM ('APERTA', 'CHIUSA'), CFAziendainserente varchar(16), EmailUtenteinserente varchar(255), MaxCaratteriRisposta integer
-        inserisciDomanda($pdo, $testo, $foto, $punteggio, $aperta_chiusa, $cf_azienda_inserente, $email_utente_inserente, $max_caratteri_domanda_aperta, $codice_sondaggio);
+        inserisciDomanda($pdo, $testo, $foto, $punteggio, $aperta_chiusa, $cf_azienda_inserente, $email_utente_inserente, $max_caratteri_domanda_aperta, $codice_sondaggio, $collezione_log);
         //reindirizza con un messaggio di successo
         header("Location: ../gestisci_domanda.php?cod_sondaggio=$codice_sondaggio&success=10");
         exit;
@@ -96,7 +117,7 @@ if (isset($_POST["crea"])) {
         $aperta_chiusa = "CHIUSA";
         $max_caratteri_domanda_aperta = 0;
         //InserisciDomanda(Testo varchar(3000), Foto longblob, Punteggio integer, ApertaChiusa ENUM ('APERTA', 'CHIUSA'), CFAziendainserente varchar(16), EmailUtenteinserente varchar(255), MaxCaratteriRisposta integer
-        inserisciDomanda($pdo, $testo, $foto, $punteggio, $aperta_chiusa, $cf_azienda_inserente, $email_utente_inserente, $max_caratteri_domanda_aperta, $codice_sondaggio);
+        inserisciDomanda($pdo, $testo, $foto, $punteggio, $aperta_chiusa, $cf_azienda_inserente, $email_utente_inserente, $max_caratteri_domanda_aperta, $codice_sondaggio, $collezione_log);
         //reindirizza con un messaggio di successo
         header("Location: ../gestisci_domanda.php?cod_sondaggio=$codice_sondaggio&success=10");
         exit;

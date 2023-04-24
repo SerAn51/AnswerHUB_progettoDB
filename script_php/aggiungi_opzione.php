@@ -1,13 +1,29 @@
 <?php
 require '../config_connessione.php'; // instaura la connessione con il db
 
-function inserisciOpzione($pdo, int $id_domanda_chiusa, string $testo_opzione)
+require '../config_conn_mongodb.php'; // instaura la connessione con mongodb, creando db e collezione se non esiste
+use MongoDB\BSON\UTCDateTime;
+
+function inserisciOpzione($pdo, int $id_domanda_chiusa, string $testo_opzione, $collezione_log)
 {
     $proc_inserisci_opzione = "CALL InserisciOpzione(:param1, :param2)";
     $prep_proc_inserisci_opzione = $pdo->prepare($proc_inserisci_opzione);
     $prep_proc_inserisci_opzione->bindParam(':param1', $id_domanda_chiusa, PDO::PARAM_INT);
     $prep_proc_inserisci_opzione->bindParam(':param2', $testo_opzione, PDO::PARAM_STR);
     $prep_proc_inserisci_opzione->execute();
+
+    // Informazione da inserire nella collezione di log
+    $informazione_log = array(
+        "data" => new MongoDB\BSON\UTCDateTime(),
+        "azione" => "Inserimento nuova opzione",
+        "dettagli" => array(
+            "id_domanda_chiusa" => $id_domanda_chiusa,
+            "testo_opzione" => $testo_opzione
+        )
+    );
+
+    // Inserimento dell'informazione nella collezione di log
+    $collezione_log->insertOne($informazione_log);
 }
 
 if (isset($_POST["aggiungi_opzione"])) {
@@ -30,7 +46,7 @@ if (isset($_POST["aggiungi_opzione"])) {
         }
     }
 
-    inserisciOpzione($pdo, $id_domanda_chiusa, $testo_opzione);
+    inserisciOpzione($pdo, $id_domanda_chiusa, $testo_opzione, $collezione_log);
 
     header("Location: ../gestisci_opzioni.php?cod_sondaggio=$codice_sondaggio&id_domanda=$id_domanda_chiusa&success=10");
     exit;

@@ -2,7 +2,10 @@
 
 require '../config_connessione.php'; // instaura la connessione con il db
 
-function inserisci_invito_automaticamente($pdo, $email_utente, $codice_sondaggio, $cf_azienda_invitante)
+require '../config_conn_mongodb.php'; // instaura la connessione con mongodb, creando db e collezione se non esiste
+use MongoDB\BSON\UTCDateTime;
+
+function inserisci_invito_automaticamente($pdo, $email_utente, $codice_sondaggio, $cf_azienda_invitante, $collezione_log)
 {
     $email_utente_invitante = NULL;
 
@@ -12,6 +15,20 @@ function inserisci_invito_automaticamente($pdo, $email_utente, $codice_sondaggio
     $proc_inserisci_invito->bindParam(':param3', $cf_azienda_invitante, PDO::PARAM_STR);
     $proc_inserisci_invito->bindParam(':param4', $email_utente_invitante, PDO::PARAM_NULL);
     $proc_inserisci_invito->execute();
+
+    // Informazione da inserire nella collezione di log
+    $informazione_log = array(
+        "data" => new MongoDB\BSON\UTCDateTime(),
+        "azione" => "Inserimento nuovo invito azienda",
+        "dettagli" => array(
+            "email_utente" => $email_utente,
+            "codice_sondaggio" => $codice_sondaggio,
+            "cf_azienda_invitante" => $cf_azienda_invitante
+        )
+    );
+
+    // Inserimento dell'informazione nella collezione di log
+    $collezione_log->insertOne($informazione_log);
 }
 
 if (isset($_POST["invita"])) {
@@ -85,7 +102,7 @@ if (isset($_POST["invita"])) {
                         // gli utenti verranno invitati in ordine di aggiunta al db, cioè in ordine di chi ha per primo mostrato intresse per il sondaggio (politica fair)
                         $email_utente = $utente_interessato['EmailUtente'];
                         $cf_azienda_invitante = $_SESSION['cf_azienda'];
-                        inserisci_invito_automaticamente($pdo, $email_utente, $codice_sondaggio, $cf_azienda_invitante);
+                        inserisci_invito_automaticamente($pdo, $email_utente, $codice_sondaggio, $cf_azienda_invitante, $collezione_log);
                         $count++;
                         if ($count == $max_utenti) {
                             echo "utenti invitati";

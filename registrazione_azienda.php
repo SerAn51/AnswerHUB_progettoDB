@@ -1,12 +1,15 @@
 <?php
 require 'config_connessione.php'; // instaura la connessione con il db
 
+require 'config_conn_mongodb.php'; // instaura la connessione con mongodb, creando db e collezione se non esiste
+use MongoDB\BSON\UTCDateTime;
+
 //con accesso fatto, se provo a cambiare url e mettere registrazione.php il primo codice che esegue e' questo e mi reindirizza a index.php
 if (!(empty($_SESSION["cf_azienda"]))) {
     header("Location: index.php");
 }
 
-function inserisciAzienda($pdo, $cf, $password, $email, $nome, $sede)
+function inserisciAzienda($pdo, $cf, $password, $email, $nome, $sede, $collezione_log)
 {
     $inserisci_azienda = $pdo->prepare("CALL InserisciAzienda(:param1, :param2, :param3, :param4, :param5)");
     $inserisci_azienda->bindParam(':param1', $cf, PDO::PARAM_STR);
@@ -15,6 +18,21 @@ function inserisciAzienda($pdo, $cf, $password, $email, $nome, $sede)
     $inserisci_azienda->bindParam(':param4', $nome, PDO::PARAM_STR);
     $inserisci_azienda->bindParam(':param5', $sede, PDO::PARAM_STR);
     $inserisci_azienda->execute();
+
+    // Informazione da inserire nella collezione di log
+    $informazione_log = array(
+        "data" => new MongoDB\BSON\UTCDateTime(),
+        "azione" => "Inserimento nuova azienda",
+        "dettagli" => array(
+            "cf" => $cf,
+            "email" => $email,
+            "nome" => $nome,
+            "sede" => $sede
+        )
+    );
+
+    // Inserimento dell'informazione nella collezione di log
+    $collezione_log->insertOne($informazione_log);
 }
 
 if (isset($_POST["submit"])) { // se submit avviene con successo
@@ -39,7 +57,7 @@ if (isset($_POST["submit"])) { // se submit avviene con successo
 
             //se e' null l'azienda non esiste, quindi la inserisco
             if (!(isset($row['CF']))) { //isset() verifica se una variabile è stata impostata e se il suo valore non è NULL. True se la variabile è stata impostata e ha un valore diverso da NULL, false in caso contrario.
-                inserisciAzienda($pdo, $cf, $password, $email, $nome, $sede);
+                inserisciAzienda($pdo, $cf, $password, $email, $nome, $sede, $collezione_log);
                 $messaggio = "Registrazione avvenuta con successo";
                 $tipo_messaggio = "successo";
 
