@@ -18,6 +18,33 @@ function inserisciUtente($pdo, $email, $password, $nome, $cognome, $data_nascita
     $stmt->bindParam(':param6', $luogo_nascita, PDO::PARAM_STR);
     $stmt->bindParam(':param7', $tipo_utente, PDO::PARAM_STR);
     $stmt->execute();
+
+    /*
+    // Connessione al database MySQL
+    $pdo = new PDO("mysql:host=localhost;dbname=my_database", "username", "password");
+    // Esecuzione della stored procedure con input
+    $stmt = $pdo->prepare("CALL my_stored_procedure(?,?)");
+    $stmt->execute([$input1, $input2]);
+    // Connessione al database MongoDB
+    $mongo = new MongoDB\Client("mongodb://localhost:27017");
+    // Select del database e della collection
+    $collection = $mongo->my_database->my_collection;
+    // Creazione del documento di log
+    $logDoc = [
+    "event" => "Stored procedure eseguita con successo",
+    "input1" => $input1,
+    "input2" => $input2,
+    "timestamp" => new MongoDB\BSON\UTCDateTime()
+    ];
+    // Inserimento del documento di log nella collection MongoDB
+    $insertResult = $collection->insertOne($logDoc);
+    // Controllo dell'esito dell'operazione di inserimento
+    if($insertResult->getInsertedCount() == 1) {
+    echo "Log inserito correttamente";
+    } else {
+    echo "Errore durante l'inserimento del log";
+    }
+    */
 }
 
 if (isset($_POST["submit"])) { // se submit avviene con successo
@@ -171,7 +198,8 @@ if (isset($_POST["submit"])) { // se submit avviene con successo
                             <label for="conferma_password">Conferma Password</label>
                         </div>
                         <!--checkbox per inserire codice amministratore-->
-                        <label name="label_checkbox_codice_amm" id="label_checkbox_codice_amm" for="checkbox_codice_amm">Spunta per registrarti come amministratore</label>
+                        <label name="label_checkbox_codice_amm" id="label_checkbox_codice_amm"
+                            for="checkbox_codice_amm">Spunta per registrarti come amministratore</label>
                         <input type="checkbox" name="checkbox_codice_amm" id="checkbox_codice_amm">
                         <!--input box Codice amministratore-->
                         <div name="inputbox_codice_amm" id="inputbox_codice_amm" class="inputbox">
@@ -180,8 +208,11 @@ if (isset($_POST["submit"])) { // se submit avviene con successo
                         </div>
                         <!--bottone registrati-->
                         <button class="submit" type="submit" name="submit" id="submit"> Registrati
-                            <svg viewBox="0 0 16 16" class="bi bi-arrow-right" height="20" width="20" xmlns="http://www.w3.org/2000/svg" style="background-color: #00f2fe" fill="#0c2840">
-                                <path d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" fill-rule="evenodd"></path>
+                            <svg viewBox="0 0 16 16" class="bi bi-arrow-right" height="20" width="20"
+                                xmlns="http://www.w3.org/2000/svg" style="background-color: #00f2fe" fill="#0c2840">
+                                <path
+                                    d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"
+                                    fill-rule="evenodd"></path>
                             </svg>
                         </button>
                         <!--Vai al login-->

@@ -57,9 +57,17 @@ var_dump($codice_sondaggio);
         <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
 
         <link rel="stylesheet" href="stile_css/checkbox_style.css">
+        <link rel="stylesheet" href="stile_css/input_statistiche_aggregate.css">
+        <link rel="stylesheet" href="stile_css/radio_seleziona_sondaggio.css">
+        <link rel="stylesheet" href="stile_css/crea_sondaggio_inputs.css">
+        <link rel="stylesheet" href="stile_css/crea_sondaggio_button.css">
+        <link rel="stylesheet" href="stile_css/bottone_elimina_sondaggio.css">
+        <link rel="stylesheet" href="stile_css/bottone_invita.css">
 
         <style>
             body {
+                text-align: center;
+
                 background-color: #0F2849;
                 font-family: 'Poppins', sans-serif;
                 height: 100vh;
@@ -144,6 +152,11 @@ var_dump($codice_sondaggio);
             ul {
                 list-style: none;
             }
+
+            form {
+                text-align: center;
+                display: inline-block;
+            }
         </style>
     </head>
 
@@ -154,88 +167,6 @@ var_dump($codice_sondaggio);
     </header>
 
     <main class="main">
-        <!--STATISTICHE AGGREGATE SONDAGGIO-->
-        <div class="space">
-            <form action="visualizza_statistiche_aggregate.php" method="POST">
-                <h2>Statistiche aggregate sondaggio</h2>
-                <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
-                    <?php $codice_sondaggio = $sondaggio_creato['Codice']; ?>
-                    <label>
-                        <?php echo $sondaggio_creato['Titolo']; ?>
-                    </label>
-
-                    <input type="hidden" name="codice_sondaggio" id="codice_sondaggio"
-                        value="<?php echo $codice_sondaggio ?>">
-                    <input type="submit" name="statistiche_aggregate" id="statistiche_aggregate"
-                        value="Visualizza statistiche aggregate">
-                </form>
-            <?php } ?>
-        </div>
-
-        <!--ELIMINA SONDAGGIO-->
-        <div class="space">
-            <form action="script_php/elimina_sondaggio.php" method="POST">
-                <h2>Elimina sondaggi</h2>
-                <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
-                    <?php
-                    //utile per verificare che ci siano invitati al sondaggio
-                    $codice_sondaggio = $sondaggio_creato['Codice'];
-                    $check_inviti = $pdo->prepare("SELECT * FROM Invito WHERE CodiceSondaggio = :codice_sondaggio");
-                    $check_inviti->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
-                    $check_inviti->execute();
-                    $inviti = $check_inviti->fetchAll();
-                    $check_inviti->closeCursor();
-                    ?>
-                    <!--Quando rimuovo da Sondaggio, deve rimuovere automaticamente anche da:
-            - ComponenteSondaggioDomanda
-            - Invito (se ci sono inviti e almeno uno non e' in sospeso, non mostra l'opzione, quindi la possibilità che rimuovendo un sondaggio vengano eliminati gli inviti non esiste)-->
-
-                    <label>
-                        <form action="script_php/elimina_sondaggio.php" method="POST">
-                            <?php echo $sondaggio_creato['Titolo']; ?>
-                    </label>
-
-                    <?php
-                    // se non ci sono utenti invitati mostra il bottone per eliminare, se ci sono mostra i bottoni solo se nessuno ha ancora accettato l'invito
-                    $tutti_sospesi = true;
-
-                    // se la query restituisce almeno una riga, vuol dire che ho invitato almeno un utente quindi non posso piu' rimuovere sondaggi-->
-                    if (($inviti && count($inviti) > 0)) {
-                        foreach ($inviti as $invito) {
-                            if ($invito['Esito'] == "ACCETTATO") {
-                                $tutti_sospesi = false;
-                                break;
-                            }
-                        }
-                    } ?>
-                    <?php
-                    // se non ci sono invitati la variabile booleana non e' stata modificata quindi posso eliminare i sondaggi,
-                    // se tutti gli invitati sono con Esito='Sospeso' oppure con Esito='Rifiutato' ho eseguito i controlli ma la variabile booleana non e' stata modificata, quindi posso eliminare il sondaggio
-                    if ($tutti_sospesi) {
-                        ?>
-                        <input type="hidden" name="codice_sondaggio" id="codice_sondaggio"
-                            value="<?php echo $codice_sondaggio ?>">
-                        <input type="submit" name="elimina" id="elimina" value="Elimina">
-                    <?php } ?>
-
-                </form>
-            <?php } ?>
-        </div>
-
-        <!--VISUALIZZA LE RISPOSTE DI UN SINDAGGIO-->
-        <div class="space">
-            <ul>
-                <h2>Visualizza risposte sondaggio</h2>
-                <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
-                    <label>
-                        <li>
-                            <a
-                                href="visualizza_risposte_sondaggio.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>"><?php echo $sondaggio_creato['Titolo']; ?></a>
-                        </li>
-                    </label>
-                <?php } ?>
-            </ul>
-        </div>
 
         <!--CREAZIONE DI UN NUOVO SONDAGGIO-->
         <!--
@@ -264,46 +195,68 @@ var_dump($codice_sondaggio);
                     echo "Sondaggio creato con successo";
                 }
                 ?>
+                <div class="input-group">
+                    <input type="Text" name="titolo" id="titolo" required autocomplete="off" class="input">
+                    <label class="user-label">Titolo</label>
+                </div>
+                <!--
                 <label for="titolo">Titolo</label>
                 <input type="Text" name="titolo" id="titolo" required>
+                -->
                 <br>
+                <div class="input-group">
+                    <input type="number" min="1" name="max_utenti" id="max_utenti" required autocomplete="off"
+                        class="input">
+                    <label class="user-label">Max utenti</label>
+                </div>
+                <!--
                 <label for="max_utenti">Max utenti</label>
                 <input type="number" min="1" name="max_utenti" id="max_utenti" required>
+                -->
                 <br>
+                <div class="input-group">
+                    <input type="date" name="data_chiusura" id="data_chiusura" required autocomplete="off"
+                        class="input">
+                    <label class="user-label">Data di chiusura</label>
+                </div>
+                <!--
                 <label for="data_chiusura">Data di chiusura</label>
                 <input type="date" name="data_chiusura" id="data_chiusura" required>
+                -->
                 <br>
-                <ul>
-                    Seleziona dominio:
+                <div class="container">
                     <?php foreach ($domini as $dominio) { ?>
+                        <label>
+                            <input type="radio" id="dominio" name="dominio" value="<?php echo $dominio['Parolachiave']; ?>">
+                            <span>
+                                <?php echo $dominio['Parolachiave']; ?>
+                            </span>
+                        </label>
+                    <?php } ?>
+
+                </div>
+                <!--
+                    Seleziona dominio:
+                    <?php //foreach ($domini as $dominio) { ?>
                         <li>
                             <label>
                                 <input type="radio" name="dominio" id="dominio"
-                                    value="<?php echo $dominio['Parolachiave']; ?>">
-                                <?php echo $dominio['Parolachiave']; ?>
+                                    value="<?php //echo $dominio['Parolachiave']; ?>">
+                                <?php //echo $dominio['Parolachiave']; ?>
                             </label>
                         </li>
-                    <?php } ?>
-                </ul>
+                    <?php //} ?>
+                </ul>-->
                 <br>
-                <input type="submit" name="crea" id="crea" value="Crea">
-            </form>
-        </div>
+                <button class="crea" type="submit" name="crea" id="crea">
+                    Crea
+                    <div class="arrow-wrapper">
+                        <div class="arrow"></div>
 
-        <!--CREAZIONE DI UN INVITO AD UN SONDAGGIO VERSO UN UTENTE DELLA PIATTAFORMA-->
-        <!--Idea: gestione inviti fatta con una lista di utenti da invitare, questi utenti sono presi con una select che filtra gli utenti per dominio di interesse == dominio sondaggio;
-inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad una pagina con la lista degli utenti da invitare, con checkbox-->
-        <div class="space">
-            <ul>
-                <h2>Invita utenti</h2>
-                <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
-                    <li>
-                        <label>
-                            <a href="inviti_sondaggio.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>"><?php echo $sondaggio_creato['Titolo']; ?></a>
-                        </label>
-                    </li>
-                <?php } ?>
-            </ul>
+                    </div>
+                </button>
+                <!--<input type="submit" name="crea" id="crea" value="Crea">-->
+            </form>
         </div>
 
         <!--INSERIMENTO DI UNA NUOVA DOMANDA-->
@@ -315,10 +268,173 @@ inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad u
                 <h2>Inserisci domanda</h2>
                 <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
                     <li>
+                        <a href="gestisci_domanda.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>">
+                            <button class="link_sondaggio_button">
+                                <span class="circle" aria-hidden="true">
+                                    <span class="icon arrow"></span>
+                                </span>
+                                <span class="link_sondaggio_button-text">
+                                    <?php echo $sondaggio_creato['Titolo']; ?>
+                                </span>
+                            </button>
+                        </a>
+                        <!--
                         <label>
                             <a href="gestisci_domanda.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>"><?php echo $sondaggio_creato['Titolo']; ?></a>
                         </label>
+                        -->
                     </li>
+                <?php } ?>
+            </ul>
+        </div>
+
+        <!--CREAZIONE DI UN INVITO AD UN SONDAGGIO VERSO UN UTENTE DELLA PIATTAFORMA-->
+        <!--Idea: gestione inviti fatta con una lista di utenti da invitare, questi utenti sono presi con una select che filtra gli utenti per dominio di interesse == dominio sondaggio;
+inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad una pagina con la lista degli utenti da invitare, con checkbox-->
+        <div class="space">
+            <ul>
+                <h2>Invita utenti</h2>
+                <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
+                    <li>
+                        <a href="inviti_sondaggio.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>">
+                            <button class="link_sondaggio_button">
+                                <span class="circle" aria-hidden="true">
+                                    <span class="icon arrow"></span>
+                                </span>
+                                <span class="link_sondaggio_button-text">
+                                    <?php echo $sondaggio_creato['Titolo']; ?>
+                                </span>
+                            </button>
+                        </a>
+                        <!--
+                        <label>
+                            <a href="inviti_sondaggio.php?cod_sondaggio=<?php //echo $sondaggio_creato['Codice']; ?>"><?php //echo $sondaggio_creato['Titolo']; ?></a>
+                        </label>
+                    -->
+                    </li>
+                <?php } ?>
+            </ul>
+        </div>
+
+        <!--ELIMINA SONDAGGIO-->
+        <div class="space">
+            <ul>
+                <h2>Elimina sondaggio</h2>
+                <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
+                    <form action="script_php/elimina_sondaggio.php" method="POST">
+                        <?php
+                        //utile per verificare che ci siano invitati al sondaggio
+                        $codice_sondaggio = $sondaggio_creato['Codice'];
+                        $check_inviti = $pdo->prepare("SELECT * FROM Invito WHERE CodiceSondaggio = :codice_sondaggio");
+                        $check_inviti->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
+                        $check_inviti->execute();
+                        $inviti = $check_inviti->fetchAll();
+                        $check_inviti->closeCursor();
+                        ?>
+                        <!--Quando rimuovo da Sondaggio, deve rimuovere automaticamente anche da:
+                        - ComponenteSondaggioDomanda
+                        - Invito (se ci sono inviti e almeno uno non e' in sospeso, non mostra l'opzione, quindi la possibilità che rimuovendo un sondaggio vengano eliminati gli inviti non esiste)-->
+                        <li>
+                            <label>
+                                <!--<form action="script_php/elimina_sondaggio.php" method="POST">-->
+                                <?php echo $sondaggio_creato['Titolo']; ?>
+                            </label>
+
+                            <?php
+                            // se non ci sono utenti invitati mostra il bottone per eliminare, se ci sono mostra i bottoni solo se nessuno ha ancora accettato l'invito
+                            $tutti_sospesi = true;
+
+                            // se la query restituisce almeno una riga, vuol dire che ho invitato almeno un utente quindi non posso piu' rimuovere sondaggi-->
+                            if (($inviti && count($inviti) > 0)) {
+                                foreach ($inviti as $invito) {
+                                    if ($invito['Esito'] == "ACCETTATO") {
+                                        $tutti_sospesi = false;
+                                        break;
+                                    }
+                                }
+                            } ?>
+                            <?php
+                            // se non ci sono invitati la variabile booleana non e' stata modificata quindi posso eliminare i sondaggi,
+                            // se tutti gli invitati sono con Esito='Sospeso' oppure con Esito='Rifiutato' ho eseguito i controlli ma la variabile booleana non e' stata modificata, quindi posso eliminare il sondaggio
+                            if ($tutti_sospesi) {
+                                ?>
+                                <input type="hidden" name="codice_sondaggio" id="codice_sondaggio"
+                                    value="<?php echo $codice_sondaggio ?>">
+
+                                <button class="delete_button" type="submit" name="elimina" id="elimina">
+                                    <span class="lable">X</span>
+                                </button>
+                                <!--<input type="submit" name="elimina" id="elimina" value="Elimina">-->
+                            <?php } ?>
+                        </li>
+                    </form>
+                <?php } ?>
+            </ul>
+        </div>
+
+        <!--VISUALIZZA LE RISPOSTE DI UN SINDAGGIO-->
+        <div class="space">
+            <ul>
+                <h2>Visualizza risposte sondaggio</h2>
+                <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
+
+                    <li>
+                        <a
+                            href="visualizza_risposte_sondaggio.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>">
+                            <button class="link_sondaggio_button">
+                                <span class="circle" aria-hidden="true">
+                                    <span class="icon arrow"></span>
+                                </span>
+                                <span class="link_sondaggio_button-text">
+                                    <?php echo $sondaggio_creato['Titolo']; ?>
+                                </span>
+                            </button>
+                        </a>
+                        <!--
+                        <label>
+                            <a
+                                href="visualizza_risposte_sondaggio.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>"><?php echo $sondaggio_creato['Titolo']; ?></a>
+                        </label>
+                        -->
+                    </li>
+
+                <?php } ?>
+            </ul>
+        </div>
+
+        <!--STATISTICHE AGGREGATE SONDAGGIO-->
+        <div class="space">
+            <ul>
+                <h2>Statistiche aggregate sondaggio</h2>
+                <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
+                    <?php $codice_sondaggio = $sondaggio_creato['Codice']; ?>
+                    <form action="visualizza_statistiche_aggregate.php" method="POST">
+                        <button class="btn" type="submit" name="statistiche_aggregate" id="statistiche_aggregate">
+                            <?php echo $sondaggio_creato['Titolo']; ?>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" height="15px"
+                                width="15px" class="icon">
+                                <path stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10"
+                                    stroke-width="1.5" stroke="#292D32"
+                                    d="M8.91016 19.9201L15.4302 13.4001C16.2002 12.6301 16.2002 11.3701 15.4302 10.6001L8.91016 4.08008">
+                                </path>
+                            </svg>
+                        </button>
+                        <input type="hidden" name="codice_sondaggio" id="codice_sondaggio"
+                            value="<?php echo $codice_sondaggio ?>">
+
+                        <!--
+                    <?php //$codice_sondaggio = $sondaggio_creato['Codice']; ?>
+                    <label>
+                        <?php //echo $sondaggio_creato['Titolo']; ?>
+                    </label>
+
+                    <input type="hidden" name="codice_sondaggio" id="codice_sondaggio"
+                        value="<?php //echo $codice_sondaggio ?>">
+                    <input type="submit" name="statistiche_aggregate" id="statistiche_aggregate"
+                        value="Visualizza statistiche aggregate">
+                -->
+                    </form>
+
                 <?php } ?>
             </ul>
         </div>
