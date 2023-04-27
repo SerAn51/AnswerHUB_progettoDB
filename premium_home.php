@@ -254,13 +254,6 @@ var_dump($codice_sondaggio);
 
     <main class="main">
 
-        <!--CREAZIONE DI UN NUOVO SONDAGGIO-->
-        <!--
-        - Per Stato metto di default APERTO...appena lo creo è aperto,
-        - DataCreazione imposto in automatico oggi,
-        - Per ParolachiaveDominio uso una radio con la lista dei domini e ne seleziono uno,
-        - Per il creante sono un utente quindi inserisco l'email di sessione e null per il CFAziendacreante
-        - Mostra un messaggio di errore se sto creando un sondaggio di cui gia' esiste il nome-->
         <?php
         try {
             $mostra_domini = $pdo->prepare("CALL MostraDomini()");
@@ -272,8 +265,15 @@ var_dump($codice_sondaggio);
             header("Location: logout.php");
             exit;
         }
-
         ?>
+
+        <!--CREAZIONE DI UN NUOVO SONDAGGIO-->
+        <!--
+        - Per Stato metto di default APERTO...appena lo creo è aperto,
+        - DataCreazione imposto in automatico oggi,
+        - Per ParolachiaveDominio uso una radio con la lista dei domini e ne seleziono uno,
+        - Per il creante sono un utente quindi inserisco l'email di sessione e null per il CFAziendacreante
+        - Mostra un messaggio di errore se sto creando un sondaggio di cui gia' esiste il nome-->
         <div class="space">
             <form action="script_php/crea_sondaggio.php" method="POST">
                 <h2>Crea sondaggio</h2>
