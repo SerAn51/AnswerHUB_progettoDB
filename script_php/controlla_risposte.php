@@ -8,12 +8,18 @@ $codice_sondaggio = $_POST['codice_sondaggio'];
 
 function inserisci_risposta($pdo, $testo, $id_domanda, $email_utente, $collezione_log)
 {
-    $inserisci_risposta = $pdo->prepare("CALL InserisciRisposta(:testo, :id_domanda, :email_utente)");
-    $inserisci_risposta->bindParam(':testo', $testo, PDO::PARAM_STR);
-    $inserisci_risposta->bindParam(':id_domanda', $id_domanda, PDO::PARAM_INT);
-    $inserisci_risposta->bindParam(':email_utente', $email_utente, PDO::PARAM_STR);
-    $inserisci_risposta->execute();
-    $inserisci_risposta->closeCursor();
+    try {
+        $inserisci_risposta = $pdo->prepare("CALL InserisciRisposta(:testo, :id_domanda, :email_utente)");
+        $inserisci_risposta->bindParam(':testo', $testo, PDO::PARAM_STR);
+        $inserisci_risposta->bindParam(':id_domanda', $id_domanda, PDO::PARAM_INT);
+        $inserisci_risposta->bindParam(':email_utente', $email_utente, PDO::PARAM_STR);
+        $inserisci_risposta->execute();
+        $inserisci_risposta->closeCursor();
+    } catch (PDOException $e) {
+        echo "Errore Stored Procedure: " . $e->getMessage();
+        header("Location: logout.php");
+        exit;
+    }
 
     // Informazione da inserire nella collezione di log
     $informazione_log = array(
@@ -32,12 +38,18 @@ function inserisci_risposta($pdo, $testo, $id_domanda, $email_utente, $collezion
 
 function inserisci_opzione($pdo, $email_utente, $id_domanda_chiusa, $numero_progressivo_opzione_selezionata, $collezione_log)
 {
-    $inserisci_opzione = $pdo->prepare("CALL InserisciOpzioneRisposta(:email_utente, :id_domanda_chiusa, :numero_progressivo_opzione_selezionata)");
-    $inserisci_opzione->bindParam(':email_utente', $email_utente, PDO::PARAM_STR);
-    $inserisci_opzione->bindParam(':id_domanda_chiusa', $id_domanda_chiusa, PDO::PARAM_INT);
-    $inserisci_opzione->bindParam(':numero_progressivo_opzione_selezionata', $numero_progressivo_opzione_selezionata, PDO::PARAM_INT);
-    $inserisci_opzione->execute();
-    $inserisci_opzione->closeCursor();
+    try {
+        $inserisci_opzione = $pdo->prepare("CALL InserisciOpzioneRisposta(:email_utente, :id_domanda_chiusa, :numero_progressivo_opzione_selezionata)");
+        $inserisci_opzione->bindParam(':email_utente', $email_utente, PDO::PARAM_STR);
+        $inserisci_opzione->bindParam(':id_domanda_chiusa', $id_domanda_chiusa, PDO::PARAM_INT);
+        $inserisci_opzione->bindParam(':numero_progressivo_opzione_selezionata', $numero_progressivo_opzione_selezionata, PDO::PARAM_INT);
+        $inserisci_opzione->execute();
+        $inserisci_opzione->closeCursor();
+    } catch (PDOException $e) {
+        echo "Errore Stored Procedure: " . $e->getMessage();
+        header("Location: logout.php");
+        exit;
+    }
 
     // Informazione da inserire nella collezione di log
     $informazione_log = array(

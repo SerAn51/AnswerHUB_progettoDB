@@ -1,10 +1,17 @@
 <?php
 require '../config_connessione.php'; // instaura la connessione con il db
 
-function eliminaSondaggio($pdo, $codice_sondaggio) {
-    $elimina_sondaggio = $pdo->prepare("CALL EliminaSondaggio(:param1)");
-    $elimina_sondaggio->bindParam(':param1', $codice_sondaggio, PDO::PARAM_INT);
-    $elimina_sondaggio->execute();
+function eliminaSondaggio($pdo, $codice_sondaggio)
+{
+    try {
+        $elimina_sondaggio = $pdo->prepare("CALL EliminaSondaggio(:param1)");
+        $elimina_sondaggio->bindParam(':param1', $codice_sondaggio, PDO::PARAM_INT);
+        $elimina_sondaggio->execute();
+    } catch (PDOException $e) {
+        echo "Errore Stored Procedure: " . $e->getMessage();
+        header("Location: logout.php");
+        exit;
+    }
 }
 
 if (isset($_POST["elimina"])) {

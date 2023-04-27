@@ -6,30 +6,35 @@ use MongoDB\BSON\UTCDateTime;
 
 function inserisciDomanda($pdo, $testo, $foto, $punteggio, $aperta_chiusa, $cf_azienda_inserente, $email_utente_inserente, $max_caratteri_domanda_aperta, $codice_sondaggio, $collezione_log)
 {
-    $inserisci_domanda = $pdo->prepare("CALL InserisciDomanda(:param1, :param2, :param3, :param4, :param5, :param6, :param7, :param8)");
-    $inserisci_domanda->bindParam(':param1', $testo, PDO::PARAM_STR);
-    if (!(is_null($foto))) { //se non è null
-        $inserisci_domanda->bindParam(':param2', $foto, PDO::PARAM_LOB);
-    } else {
-        $inserisci_domanda->bindParam(':param2', $foto, PDO::PARAM_NULL);
+    try {
+        $inserisci_domanda = $pdo->prepare("CALL InserisciDomanda(:param1, :param2, :param3, :param4, :param5, :param6, :param7, :param8)");
+        $inserisci_domanda->bindParam(':param1', $testo, PDO::PARAM_STR);
+        if (!(is_null($foto))) { //se non è null
+            $inserisci_domanda->bindParam(':param2', $foto, PDO::PARAM_LOB);
+        } else {
+            $inserisci_domanda->bindParam(':param2', $foto, PDO::PARAM_NULL);
+        }
+        if (!(is_null($punteggio))) {
+            $inserisci_domanda->bindParam(':param3', $punteggio, PDO::PARAM_INT);
+        } else {
+            $inserisci_domanda->bindParam(':param3', $punteggio, PDO::PARAM_NULL);
+        }
+        $inserisci_domanda->bindParam(':param4', $aperta_chiusa, PDO::PARAM_STR);
+        if (!(empty($_SESSION["email"]))) {
+            $inserisci_domanda->bindParam(':param5', $cf_azienda_inserente, PDO::PARAM_NULL);
+            $inserisci_domanda->bindParam(':param6', $email_utente_inserente, PDO::PARAM_STR);
+        } else if (!(empty($_SESSION["cf_azienda"]))) {
+            $inserisci_domanda->bindParam(':param5', $cf_azienda_inserente, PDO::PARAM_STR);
+            $inserisci_domanda->bindParam(':param6', $email_utente_inserente, PDO::PARAM_NULL);
+        }
+        $inserisci_domanda->bindParam(':param7', $max_caratteri_domanda_aperta, PDO::PARAM_INT);
+        $inserisci_domanda->bindParam(':param8', $codice_sondaggio, PDO::PARAM_INT);
+        $inserisci_domanda->execute();
+    } catch (PDOException $e) {
+        echo "Errore Stored Procedure: " . $e->getMessage();
+        header("Location: logout.php");
+        exit;
     }
-    if (!(is_null($punteggio))) {
-        $inserisci_domanda->bindParam(':param3', $punteggio, PDO::PARAM_INT);
-    } else {
-        $inserisci_domanda->bindParam(':param3', $punteggio, PDO::PARAM_NULL);
-    }
-    $inserisci_domanda->bindParam(':param4', $aperta_chiusa, PDO::PARAM_STR);
-    if (!(empty($_SESSION["email"]))) {
-        $inserisci_domanda->bindParam(':param5', $cf_azienda_inserente, PDO::PARAM_NULL);
-        $inserisci_domanda->bindParam(':param6', $email_utente_inserente, PDO::PARAM_STR);
-    } else if (!(empty($_SESSION["cf_azienda"]))) {
-        $inserisci_domanda->bindParam(':param5', $cf_azienda_inserente, PDO::PARAM_STR);
-        $inserisci_domanda->bindParam(':param6', $email_utente_inserente, PDO::PARAM_NULL);
-    }
-    $inserisci_domanda->bindParam(':param7', $max_caratteri_domanda_aperta, PDO::PARAM_INT);
-    $inserisci_domanda->bindParam(':param8', $codice_sondaggio, PDO::PARAM_INT);
-    $inserisci_domanda->execute();
-
     // Informazione da inserire nella collezione di log
     $informazione_log = array(
         "data" => new MongoDB\BSON\UTCDateTime(),
@@ -58,11 +63,17 @@ if (isset($_POST["crea"])) {
 
     //Un utente premium non può creare due opzioni con lo stesso testo (ignorando maiuscole e minuscole), questo perche'
     //lato utente che risponde ai sondaggi si potrebbe creare confusione, sono ammesse opzioni con lo stesso testo a patto che siano appartenenti a due domande diverse
-    $proc_mostra_domande = $pdo->prepare("CALL MostraDomande(:param1)");
-    $proc_mostra_domande->bindParam(':param1', $codice_sondaggio, PDO::PARAM_INT);
-    $proc_mostra_domande->execute();
-    $domande = $proc_mostra_domande->fetchAll(PDO::FETCH_ASSOC);
-    $proc_mostra_domande->closeCursor();
+    try {
+        $proc_mostra_domande = $pdo->prepare("CALL MostraDomande(:param1)");
+        $proc_mostra_domande->bindParam(':param1', $codice_sondaggio, PDO::PARAM_INT);
+        $proc_mostra_domande->execute();
+        $domande = $proc_mostra_domande->fetchAll(PDO::FETCH_ASSOC);
+        $proc_mostra_domande->closeCursor();
+    } catch (PDOException $e) {
+        echo "Errore Stored Procedure: " . $e->getMessage();
+        header("Location: logout.php");
+        exit;
+    }
 
     foreach ($domande as $domanda) {
         if (strcasecmp($domanda['Testo'], $testo) == 0) {

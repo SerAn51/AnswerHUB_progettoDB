@@ -1,14 +1,21 @@
 <?php
 require '../config_connessione.php'; // instaura la connessione con il db
 
-function rimuoviDomanda($pdo, $id_domanda) {
-    $rimuovi_domanda = $pdo->prepare("CALL RimuoviDomanda(:param1)");
-    $rimuovi_domanda->bindParam(':param1', $id_domanda, PDO::PARAM_INT);
-    $rimuovi_domanda->execute();
+function rimuoviDomanda($pdo, $id_domanda)
+{
+    try {
+        $rimuovi_domanda = $pdo->prepare("CALL RimuoviDomanda(:param1)");
+        $rimuovi_domanda->bindParam(':param1', $id_domanda, PDO::PARAM_INT);
+        $rimuovi_domanda->execute();
+    } catch (PDOException $e) {
+        echo "Errore Stored Procedure: " . $e->getMessage();
+        header("Location: logout.php");
+        exit;
+    }
 }
 
 if (isset($_POST["bottone"])) {
-    $id_domanda = $_POST['id_domanda'];// basta l'id della domanda e la rimozione da domanda,
+    $id_domanda = $_POST['id_domanda']; // basta l'id della domanda e la rimozione da domanda,
     //inutile il codice del sondaggio in quanto rimuovo in Domanda e a cascata rimuove in ComponenteSondaggioDomanda e le altre tabelle
 
     // codice_sondaggio utile solo per il get di ritorno

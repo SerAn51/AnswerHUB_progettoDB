@@ -8,11 +8,17 @@ use MongoDB\BSON\UTCDateTime;
 function inserisciDominio($pdo, $parola_chiave, $descrizione, $collezione_log)
 {
     //Insert nella tabella Premio che mette come EmailUtenteAmministratore la mail di sessione
-    $proc_inserisci_dominio = "CALL InserisciDominio(:param1, :param2)";
-    $prep_proc_inserisci_dominio = $pdo->prepare($proc_inserisci_dominio);
-    $prep_proc_inserisci_dominio->bindParam(':param1', $parola_chiave, PDO::PARAM_STR);
-    $prep_proc_inserisci_dominio->bindParam(':param2', $descrizione, PDO::PARAM_STR);
-    $prep_proc_inserisci_dominio->execute();
+    try {
+        $proc_inserisci_dominio = "CALL InserisciDominio(:param1, :param2)";
+        $prep_proc_inserisci_dominio = $pdo->prepare($proc_inserisci_dominio);
+        $prep_proc_inserisci_dominio->bindParam(':param1', $parola_chiave, PDO::PARAM_STR);
+        $prep_proc_inserisci_dominio->bindParam(':param2', $descrizione, PDO::PARAM_STR);
+        $prep_proc_inserisci_dominio->execute();
+    } catch (PDOException $e) {
+        echo "Errore Stored Procedure: " . $e->getMessage();
+        header("Location: logout.php");
+        exit;
+    }
 
     // Informazione da inserire nella collezione di log
     $informazione_log = array(

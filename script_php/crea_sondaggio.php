@@ -11,21 +11,27 @@ function crea_sondaggio($pdo, $titolo, $max_utenti, $data_chiusura, $dominio, $c
     //NB: $data_chiusura e' gia' nel giusto formato
 
     //Crea sondaggio impostando lo stato APERTO, come data_creazione la data attuale, come CFAziendacreante NULL, come EmailUtentecreante la mail di sessione
-    $proc_crea_sondaggio = $pdo->prepare("CALL CreaSondaggio(:param1, :param2, :param3, :param4, :param5, :param6, :param7, :param8)");
-    $proc_crea_sondaggio->bindParam(':param1', $titolo, PDO::PARAM_STR);
-    $proc_crea_sondaggio->bindParam(':param2', $stato, PDO::PARAM_STR);
-    $proc_crea_sondaggio->bindParam(':param3', $max_utenti, PDO::PARAM_INT);
-    $proc_crea_sondaggio->bindParam(':param4', $data_creazione, PDO::PARAM_STR);
-    $proc_crea_sondaggio->bindParam(':param5', $data_chiusura, PDO::PARAM_STR);
-    $proc_crea_sondaggio->bindParam(':param6', $dominio, PDO::PARAM_STR);
-    if ($utente_o_azienda) {
-        $proc_crea_sondaggio->bindParam(':param7', $cf_azienda_creante, PDO::PARAM_NULL);
-        $proc_crea_sondaggio->bindParam(':param8', $email_utente_creante, PDO::PARAM_STR);
-    } else {
-        $proc_crea_sondaggio->bindParam(':param7', $cf_azienda_creante, PDO::PARAM_STR);
-        $proc_crea_sondaggio->bindParam(':param8', $email_utente_creante, PDO::PARAM_NULL);
+    try {
+        $proc_crea_sondaggio = $pdo->prepare("CALL CreaSondaggio(:param1, :param2, :param3, :param4, :param5, :param6, :param7, :param8)");
+        $proc_crea_sondaggio->bindParam(':param1', $titolo, PDO::PARAM_STR);
+        $proc_crea_sondaggio->bindParam(':param2', $stato, PDO::PARAM_STR);
+        $proc_crea_sondaggio->bindParam(':param3', $max_utenti, PDO::PARAM_INT);
+        $proc_crea_sondaggio->bindParam(':param4', $data_creazione, PDO::PARAM_STR);
+        $proc_crea_sondaggio->bindParam(':param5', $data_chiusura, PDO::PARAM_STR);
+        $proc_crea_sondaggio->bindParam(':param6', $dominio, PDO::PARAM_STR);
+        if ($utente_o_azienda) {
+            $proc_crea_sondaggio->bindParam(':param7', $cf_azienda_creante, PDO::PARAM_NULL);
+            $proc_crea_sondaggio->bindParam(':param8', $email_utente_creante, PDO::PARAM_STR);
+        } else {
+            $proc_crea_sondaggio->bindParam(':param7', $cf_azienda_creante, PDO::PARAM_STR);
+            $proc_crea_sondaggio->bindParam(':param8', $email_utente_creante, PDO::PARAM_NULL);
+        }
+        $proc_crea_sondaggio->execute();
+    } catch (PDOException $e) {
+        echo "Errore Stored Procedure: " . $e->getMessage();
+        header("Location: logout.php");
+        exit;
     }
-    $proc_crea_sondaggio->execute();
 
     // Informazione da inserire nella collezione di log
     $informazione_log = array(
@@ -65,27 +71,33 @@ if (isset($_POST["crea"])) {
         }
         exit;
     }
-    
+
     $dominio = $_POST["dominio"];
 
     //Un utente premium non può creare due sondaggi con lo stesso nome (ignorando maiuscole e minuscole), questo perche'
 //lato utente che risponde ai sondaggi si potrebbe creare confusione, sono ammessi sondaggi con lo stesso nome a patto che abbiano creatore diverso
-    $proc_mostra_sondaggi = $pdo->prepare("CALL MostraSondaggi(:param1, :param2)");
-    if ($utente_o_azienda) {
-        $email_utente_creante = $_SESSION['email'];
-        $cf_azienda_creante = null;
-        $proc_mostra_sondaggi->bindParam(':param1', $email_utente_creante, PDO::PARAM_STR);
-        $proc_mostra_sondaggi->bindParam(':param2', $cf_azienda_creante, PDO::PARAM_NULL);
-    } else {
-        $email_utente_creante = null;
-        $cf_azienda_creante = $_SESSION['cf_azienda'];
-        $proc_mostra_sondaggi->bindParam(':param1', $email_utente_creante, PDO::PARAM_NULL);
-        $proc_mostra_sondaggi->bindParam(':param2', $cf_azienda_creante, PDO::PARAM_STR);
+    try {
+        $proc_mostra_sondaggi = $pdo->prepare("CALL MostraSondaggi(:param1, :param2)");
+        if ($utente_o_azienda) {
+            $email_utente_creante = $_SESSION['email'];
+            $cf_azienda_creante = null;
+            $proc_mostra_sondaggi->bindParam(':param1', $email_utente_creante, PDO::PARAM_STR);
+            $proc_mostra_sondaggi->bindParam(':param2', $cf_azienda_creante, PDO::PARAM_NULL);
+        } else {
+            $email_utente_creante = null;
+            $cf_azienda_creante = $_SESSION['cf_azienda'];
+            $proc_mostra_sondaggi->bindParam(':param1', $email_utente_creante, PDO::PARAM_NULL);
+            $proc_mostra_sondaggi->bindParam(':param2', $cf_azienda_creante, PDO::PARAM_STR);
+        }
+        $proc_mostra_sondaggi->execute();
+        $sondaggi = $proc_mostra_sondaggi->fetchAll(PDO::FETCH_ASSOC);
+        $proc_mostra_sondaggi->closeCursor();
+    } catch (PDOException $e) {
+        echo "Errore Stored Procedure: " . $e->getMessage();
+        header("Location: logout.php");
+        exit;
     }
-    $proc_mostra_sondaggi->execute();
-    $sondaggi = $proc_mostra_sondaggi->fetchAll(PDO::FETCH_ASSOC);
-    $proc_mostra_sondaggi->closeCursor();
-
+    
     // se sto inserendo un sondaggio con un titolo già esistente mostra errore e interrompi l'esecuzione
     foreach ($sondaggi as $sondaggio) {
         if (strcasecmp($sondaggio['Titolo'], $titolo) == 0) {

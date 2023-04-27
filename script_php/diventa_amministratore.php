@@ -3,9 +3,15 @@ require '../config_connessione.php'; // instaura la connessione con il db
 
 function diventaAmministratore($pdo, $email)
 {
-    $diventa_amministratore = $pdo->prepare("CALL DiventaAmministratore(:param1)");
-    $diventa_amministratore->bindParam(':param1', $email, PDO::PARAM_STR);
-    $diventa_amministratore->execute();
+    try {
+        $diventa_amministratore = $pdo->prepare("CALL DiventaAmministratore(:param1)");
+        $diventa_amministratore->bindParam(':param1', $email, PDO::PARAM_STR);
+        $diventa_amministratore->execute();
+    } catch (PDOException $e) {
+        echo "Errore Stored Procedure: " . $e->getMessage();
+        header("Location: logout.php");
+        exit;
+    }
 }
 
 if (isset($_POST["diventa_amministratore"])) {

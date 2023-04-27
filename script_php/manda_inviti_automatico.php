@@ -9,12 +9,18 @@ function inserisci_invito_automaticamente($pdo, $email_utente, $codice_sondaggio
 {
     $email_utente_invitante = NULL;
 
-    $proc_inserisci_invito = $pdo->prepare("CALL InserisciInvito(:param1, :param2, :param3, :param4)");
-    $proc_inserisci_invito->bindParam(':param1', $email_utente, PDO::PARAM_STR);
-    $proc_inserisci_invito->bindParam(':param2', $codice_sondaggio, PDO::PARAM_INT);
-    $proc_inserisci_invito->bindParam(':param3', $cf_azienda_invitante, PDO::PARAM_STR);
-    $proc_inserisci_invito->bindParam(':param4', $email_utente_invitante, PDO::PARAM_NULL);
-    $proc_inserisci_invito->execute();
+    try {
+        $proc_inserisci_invito = $pdo->prepare("CALL InserisciInvito(:param1, :param2, :param3, :param4)");
+        $proc_inserisci_invito->bindParam(':param1', $email_utente, PDO::PARAM_STR);
+        $proc_inserisci_invito->bindParam(':param2', $codice_sondaggio, PDO::PARAM_INT);
+        $proc_inserisci_invito->bindParam(':param3', $cf_azienda_invitante, PDO::PARAM_STR);
+        $proc_inserisci_invito->bindParam(':param4', $email_utente_invitante, PDO::PARAM_NULL);
+        $proc_inserisci_invito->execute();
+    } catch (PDOException $e) {
+        echo "Errore Stored Procedure: " . $e->getMessage();
+        header("Location: logout.php");
+        exit;
+    }
 
     // Informazione da inserire nella collezione di log
     $informazione_log = array(
@@ -37,27 +43,31 @@ if (isset($_POST["invita"])) {
     // idea: prendo sondaggio join interessato on ParolachiaveDominio filtrando per codice_sondaggio
     // il risultato e' una lista di utenti interessati al dominio a cui appartiene questo sondaggio
     // prendo le mail e le inserisco in invito
+    try {
+        $mostra_utenti_interessati = $pdo->prepare("CALL MostraUtentiInteressati(:param1)");
+        $mostra_utenti_interessati->bindParam(':param1', $codice_sondaggio, PDO::PARAM_INT);
+        $mostra_utenti_interessati->execute();
+        $utenti_interessati = $mostra_utenti_interessati->fetchAll(PDO::FETCH_ASSOC);
+        $mostra_utenti_interessati->closeCursor();
 
-    $mostra_utenti_interessati = $pdo->prepare("CALL MostraUtentiInteressati(:param1)");
-    $mostra_utenti_interessati->bindParam(':param1', $codice_sondaggio, PDO::PARAM_INT);
-    $mostra_utenti_interessati->execute();
-    $utenti_interessati = $mostra_utenti_interessati->fetchAll(PDO::FETCH_ASSOC);
-    $mostra_utenti_interessati->closeCursor();
+        // Ritorna un array non vuoto se esiste almeno una domanda
+        $check_domande = $pdo->prepare("SELECT * FROM Domanda JOIN ComponenteSondaggioDomanda ON ID = IDDomanda WHERE CodiceSondaggio = :codice_sondaggio");
+        $check_domande->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
+        $check_domande->execute();
+        $domande = $check_domande->fetchAll();
+        $check_domande->closeCursor();
 
-    // Ritorna un array non vuoto se esiste almeno una domanda
-    $check_domande = $pdo->prepare("SELECT * FROM Domanda JOIN ComponenteSondaggioDomanda ON ID = IDDomanda WHERE CodiceSondaggio = :codice_sondaggio");
-    $check_domande->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
-    $check_domande->execute();
-    $domande = $check_domande->fetchAll();
-    $check_domande->closeCursor();
-
-    //  Ritorna un array delle domande chiuse del sondaggio
-    $check_domande_chiuse = $pdo->prepare("SELECT * FROM DomandaChiusa JOIN Domanda ON DomandaChiusa.ID = Domanda.ID JOIN ComponenteSondaggioDomanda ON Domanda.ID = ComponenteSondaggioDomanda.IDDomanda WHERE CodiceSondaggio = :codice_sondaggio");
-    $check_domande_chiuse->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
-    $check_domande_chiuse->execute();
-    $domande_chiuse = $check_domande_chiuse->fetchAll();
-    $check_domande_chiuse->closeCursor();
-
+        //  Ritorna un array delle domande chiuse del sondaggio
+        $check_domande_chiuse = $pdo->prepare("SELECT * FROM DomandaChiusa JOIN Domanda ON DomandaChiusa.ID = Domanda.ID JOIN ComponenteSondaggioDomanda ON Domanda.ID = ComponenteSondaggioDomanda.IDDomanda WHERE CodiceSondaggio = :codice_sondaggio");
+        $check_domande_chiuse->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
+        $check_domande_chiuse->execute();
+        $domande_chiuse = $check_domande_chiuse->fetchAll();
+        $check_domande_chiuse->closeCursor();
+    } catch (PDOException $e) {
+        echo "Errore Stored Procedure: " . $e->getMessage();
+        header("Location: logout.php");
+        exit;
+    }
     //Controlla se esistono domande per il sondaggio, altrimenti notifica l'utente e non rendere disponibile l'invio di inviti
     $controllo = true;
     if (empty($domande)) {
@@ -70,11 +80,17 @@ if (isset($_POST["invita"])) {
             foreach ($domande_chiuse as $domanda_chiusa) {
                 //Ritorna un array delle opzioni della domanda data in input
                 $id_domanda_chiusa = $domanda_chiusa['IDDomanda'];
-                $check_opzioni_domanda = $pdo->prepare("SELECT * FROM Opzione WHERE IDDomandachiusa = :id_domanda_chiusa");
-                $check_opzioni_domanda->bindParam(':id_domanda_chiusa', $id_domanda_chiusa, PDO::PARAM_INT);
-                $check_opzioni_domanda->execute();
-                $opzioni_domanda = $check_opzioni_domanda->fetchAll();
-                $check_opzioni_domanda->closeCursor();
+                try {
+                    $check_opzioni_domanda = $pdo->prepare("SELECT * FROM Opzione WHERE IDDomandachiusa = :id_domanda_chiusa");
+                    $check_opzioni_domanda->bindParam(':id_domanda_chiusa', $id_domanda_chiusa, PDO::PARAM_INT);
+                    $check_opzioni_domanda->execute();
+                    $opzioni_domanda = $check_opzioni_domanda->fetchAll();
+                    $check_opzioni_domanda->closeCursor();
+                } catch (PDOException $e) {
+                    echo "Errore Stored Procedure: " . $e->getMessage();
+                    header("Location: logout.php");
+                    exit;
+                }
                 if (empty($opzioni_domanda)) {
                     //echo "Errore: una domanda e' senza opzioni";
                     header("Location: ../azienda_home.php?error=21");
@@ -93,11 +109,17 @@ if (isset($_POST["invita"])) {
                 //echo "Non ci sono utenti interessati al dominio di questo sondaggio";
             } else {
 
-                $mostra_max_utenti = $pdo->prepare("SELECT MaxUtenti FROM Sondaggio WHERE Codice = :codice");
-                $mostra_max_utenti->bindParam(':codice', $codice_sondaggio, PDO::PARAM_INT);
-                $mostra_max_utenti->execute();
-                $riga_max_utenti = $mostra_max_utenti->fetch(PDO::FETCH_ASSOC);
-                $mostra_max_utenti->closeCursor();
+                try {
+                    $mostra_max_utenti = $pdo->prepare("SELECT MaxUtenti FROM Sondaggio WHERE Codice = :codice");
+                    $mostra_max_utenti->bindParam(':codice', $codice_sondaggio, PDO::PARAM_INT);
+                    $mostra_max_utenti->execute();
+                    $riga_max_utenti = $mostra_max_utenti->fetch(PDO::FETCH_ASSOC);
+                    $mostra_max_utenti->closeCursor();
+                } catch (PDOException $e) {
+                    echo "Errore Stored Procedure: " . $e->getMessage();
+                    header("Location: logout.php");
+                    exit;
+                }
                 $max_utenti = $riga_max_utenti['MaxUtenti']; //salva l'intero
 
                 if (isset($utenti_interessati) && is_array($utenti_interessati)) {

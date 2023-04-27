@@ -8,15 +8,20 @@ use MongoDB\BSON\UTCDateTime;
 function inserisciPremio($pdo, $nome, $descrizione, $foto, $punti_necessari, $collezione_log)
 {
     //Insert nella tabella Premio che mette come EmailUtenteAmministratore la mail di sessione
-    $proc_inserisci_premio = "CALL InserisciPremio(:param1, :param2, :param3, :param4, :param5)";
-    $prep_proc_inserisci_premio = $pdo->prepare($proc_inserisci_premio);
-    $prep_proc_inserisci_premio->bindParam(':param1', $nome, PDO::PARAM_STR);
-    $prep_proc_inserisci_premio->bindParam(':param2', $descrizione, PDO::PARAM_STR);
-    $prep_proc_inserisci_premio->bindParam(':param3', $foto, PDO::PARAM_LOB);
-    $prep_proc_inserisci_premio->bindParam(':param4', $punti_necessari, PDO::PARAM_INT);
-    $prep_proc_inserisci_premio->bindParam(':param5', $_SESSION["email"], PDO::PARAM_STR);
-    $prep_proc_inserisci_premio->execute();
-
+    try {
+        $proc_inserisci_premio = "CALL InserisciPremio(:param1, :param2, :param3, :param4, :param5)";
+        $prep_proc_inserisci_premio = $pdo->prepare($proc_inserisci_premio);
+        $prep_proc_inserisci_premio->bindParam(':param1', $nome, PDO::PARAM_STR);
+        $prep_proc_inserisci_premio->bindParam(':param2', $descrizione, PDO::PARAM_STR);
+        $prep_proc_inserisci_premio->bindParam(':param3', $foto, PDO::PARAM_LOB);
+        $prep_proc_inserisci_premio->bindParam(':param4', $punti_necessari, PDO::PARAM_INT);
+        $prep_proc_inserisci_premio->bindParam(':param5', $_SESSION["email"], PDO::PARAM_STR);
+        $prep_proc_inserisci_premio->execute();
+    } catch (PDOException $e) {
+        echo "Errore Stored Procedure: " . $e->getMessage();
+        header("Location: logout.php");
+        exit;
+    }
     // Informazione da inserire nella collezione di log
     $informazione_log = array(
         "data" => new MongoDB\BSON\UTCDateTime(),

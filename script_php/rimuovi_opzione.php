@@ -1,11 +1,18 @@
 <?php
 require '../config_connessione.php'; // instaura la connessione con il db
 
-function rimuoviOpzione($pdo, $id_domanda_chiusa, $numero_progressivo) {
-    $rimuovi_opzione = $pdo->prepare("CALL RimuoviOpzione(:param1, :param2)");
-    $rimuovi_opzione->bindParam(':param1', $id_domanda_chiusa, PDO::PARAM_INT);
-    $rimuovi_opzione->bindParam(':param2', $numero_progressivo, PDO::PARAM_INT);
-    $rimuovi_opzione->execute();
+function rimuoviOpzione($pdo, $id_domanda_chiusa, $numero_progressivo)
+{
+    try {
+        $rimuovi_opzione = $pdo->prepare("CALL RimuoviOpzione(:param1, :param2)");
+        $rimuovi_opzione->bindParam(':param1', $id_domanda_chiusa, PDO::PARAM_INT);
+        $rimuovi_opzione->bindParam(':param2', $numero_progressivo, PDO::PARAM_INT);
+        $rimuovi_opzione->execute();
+    } catch (PDOException $e) {
+        echo "Errore Stored Procedure: " . $e->getMessage();
+        header("Location: logout.php");
+        exit;
+    }
 }
 
 if (isset($_POST["bottone"])) {

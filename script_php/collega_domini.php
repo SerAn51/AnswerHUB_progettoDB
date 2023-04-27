@@ -8,20 +8,31 @@ use MongoDB\BSON\UTCDateTime;
 function rimuoviInteresse($pdo, string $email, string $parola_chiave)
 {
     //Delete nella tabella Interessato che rimuove la riga con questa email e questa password
-    $rimuovi_interesse = $pdo->prepare("CALL RimuoviInteresse(:param1, :param2)");
-    $rimuovi_interesse->bindParam(':param1', $email, PDO::PARAM_STR);
-    $rimuovi_interesse->bindParam(':param2', $parola_chiave, PDO::PARAM_STR);
-    $rimuovi_interesse->execute();
+    try {
+        $rimuovi_interesse = $pdo->prepare("CALL RimuoviInteresse(:param1, :param2)");
+        $rimuovi_interesse->bindParam(':param1', $email, PDO::PARAM_STR);
+        $rimuovi_interesse->bindParam(':param2', $parola_chiave, PDO::PARAM_STR);
+        $rimuovi_interesse->execute();
+    } catch (PDOException $e) {
+        echo "Errore Stored Procedure: " . $e->getMessage();
+        header("Location: logout.php");
+        exit;
+    }
 }
 
 function inserisciInteresse($pdo, string $email, string $parola_chiave, $collezione_log)
 {
     //Insert nella tabella Interessato che mette come EmailUtente la mail di sessione e come ParolachiaveDominio il valore di questo foreach
-    $inserisci_interesse = $pdo->prepare("CALL InserisciInteresse(:param1, :param2)");
-    $inserisci_interesse->bindParam(':param1', $email, PDO::PARAM_STR);
-    $inserisci_interesse->bindParam(':param2', $parola_chiave, PDO::PARAM_STR);
-    $inserisci_interesse->execute();
-
+    try {
+        $inserisci_interesse = $pdo->prepare("CALL InserisciInteresse(:param1, :param2)");
+        $inserisci_interesse->bindParam(':param1', $email, PDO::PARAM_STR);
+        $inserisci_interesse->bindParam(':param2', $parola_chiave, PDO::PARAM_STR);
+        $inserisci_interesse->execute();
+    } catch (PDOException $e) {
+        echo "Errore Stored Procedure: " . $e->getMessage();
+        header("Location: logout.php");
+        exit;
+    }
     // Informazione da inserire nella collezione di log
     $informazione_log = array(
         "data" => new MongoDB\BSON\UTCDateTime(),
@@ -38,22 +49,25 @@ function inserisciInteresse($pdo, string $email, string $parola_chiave, $collezi
 
 //COLLEGAMENTO DOMINIO INTERESSE
 if (isset($_POST["invia"])) {
+    try {
+        //array con i domini gia' in precedenza selezionati dall'utente
+        $prep_query_interessato = $pdo->prepare('SELECT * FROM Interessato WHERE EmailUtente = :email');
+        $prep_query_interessato->bindParam(':email', $_SESSION["email"], PDO::PARAM_STR);
+        $prep_query_interessato->execute();
+        $domini_salvati_in_passato = $prep_query_interessato->fetchAll(PDO::FETCH_ASSOC);
+        //NB: se questa query restituisce un risultato vuoto, ritorna un booleano
 
-    //array con i domini gia' in precedenza selezionati dall'utente
-    $prep_query_interessato = $pdo->prepare('SELECT * FROM Interessato WHERE EmailUtente = :email');
-    $prep_query_interessato->bindParam(':email', $_SESSION["email"], PDO::PARAM_STR);
-    $prep_query_interessato->execute();
-    $domini_salvati_in_passato = $prep_query_interessato->fetchAll(PDO::FETCH_ASSOC);
-    //NB: se questa query restituisce un risultato vuoto, ritorna un booleano
-
-    //lista di tutti i domini
-    $sql = "CALL MostraDomini()";
-    $mostra_domini = $pdo->prepare($sql);
-    $mostra_domini->execute();
-    $domini = $mostra_domini->fetchAll(PDO::FETCH_ASSOC);
-
-    $mostra_domini->closeCursor(); // chiude il cursore del set di risultati corrente
-
+        //lista di tutti i domini
+        $sql = "CALL MostraDomini()";
+        $mostra_domini = $pdo->prepare($sql);
+        $mostra_domini->execute();
+        $domini = $mostra_domini->fetchAll(PDO::FETCH_ASSOC);
+        $mostra_domini->closeCursor(); // chiude il cursore del set di risultati corrente
+    } catch (PDOException $e) {
+        echo "Errore Stored Procedure: " . $e->getMessage();
+        header("Location: logout.php");
+        exit;
+    }
     $array_parolachiave_tutti_i_domini = array();
     foreach ($domini as $dominio) {
         $parole_chiave = $dominio["Parolachiave"];
