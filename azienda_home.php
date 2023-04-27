@@ -2,13 +2,17 @@
 require 'config_connessione.php'; // instaura la connessione con il db
 
 //utile per mostrare la lista di sondaggi
-try {+0}
-$mostra_sondaggi_creati = $pdo->prepare("SELECT * FROM Sondaggio WHERE CFAziendacreante = :cf_azienda");
-$mostra_sondaggi_creati->bindParam(':cf_azienda', $_SESSION["cf_azienda"], PDO::PARAM_STR);
-$mostra_sondaggi_creati->execute();
-$sondaggi_creati = $mostra_sondaggi_creati->fetchAll(PDO::FETCH_ASSOC);
-$mostra_sondaggi_creati->closeCursor();
-
+try {
+    $mostra_sondaggi_creati = $pdo->prepare("SELECT * FROM Sondaggio WHERE CFAziendacreante = :cf_azienda");
+    $mostra_sondaggi_creati->bindParam(':cf_azienda', $_SESSION["cf_azienda"], PDO::PARAM_STR);
+    $mostra_sondaggi_creati->execute();
+    $sondaggi_creati = $mostra_sondaggi_creati->fetchAll(PDO::FETCH_ASSOC);
+    $mostra_sondaggi_creati->closeCursor();
+} catch (PDOException $e) {
+    echo "Errore Stored Procedure: " . $e->getMessage();
+    header("Location: logout.php");
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -84,11 +88,16 @@ $mostra_sondaggi_creati->closeCursor();
         - Per il creante sono una azienda quindi inserisco il cf di sessione e null per il EmailUtentecreante
         - Mostra un messaggio di errore se sto creando un sondaggio di cui gia' esiste il nome-->
     <?php
-    $mostra_domini = $pdo->prepare("CALL MostraDomini()");
-    $mostra_domini->execute();
-    $domini = $mostra_domini->fetchAll(PDO::FETCH_ASSOC);
-    $mostra_domini->closeCursor();
-
+    try {
+        $mostra_domini = $pdo->prepare("CALL MostraDomini()");
+        $mostra_domini->execute();
+        $domini = $mostra_domini->fetchAll(PDO::FETCH_ASSOC);
+        $mostra_domini->closeCursor();
+    } catch (PDOException $e) {
+        echo "Errore Stored Procedure: " . $e->getMessage();
+        header("Location: logout.php");
+        exit;
+    }
     ?>
     <div class="space">
         <form action="script_php/crea_sondaggio.php" method="POST">
@@ -127,11 +136,17 @@ $mostra_sondaggi_creati->closeCursor();
             <?php
             //utile per verificare che ci siano invitati al sondaggio
             $codice_sondaggio = $sondaggio_creato['Codice'];
-            $check_inviti = $pdo->prepare("SELECT * FROM Invito WHERE CodiceSondaggio = :codice_sondaggio");
-            $check_inviti->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
-            $check_inviti->execute();
-            $inviti = $check_inviti->fetchAll();
-            $check_inviti->closeCursor();
+            try {
+                $check_inviti = $pdo->prepare("SELECT * FROM Invito WHERE CodiceSondaggio = :codice_sondaggio");
+                $check_inviti->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
+                $check_inviti->execute();
+                $inviti = $check_inviti->fetchAll();
+                $check_inviti->closeCursor();
+            } catch (PDOException $e) {
+                echo "Errore Stored Procedure: " . $e->getMessage();
+                header("Location: logout.php");
+                exit;
+            }
             ?>
             <label>
                 <a href="gestisci_domanda.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>"><?php echo $sondaggio_creato['Titolo']; ?></a>

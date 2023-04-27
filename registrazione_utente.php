@@ -24,7 +24,7 @@ function inserisciUtente($pdo, $email, $password, $nome, $cognome, $data_nascita
         $stmt->execute();
     } catch (PDOException $e) {
         echo "Errore Stored Procedure: " . $e->getMessage();
-        header("Location: index.php");
+        header("Location: logout.php");
         exit;
     }
     // Informazione da inserire nella collezione di log
@@ -69,7 +69,7 @@ if (isset($_POST["submit"])) { // se submit avviene con successo
                 $row = $stmt->fetch(PDO::FETCH_ASSOC);
             } catch (PDOException $e) {
                 echo "Errore Stored Procedure: " . $e->getMessage();
-                header("Location: index.php");
+                header("Location: logout.php");
                 exit;
             }
             //se e' null l'utente non esiste, quindi lo inserisco

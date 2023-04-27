@@ -21,7 +21,7 @@ function inserisciAzienda($pdo, $cf, $password, $email, $nome, $sede, $collezion
         $inserisci_azienda->execute();
     } catch (PDOException $e) {
         echo "Errore Stored Procedure: " . $e->getMessage();
-        header("Location: index.php");
+        header("Location: logout.php");
         exit;
     }
     // Informazione da inserire nella collezione di log
@@ -61,7 +61,7 @@ if (isset($_POST["submit"])) { // se submit avviene con successo
                 $row = $azienda->fetch(PDO::FETCH_ASSOC);
             } catch (PDOException $e) {
                 echo "Errore Stored Procedure: " . $e->getMessage();
-                header("Location: index.php");
+                header("Location: logout.php");
                 exit;
             }
 
