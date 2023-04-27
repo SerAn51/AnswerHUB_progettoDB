@@ -1,40 +1,47 @@
 <?php
+try {
+    require 'config_connessione.php'; // instaura la connessione con il db
+    $codice_sondaggio = $_GET['cod_sondaggio'];
 
-require 'config_connessione.php'; // instaura la connessione con il db
-$codice_sondaggio = $_GET['cod_sondaggio'];
+    // controllo per evitare che si cambi url e si faccia l'accesso ad un sondaggio di un altro utente premium/azienda, al massimo se cambio url per il get del codice posso mettere il codice di un sondaggio da me (utente premium/azienda) gestito:
+    // se email non e' vuota vuol dire che ho richiamato gestisci_domanda come utente premium
+    if (!(empty($_SESSION["email"]))) {
+        $check_sondaggio = $pdo->prepare("SELECT Codice FROM Sondaggio WHERE EmailUtentecreante = :email AND Codice = :codice");
+        $check_sondaggio->bindParam(':email', $_SESSION['email'], PDO::PARAM_STR);
+        // altrimenti l'ho richiamato come azienda
+    } else if (!(empty($_SESSION["cf_azienda"]))) {
+        $check_sondaggio = $pdo->prepare("SELECT Codice FROM Sondaggio WHERE CFAziendacreante = :cf_azienda AND Codice = :codice");
+        $check_sondaggio->bindParam(':cf_azienda', $_SESSION['cf_azienda'], PDO::PARAM_STR);
+    } else {
+        // errore nel caso in cui non esiste ne' email ne' cf_azienda sono settati
+        die("Errore: utente non loggato");
+    }
+    $check_sondaggio->bindParam(':codice', $codice_sondaggio, PDO::PARAM_INT);
+    $check_sondaggio->execute();
+    $sondaggio = $check_sondaggio->fetch(PDO::FETCH_ASSOC);
+    $check_sondaggio->closeCursor();
+    if (!$sondaggio) {
+        header("Location: premium_home.php");
+        exit;
+    }
 
-// controllo per evitare che si cambi url e si faccia l'accesso ad un sondaggio di un altro utente premium/azienda, al massimo se cambio url per il get del codice posso mettere il codice di un sondaggio da me (utente premium/azienda) gestito:
-// se email non e' vuota vuol dire che ho richiamato gestisci_domanda come utente premium
-if (!(empty($_SESSION["email"]))) {
-    $check_sondaggio = $pdo->prepare("SELECT Codice FROM Sondaggio WHERE EmailUtentecreante = :email AND Codice = :codice");
-    $check_sondaggio->bindParam(':email', $_SESSION['email'], PDO::PARAM_STR);
-    // altrimenti l'ho richiamato come azienda
-} else if (!(empty($_SESSION["cf_azienda"]))) {
-    $check_sondaggio = $pdo->prepare("SELECT Codice FROM Sondaggio WHERE CFAziendacreante = :cf_azienda AND Codice = :codice");
-    $check_sondaggio->bindParam(':cf_azienda', $_SESSION['cf_azienda'], PDO::PARAM_STR);
-}
-$check_sondaggio->bindParam(':codice', $codice_sondaggio, PDO::PARAM_INT);
-$check_sondaggio->execute();
-$sondaggio = $check_sondaggio->fetch(PDO::FETCH_ASSOC);
-$check_sondaggio->closeCursor();
-if (!$sondaggio) {
-    header("Location: premium_home.php");
+    $mostra_domande_sondaggio = $pdo->prepare("CALL MostraDomande(:codice)");
+    $mostra_domande_sondaggio->bindParam(':codice', $codice_sondaggio, PDO::PARAM_INT);
+    $mostra_domande_sondaggio->execute();
+    $domande_sondaggio = $mostra_domande_sondaggio->fetchAll(PDO::FETCH_ASSOC);
+    $mostra_domande_sondaggio->closeCursor();
+
+
+    $check_inviti = $pdo->prepare("SELECT * FROM Invito WHERE CodiceSondaggio = :codice_sondaggio");
+    $check_inviti->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
+    $check_inviti->execute();
+    $inviti = $check_inviti->fetchAll(PDO::FETCH_ASSOC);
+    $check_inviti->closeCursor();
+} catch (PDOException $e) {
+    echo "Errore Stored Procedure: " . $e->getMessage();
+    header("Location: index.php");
     exit;
 }
-
-$mostra_domande_sondaggio = $pdo->prepare("CALL MostraDomande(:codice)");
-$mostra_domande_sondaggio->bindParam(':codice', $codice_sondaggio, PDO::PARAM_INT);
-$mostra_domande_sondaggio->execute();
-$domande_sondaggio = $mostra_domande_sondaggio->fetchAll(PDO::FETCH_ASSOC);
-$mostra_domande_sondaggio->closeCursor();
-
-
-$check_inviti = $pdo->prepare("SELECT * FROM Invito WHERE CodiceSondaggio = :codice_sondaggio");
-$check_inviti->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
-$check_inviti->execute();
-$inviti = $check_inviti->fetchAll();
-$check_inviti->closeCursor();
-
 ?>
 
 <!DOCTYPE html>

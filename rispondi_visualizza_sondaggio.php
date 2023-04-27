@@ -4,12 +4,17 @@ require 'config_connessione.php'; // instaura la connessione con il db
 if ((isset($_POST["rispondi"])) || (isset($_POST["visualizza_risposte"]))) {
     $email = $_SESSION["email"];
     $codice_sondaggio = $_POST['codice_sondaggio'];
-
-    $mostra_domande_sondaggio = $pdo->prepare("CALL MostraDomande(:param1)");
-    $mostra_domande_sondaggio->bindParam(':param1', $codice_sondaggio, PDO::PARAM_INT);
-    $mostra_domande_sondaggio->execute();
-    $domande_sondaggio = $mostra_domande_sondaggio->fetchAll(PDO::FETCH_ASSOC);
-    $mostra_domande_sondaggio->closeCursor();
+    try {
+        $mostra_domande_sondaggio = $pdo->prepare("CALL MostraDomande(:param1)");
+        $mostra_domande_sondaggio->bindParam(':param1', $codice_sondaggio, PDO::PARAM_INT);
+        $mostra_domande_sondaggio->execute();
+        $domande_sondaggio = $mostra_domande_sondaggio->fetchAll(PDO::FETCH_ASSOC);
+        $mostra_domande_sondaggio->closeCursor();
+    } catch (PDOException $e) {
+        echo "Errore Stored Procedure: " . $e->getMessage();
+        header("Location: index.php");
+        exit;
+    }
 }
 ?>
 
@@ -67,9 +72,15 @@ if ((isset($_POST["rispondi"])) || (isset($_POST["visualizza_risposte"]))) {
                         <!--Se la domanda è aperta, mostro il massimo numero di caratteri-->
                         <?php if ($domanda_sondaggio['ApertaChiusa'] == "APERTA") { ?>
                             <?php
-                            $max_caratteri_risposta = $pdo->prepare("SELECT * FROM DomandaAperta WHERE ID = ?");
-                            $max_caratteri_risposta->execute([$id_domanda]);
-                            $max_caratteri = $max_caratteri_risposta->fetch(PDO::FETCH_ASSOC);
+                            try {
+                                $max_caratteri_risposta = $pdo->prepare("SELECT * FROM DomandaAperta WHERE ID = ?");
+                                $max_caratteri_risposta->execute([$id_domanda]);
+                                $max_caratteri = $max_caratteri_risposta->fetch(PDO::FETCH_ASSOC);
+                            } catch (PDOException $e) {
+                                echo "Errore Stored Procedure: " . $e->getMessage();
+                                header("Location: index.php");
+                                exit;
+                            }
                             ?>
                             <?php echo ' (max caratteri: ' . $max_caratteri['MaxCaratteriRisposta'] . ')'; ?>
                         <?php } ?>
@@ -105,12 +116,18 @@ if ((isset($_POST["rispondi"])) || (isset($_POST["visualizza_risposte"]))) {
                     <?php } else if ($domanda_sondaggio['ApertaChiusa'] == 'CHIUSA') { ?>
                             <!--Prendi le opzioni e mostrale in una radio-->
                             <?php
-                            $mostra_opzioni_domanda = $pdo->prepare("CALL MostraOpzioni(:id_domanda)");
-                            $mostra_opzioni_domanda->bindParam(':id_domanda', $id_domanda, PDO::PARAM_INT);
-                            $mostra_opzioni_domanda->execute();
-                            $opzioni_domanda = $mostra_opzioni_domanda->fetchAll(PDO::FETCH_ASSOC);
-                            $mostra_opzioni_domanda->closeCursor();
-                            $radio_name_id = 'opzioni_selezionate[' . $id_domanda . ']';
+                            try {
+                                $mostra_opzioni_domanda = $pdo->prepare("CALL MostraOpzioni(:id_domanda)");
+                                $mostra_opzioni_domanda->bindParam(':id_domanda', $id_domanda, PDO::PARAM_INT);
+                                $mostra_opzioni_domanda->execute();
+                                $opzioni_domanda = $mostra_opzioni_domanda->fetchAll(PDO::FETCH_ASSOC);
+                                $mostra_opzioni_domanda->closeCursor();
+                                $radio_name_id = 'opzioni_selezionate[' . $id_domanda . ']';
+                            } catch (PDOException $e) {
+                                echo "Errore Stored Procedure: " . $e->getMessage();
+                                header("Location: index.php");
+                                exit;
+                            }
                             ?>
 
                         <?php foreach ($opzioni_domanda as $opzione) { ?>
@@ -140,9 +157,15 @@ if ((isset($_POST["rispondi"])) || (isset($_POST["visualizza_risposte"]))) {
                     <!--Se la domanda è aperta, mostro il massimo numero di caratteri-->
                     <?php if ($domanda_sondaggio['ApertaChiusa'] == "APERTA") { ?>
                         <?php
-                        $max_caratteri_risposta = $pdo->prepare("SELECT * FROM DomandaAperta WHERE ID = ?");
-                        $max_caratteri_risposta->execute([$id_domanda]);
-                        $max_caratteri = $max_caratteri_risposta->fetch(PDO::FETCH_ASSOC);
+                        try {
+                            $max_caratteri_risposta = $pdo->prepare("SELECT * FROM DomandaAperta WHERE ID = ?");
+                            $max_caratteri_risposta->execute([$id_domanda]);
+                            $max_caratteri = $max_caratteri_risposta->fetch(PDO::FETCH_ASSOC);
+                        } catch (PDOException $e) {
+                            echo "Errore Stored Procedure: " . $e->getMessage();
+                            header("Location: index.php");
+                            exit;
+                        }
                         ?>
                         <?php echo ' (max caratteri: ' . $max_caratteri['MaxCaratteriRisposta'] . ')'; ?>
                     <?php } ?>
@@ -169,29 +192,41 @@ if ((isset($_POST["rispondi"])) || (isset($_POST["visualizza_risposte"]))) {
                 <!--Mostra risposta aperta o mostra opzione selezionata, in base a domanda APERTA o CHIUSA-->
                 <?php if ($domanda_sondaggio['ApertaChiusa'] == 'APERTA') { ?>
                     <?php
-                    $mostra_risposta = $pdo->prepare("CALL MostraRispostaAperta(:email, :id_domanda_aperta)");
-                    $mostra_risposta->bindParam(':email', $email, PDO::PARAM_STR);
-                    $mostra_risposta->bindParam(':id_domanda_aperta', $id_domanda, PDO::PARAM_INT);
-                    $mostra_risposta->execute();
-                    $risposta = $mostra_risposta->fetch(PDO::FETCH_ASSOC);
-                    $mostra_risposta->closeCursor();
-                    echo $risposta['Testo'];
+                    try {
+                        $mostra_risposta = $pdo->prepare("CALL MostraRispostaAperta(:email, :id_domanda_aperta)");
+                        $mostra_risposta->bindParam(':email', $email, PDO::PARAM_STR);
+                        $mostra_risposta->bindParam(':id_domanda_aperta', $id_domanda, PDO::PARAM_INT);
+                        $mostra_risposta->execute();
+                        $risposta = $mostra_risposta->fetch(PDO::FETCH_ASSOC);
+                        $mostra_risposta->closeCursor();
+                        echo $risposta['Testo'];
+                    } catch (PDOException $e) {
+                        echo "Errore Stored Procedure: " . $e->getMessage();
+                        header("Location: index.php");
+                        exit;
+                    }
                     ?>
                 <?php } else if ($domanda_sondaggio['ApertaChiusa'] == 'CHIUSA') { ?>
                         <?php
-                        $mostra_opzione_selezionata = $pdo->prepare("CALL MostraOpzioneSelezionata(:email, :id_domanda_chiusa)");
-                        $mostra_opzione_selezionata->bindParam(':email', $email, PDO::PARAM_STR);
-                        $mostra_opzione_selezionata->bindParam(':id_domanda_chiusa', $id_domanda, PDO::PARAM_INT);
-                        $mostra_opzione_selezionata->execute();
-                        $opzione_selezionata = $mostra_opzione_selezionata->fetch(PDO::FETCH_ASSOC);
-                        $mostra_opzione_selezionata->closeCursor();
+                        try {
+                            $mostra_opzione_selezionata = $pdo->prepare("CALL MostraOpzioneSelezionata(:email, :id_domanda_chiusa)");
+                            $mostra_opzione_selezionata->bindParam(':email', $email, PDO::PARAM_STR);
+                            $mostra_opzione_selezionata->bindParam(':id_domanda_chiusa', $id_domanda, PDO::PARAM_INT);
+                            $mostra_opzione_selezionata->execute();
+                            $opzione_selezionata = $mostra_opzione_selezionata->fetch(PDO::FETCH_ASSOC);
+                            $mostra_opzione_selezionata->closeCursor();
 
-                        $mostra_opzioni_non_selezionate = $pdo->prepare("CALL MostraOpzioniNonSelezionate(:email, :id_domanda_chiusa)");
-                        $mostra_opzioni_non_selezionate->bindParam(':email', $email, PDO::PARAM_STR);
-                        $mostra_opzioni_non_selezionate->bindParam(':id_domanda_chiusa', $id_domanda, PDO::PARAM_INT);
-                        $mostra_opzioni_non_selezionate->execute();
-                        $opzioni_non_selezionate = $mostra_opzioni_non_selezionate->fetchAll(PDO::FETCH_ASSOC);
-                        $mostra_opzioni_non_selezionate->closeCursor();
+                            $mostra_opzioni_non_selezionate = $pdo->prepare("CALL MostraOpzioniNonSelezionate(:email, :id_domanda_chiusa)");
+                            $mostra_opzioni_non_selezionate->bindParam(':email', $email, PDO::PARAM_STR);
+                            $mostra_opzioni_non_selezionate->bindParam(':id_domanda_chiusa', $id_domanda, PDO::PARAM_INT);
+                            $mostra_opzioni_non_selezionate->execute();
+                            $opzioni_non_selezionate = $mostra_opzioni_non_selezionate->fetchAll(PDO::FETCH_ASSOC);
+                            $mostra_opzioni_non_selezionate->closeCursor();
+                        } catch (PDOException $e) {
+                            echo "Errore Stored Procedure: " . $e->getMessage();
+                            header("Location: index.php");
+                            exit;
+                        }
                         ?>
 
                         <!--Le opzioni vengono rappresentate con una radio, selezionate o deselezionate in base a quale opzione e' stata scelta (graficamente non si vede molto)-->

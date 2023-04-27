@@ -5,11 +5,17 @@ require 'config_connessione.php'; // instaura la connessione con il db
 if (!(empty($_SESSION["email"]))) {
     $email = $_SESSION["email"];
     // ora usa l'email passata tra una pagina e l'altra (salvato nella sessione) per fare una query sql
-    $query_sql = "SELECT * FROM UtenteAmministratore JOIN Utente ON UtenteAmministratore.Email=Utente.Email WHERE UtenteAmministratore.Email = ?";
-    $stmt = $pdo->prepare($query_sql);
-    $stmt->execute([$email]);
-    //estrazione della riga cosi' da poter usare i dati
-    $dati_utente = $stmt->fetch(PDO::FETCH_ASSOC);
+    try {
+        $query_sql = "SELECT * FROM UtenteAmministratore JOIN Utente ON UtenteAmministratore.Email=Utente.Email WHERE UtenteAmministratore.Email = ?";
+        $stmt = $pdo->prepare($query_sql);
+        $stmt->execute([$email]);
+        //estrazione della riga cosi' da poter usare i dati
+        $dati_utente = $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        echo "Errore Stored Procedure: " . $e->getMessage();
+        header("Location: logout.php");
+        exit;
+    }
 
     //se sono semplice/premium e cambio l'url per andare nella home dell'utente amministratore, rimango sulla home semplice/premium
     if (isset($dati_utente['PAS'])) {
@@ -150,10 +156,16 @@ if (!(empty($_SESSION["email"]))) {
         <!--LISTA DOMINI-->
         <div class="space">
             <?php
-            $mostra_domini = $pdo->prepare("CALL MostraDomini()");
-            $mostra_domini->execute();
-            $domini = $mostra_domini->fetchAll(PDO::FETCH_ASSOC);
-            $mostra_domini->closeCursor();
+            try {
+                $mostra_domini = $pdo->prepare("CALL MostraDomini()");
+                $mostra_domini->execute();
+                $domini = $mostra_domini->fetchAll(PDO::FETCH_ASSOC);
+                $mostra_domini->closeCursor();
+            } catch (PDOException $e) {
+                echo "Errore Stored Procedure: " . $e->getMessage();
+                header("Location: logout.php");
+                exit;
+            }
             ?>
             <?php if (empty($domini)) {
                 echo "Non ci sono domini";

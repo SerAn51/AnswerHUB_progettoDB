@@ -11,14 +11,19 @@ if (!(empty($_SESSION["cf_azienda"]))) {
 
 function inserisciAzienda($pdo, $cf, $password, $email, $nome, $sede, $collezione_log)
 {
-    $inserisci_azienda = $pdo->prepare("CALL InserisciAzienda(:param1, :param2, :param3, :param4, :param5)");
-    $inserisci_azienda->bindParam(':param1', $cf, PDO::PARAM_STR);
-    $inserisci_azienda->bindParam(':param2', $password, PDO::PARAM_STR);
-    $inserisci_azienda->bindParam(':param3', $email, PDO::PARAM_STR);
-    $inserisci_azienda->bindParam(':param4', $nome, PDO::PARAM_STR);
-    $inserisci_azienda->bindParam(':param5', $sede, PDO::PARAM_STR);
-    $inserisci_azienda->execute();
-
+    try {
+        $inserisci_azienda = $pdo->prepare("CALL InserisciAzienda(:param1, :param2, :param3, :param4, :param5)");
+        $inserisci_azienda->bindParam(':param1', $cf, PDO::PARAM_STR);
+        $inserisci_azienda->bindParam(':param2', $password, PDO::PARAM_STR);
+        $inserisci_azienda->bindParam(':param3', $email, PDO::PARAM_STR);
+        $inserisci_azienda->bindParam(':param4', $nome, PDO::PARAM_STR);
+        $inserisci_azienda->bindParam(':param5', $sede, PDO::PARAM_STR);
+        $inserisci_azienda->execute();
+    } catch (PDOException $e) {
+        echo "Errore Stored Procedure: " . $e->getMessage();
+        header("Location: index.php");
+        exit;
+    }
     // Informazione da inserire nella collezione di log
     $informazione_log = array(
         "data" => new MongoDB\BSON\UTCDateTime(),
@@ -48,12 +53,17 @@ if (isset($_POST["submit"])) { // se submit avviene con successo
     if (isset($password) && isset($conferma_password)) {
         if ($password === $conferma_password) { //controllo che la password e la conferma siano uguali
 
-            //controlla che l'azienda già non sia registrata
-            $azienda = $pdo->prepare("SELECT * FROM Azienda WHERE CF = ?");
-            $azienda->execute([$cf]);
-            //estrazione della riga e inserimento in db
-            //TODO: transazione
-            $row = $azienda->fetch(PDO::FETCH_ASSOC);
+            try {
+                //controlla che l'azienda già non sia registrata
+                $azienda = $pdo->prepare("SELECT * FROM Azienda WHERE CF = ?");
+                $azienda->execute([$cf]);
+                //estrazione della riga e inserimento in db
+                $row = $azienda->fetch(PDO::FETCH_ASSOC);
+            } catch (PDOException $e) {
+                echo "Errore Stored Procedure: " . $e->getMessage();
+                header("Location: index.php");
+                exit;
+            }
 
             //se e' null l'azienda non esiste, quindi la inserisco
             if (!(isset($row['CF']))) { //isset() verifica se una variabile è stata impostata e se il suo valore non è NULL. True se la variabile è stata impostata e ha un valore diverso da NULL, false in caso contrario.

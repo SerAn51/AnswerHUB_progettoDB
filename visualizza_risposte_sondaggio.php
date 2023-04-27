@@ -5,22 +5,34 @@ require 'config_connessione.php'; // instaura la connessione con il db
 $codice_sondaggio = $_GET['cod_sondaggio'];
 
 // controllo per evitare che si cambi url e si faccia l'accesso ad un sondaggio di un altro utente premium, al massimo se cambio url per il get del codice posso mettere il codice di un sondaggio da me (utente premium) gestito:
-$check_sondaggio = $pdo->prepare("SELECT Codice FROM Sondaggio WHERE EmailUtentecreante = :email AND Codice = :codice");
-$check_sondaggio->bindParam(':email', $_SESSION['email'], PDO::PARAM_STR);
-$check_sondaggio->bindParam(':codice', $codice_sondaggio, PDO::PARAM_INT);
-$check_sondaggio->execute();
-$sondaggio = $check_sondaggio->fetch(PDO::FETCH_ASSOC);
-$check_sondaggio->closeCursor();
+try {
+    $check_sondaggio = $pdo->prepare("SELECT Codice FROM Sondaggio WHERE EmailUtentecreante = :email AND Codice = :codice");
+    $check_sondaggio->bindParam(':email', $_SESSION['email'], PDO::PARAM_STR);
+    $check_sondaggio->bindParam(':codice', $codice_sondaggio, PDO::PARAM_INT);
+    $check_sondaggio->execute();
+    $sondaggio = $check_sondaggio->fetch(PDO::FETCH_ASSOC);
+    $check_sondaggio->closeCursor();
+} catch (PDOException $e) {
+    echo "Errore Stored Procedure: " . $e->getMessage();
+    header("Location: index.php");
+    exit;
+}
 if (!$sondaggio) {
     header("Location: premium_home.php");
     exit;
 }
 
-$mostra_domande_sondaggio = $pdo->prepare("CALL MostraDomande(:param1)");
-$mostra_domande_sondaggio->bindParam(':param1', $codice_sondaggio, PDO::PARAM_INT);
-$mostra_domande_sondaggio->execute();
-$domande_sondaggio = $mostra_domande_sondaggio->fetchAll(PDO::FETCH_ASSOC);
-$mostra_domande_sondaggio->closeCursor();
+try {
+    $mostra_domande_sondaggio = $pdo->prepare("CALL MostraDomande(:param1)");
+    $mostra_domande_sondaggio->bindParam(':param1', $codice_sondaggio, PDO::PARAM_INT);
+    $mostra_domande_sondaggio->execute();
+    $domande_sondaggio = $mostra_domande_sondaggio->fetchAll(PDO::FETCH_ASSOC);
+    $mostra_domande_sondaggio->closeCursor();
+} catch (PDOException $e) {
+    echo "Errore Stored Procedure: " . $e->getMessage();
+    header("Location: index.php");
+    exit;
+}
 
 ?>
 
@@ -92,12 +104,18 @@ $mostra_domande_sondaggio->closeCursor();
 
             <!--Prendi la lista di utenti che hanno risposto al sondaggio-->
             <?php
-            $mostra_utenti_che_hanno_risposto = $pdo->prepare("CALL MostraUtentiCheHannoRisposto(:id_domanda, :codice_sondaggio)");
-            $mostra_utenti_che_hanno_risposto->bindParam(':id_domanda', $id_domanda, PDO::PARAM_INT);
-            $mostra_utenti_che_hanno_risposto->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
-            $mostra_utenti_che_hanno_risposto->execute();
-            $utenti_che_hanno_risposto = $mostra_utenti_che_hanno_risposto->fetchAll(PDO::FETCH_ASSOC);
-            $mostra_utenti_che_hanno_risposto->closeCursor();
+            try {
+                $mostra_utenti_che_hanno_risposto = $pdo->prepare("CALL MostraUtentiCheHannoRisposto(:id_domanda, :codice_sondaggio)");
+                $mostra_utenti_che_hanno_risposto->bindParam(':id_domanda', $id_domanda, PDO::PARAM_INT);
+                $mostra_utenti_che_hanno_risposto->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
+                $mostra_utenti_che_hanno_risposto->execute();
+                $utenti_che_hanno_risposto = $mostra_utenti_che_hanno_risposto->fetchAll(PDO::FETCH_ASSOC);
+                $mostra_utenti_che_hanno_risposto->closeCursor();
+            } catch (PDOException $e) {
+                echo "Errore Stored Procedure: " . $e->getMessage();
+                header("Location: index.php");
+                exit;
+            }
             ?>
 
             <!--Per ogni utente che ha risposto, se ne esistono,
@@ -114,22 +132,34 @@ $mostra_domande_sondaggio->closeCursor();
                     <!--Mostra risposta aperta o mostra opzione selezionata, in base a domanda APERTA o CHIUSA-->
                     <?php if ($domanda_sondaggio['ApertaChiusa'] == 'APERTA') { ?>
                         <?php
-                        $mostra_risposta = $pdo->prepare("CALL MostraRispostaAperta(:email, :id_domanda_aperta)");
-                        $mostra_risposta->bindParam(':email', $email, PDO::PARAM_STR);
-                        $mostra_risposta->bindParam(':id_domanda_aperta', $id_domanda, PDO::PARAM_INT);
-                        $mostra_risposta->execute();
-                        $risposta = $mostra_risposta->fetch(PDO::FETCH_ASSOC);
-                        $mostra_risposta->closeCursor();
+                        try {
+                            $mostra_risposta = $pdo->prepare("CALL MostraRispostaAperta(:email, :id_domanda_aperta)");
+                            $mostra_risposta->bindParam(':email', $email, PDO::PARAM_STR);
+                            $mostra_risposta->bindParam(':id_domanda_aperta', $id_domanda, PDO::PARAM_INT);
+                            $mostra_risposta->execute();
+                            $risposta = $mostra_risposta->fetch(PDO::FETCH_ASSOC);
+                            $mostra_risposta->closeCursor();
+                        } catch (PDOException $e) {
+                            echo "Errore Stored Procedure: " . $e->getMessage();
+                            header("Location: index.php");
+                            exit;
+                        }
                         echo 'Utente: ' . $email . ' Risposta: ' . $risposta['Testo'];
                         ?>
                     <?php } else if ($domanda_sondaggio['ApertaChiusa'] == 'CHIUSA') { ?>
                             <?php
-                            $mostra_opzione_selezionata = $pdo->prepare("CALL MostraOpzioneSelezionata(:email, :id_domanda_chiusa)");
-                            $mostra_opzione_selezionata->bindParam(':email', $email, PDO::PARAM_STR);
-                            $mostra_opzione_selezionata->bindParam(':id_domanda_chiusa', $id_domanda, PDO::PARAM_INT);
-                            $mostra_opzione_selezionata->execute();
-                            $opzione_selezionata = $mostra_opzione_selezionata->fetch(PDO::FETCH_ASSOC);
-                            $mostra_opzione_selezionata->closeCursor();
+                            try {
+                                $mostra_opzione_selezionata = $pdo->prepare("CALL MostraOpzioneSelezionata(:email, :id_domanda_chiusa)");
+                                $mostra_opzione_selezionata->bindParam(':email', $email, PDO::PARAM_STR);
+                                $mostra_opzione_selezionata->bindParam(':id_domanda_chiusa', $id_domanda, PDO::PARAM_INT);
+                                $mostra_opzione_selezionata->execute();
+                                $opzione_selezionata = $mostra_opzione_selezionata->fetch(PDO::FETCH_ASSOC);
+                                $mostra_opzione_selezionata->closeCursor();
+                            } catch (PDOException $e) {
+                                echo "Errore Stored Procedure: " . $e->getMessage();
+                                header("Location: index.php");
+                                exit;
+                            }
                             ?>
 
                             <!--Le opzioni vengono rappresentate con una radio, selezionate o deselezionate in base a quale opzione e' stata scelta (graficamente non si vede molto)-->

@@ -1,32 +1,44 @@
 <?php
 require 'config_connessione.php'; // instaura la connessione con il db
 
-//LOGIN: se vado su questa pagina senza accesso, reindirizza al login
-if (!(empty($_SESSION["email"]))) {
-    $email = $_SESSION["email"];
-    // ora usa l'email passata tra una pagina e l'altra (salvato nella sessione) per fare una query sql
-    $query_sql = "SELECT * FROM UtentePremium JOIN Utente ON UtentePremium.Email=Utente.Email WHERE UtentePremium.Email = ?";
-    $stmt = $pdo->prepare($query_sql);
-    $stmt->execute([$email]);
-    //estrazione della riga cosi' da poter usare i dati
-    $dati_utente = $stmt->fetch(PDO::FETCH_ASSOC);
+try {
+    //LOGIN: se vado su questa pagina senza accesso, reindirizza al login
+    if (!(empty($_SESSION["email"]))) {
+        $email = $_SESSION["email"];
+        // ora usa l'email passata tra una pagina e l'altra (salvato nella sessione) per fare una query sql
+        $query_sql = "SELECT * FROM UtentePremium JOIN Utente ON UtentePremium.Email=Utente.Email WHERE UtentePremium.Email = ?";
+        $stmt = $pdo->prepare($query_sql);
+        $stmt->execute([$email]);
+        //estrazione della riga cosi' da poter usare i dati
+        $dati_utente = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    //se sono semplice/amministratore e cambio l'url per andare nella home dell'utente premium, rimango sulla home semplice/amministratore
-    if ($dati_utente["PAS"] === "SEMPLICE") {
-        header("Location: semplice_home.php");
-    } else if ($dati_utente["PAS"] === "AMMINISTRATORE") {
-        header("Location: amministratore_home.php");
+        //se sono semplice/amministratore e cambio l'url per andare nella home dell'utente premium, rimango sulla home semplice/amministratore
+        if ($dati_utente["PAS"] === "SEMPLICE") {
+            header("Location: semplice_home.php");
+        } else if ($dati_utente["PAS"] === "AMMINISTRATORE") {
+            header("Location: amministratore_home.php");
+        }
+    } else {
+        header("Location: login.php"); //inoltre, cosi' che se provo ad andare in index dall'url, mi rimanda al login
     }
-} else {
-    header("Location: login.php"); //inoltre, cosi' che se provo ad andare in index dall'url, mi rimanda al login
+} catch (PDOException $e) {
+    echo "Errore Stored Procedure: " . $e->getMessage();
+    header("Location: logout.php");
+    exit;
 }
 
-//utile per mostrare la lista di sondaggi
-$mostra_sondaggi_creati = $pdo->prepare("SELECT * FROM Sondaggio WHERE EmailUtentecreante = :email");
-$mostra_sondaggi_creati->bindParam(':email', $_SESSION["email"], PDO::PARAM_STR);
-$mostra_sondaggi_creati->execute();
-$sondaggi_creati = $mostra_sondaggi_creati->fetchAll(PDO::FETCH_ASSOC);
-$mostra_sondaggi_creati->closeCursor();
+try {
+    //utile per mostrare la lista di sondaggi
+    $mostra_sondaggi_creati = $pdo->prepare("SELECT * FROM Sondaggio WHERE EmailUtentecreante = :email");
+    $mostra_sondaggi_creati->bindParam(':email', $_SESSION["email"], PDO::PARAM_STR);
+    $mostra_sondaggi_creati->execute();
+    $sondaggi_creati = $mostra_sondaggi_creati->fetchAll(PDO::FETCH_ASSOC);
+    $mostra_sondaggi_creati->closeCursor();
+} catch (PDOException $e) {
+    echo "Errore Stored Procedure: " . $e->getMessage();
+    header("Location: logout.php");
+    exit;
+}
 
 //utile per verificare che ci siano invitati al sondaggio
 /*
@@ -250,10 +262,16 @@ var_dump($codice_sondaggio);
         - Per il creante sono un utente quindi inserisco l'email di sessione e null per il CFAziendacreante
         - Mostra un messaggio di errore se sto creando un sondaggio di cui gia' esiste il nome-->
         <?php
-        $mostra_domini = $pdo->prepare("CALL MostraDomini()");
-        $mostra_domini->execute();
-        $domini = $mostra_domini->fetchAll(PDO::FETCH_ASSOC);
-        $mostra_domini->closeCursor();
+        try {
+            $mostra_domini = $pdo->prepare("CALL MostraDomini()");
+            $mostra_domini->execute();
+            $domini = $mostra_domini->fetchAll(PDO::FETCH_ASSOC);
+            $mostra_domini->closeCursor();
+        } catch (PDOException $e) {
+            echo "Errore Stored Procedure: " . $e->getMessage();
+            header("Location: logout.php");
+            exit;
+        }
 
         ?>
         <div class="space">
@@ -397,13 +415,19 @@ inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad u
                 <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
                     <form action="script_php/elimina_sondaggio.php" method="POST">
                         <?php
-                        //utile per verificare che ci siano invitati al sondaggio
-                        $codice_sondaggio = $sondaggio_creato['Codice'];
-                        $check_inviti = $pdo->prepare("SELECT * FROM Invito WHERE CodiceSondaggio = :codice_sondaggio");
-                        $check_inviti->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
-                        $check_inviti->execute();
-                        $inviti = $check_inviti->fetchAll();
-                        $check_inviti->closeCursor();
+                        try {
+                            //utile per verificare che ci siano invitati al sondaggio
+                            $codice_sondaggio = $sondaggio_creato['Codice'];
+                            $check_inviti = $pdo->prepare("SELECT * FROM Invito WHERE CodiceSondaggio = :codice_sondaggio");
+                            $check_inviti->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
+                            $check_inviti->execute();
+                            $inviti = $check_inviti->fetchAll();
+                            $check_inviti->closeCursor();
+                        } catch (PDOException $e) {
+                            echo "Errore Stored Procedure: " . $e->getMessage();
+                            header("Location: logout.php");
+                            exit;
+                        }
                         ?>
                         <!--Quando rimuovo da Sondaggio, deve rimuovere automaticamente anche da:
                         - ComponenteSondaggioDomanda

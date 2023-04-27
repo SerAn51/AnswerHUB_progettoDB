@@ -61,7 +61,8 @@ if (isset($_POST["invita"])) {
     //Controlla se esistono domande per il sondaggio, altrimenti notifica l'utente e non rendere disponibile l'invio di inviti
     $controllo = true;
     if (empty($domande)) {
-        echo "Questo sondaggio non ha domande, aggiungi delle domande";
+        //echo "Errore: questo sondaggio non ha domande, aggiungi delle domande";
+        header("Location: ../azienda_home.php?error=20");
         $controllo = false;
     } else {
         if (!empty($domande_chiuse)) {
@@ -75,7 +76,8 @@ if (isset($_POST["invita"])) {
                 $opzioni_domanda = $check_opzioni_domanda->fetchAll();
                 $check_opzioni_domanda->closeCursor();
                 if (empty($opzioni_domanda)) {
-                    echo 'La domanda "' . $domanda_chiusa['Testo'] . '" non ha opzioni, aggiungine almeno una';
+                    //echo "Errore: una domanda e' senza opzioni";
+                    header("Location: ../azienda_home.php?error=21");
                     $controllo = false;
                 }
             }
@@ -87,7 +89,8 @@ if (isset($_POST["invita"])) {
             //(lo mostri solo se sono passati i controlli precedenti sull'esistenza di domande e opzioni per domande chiuse-->
 
             if (count($utenti_interessati) == 0) {
-                echo "Non ci sono utenti interessati al dominio di questo sondaggio (non sono considerati eventuali utenti interessati e gia' invitati)";
+                header("Location: ../azienda_home.php?error=22");
+                //echo "Non ci sono utenti interessati al dominio di questo sondaggio";
             } else {
 
                 $mostra_max_utenti = $pdo->prepare("SELECT MaxUtenti FROM Sondaggio WHERE Codice = :codice");
@@ -105,8 +108,8 @@ if (isset($_POST["invita"])) {
                         inserisci_invito_automaticamente($pdo, $email_utente, $codice_sondaggio, $cf_azienda_invitante, $collezione_log);
                         $count++;
                         if ($count == $max_utenti) {
-                            echo "utenti invitati";
-                            header("Location: ../azienda_home.php");
+                            //echo "utenti invitati";
+                            header("Location: ../azienda_home.php?success=20");
                             exit;
                         }
                     }

@@ -3,11 +3,17 @@ require 'config_connessione.php'; // instaura la connessione con il db
 
 $email = $_SESSION["email"];
 // ora usa l'email passata tra una pagina e l'altra (salvato nella sessione) per fare una query sql
-$query_sql = "SELECT * FROM Utente WHERE Email = ?";
-$stmt = $pdo->prepare($query_sql);
-$stmt->execute([$email]);
-//estrazione della riga cosi' da poter usare i dati
-$dati_utente = $stmt->fetch(PDO::FETCH_ASSOC);
+try {
+    $query_sql = "SELECT * FROM Utente WHERE Email = ?";
+    $stmt = $pdo->prepare($query_sql);
+    $stmt->execute([$email]);
+    //estrazione della riga cosi' da poter usare i dati
+    $dati_utente = $stmt->fetch(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    echo "Errore Stored Procedure: " . $e->getMessage();
+    header("Location: logout.php");
+    exit;
+}
 
 //se sono amministratore/premium e cambio l'url per andare nella home dell'utente semplice, rimango sulla home amministratore/premium
 if ($dati_utente["PAS"] === "AMMINISTRATORE") {
@@ -124,20 +130,24 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
             <ul>
                 <?php
                 //array con i domini selezionati dall'utente
-                $prep_query_interessato = $pdo->prepare('SELECT * FROM Interessato WHERE EmailUtente = :email');
-                $prep_query_interessato->bindParam(':email', $_SESSION["email"], PDO::PARAM_STR);
-                $prep_query_interessato->execute();
-                $domini_salvati_in_passato = $prep_query_interessato->fetchAll(PDO::FETCH_ASSOC);
+                try {
+                    $prep_query_interessato = $pdo->prepare('SELECT * FROM Interessato WHERE EmailUtente = :email');
+                    $prep_query_interessato->bindParam(':email', $_SESSION["email"], PDO::PARAM_STR);
+                    $prep_query_interessato->execute();
+                    $domini_salvati_in_passato = $prep_query_interessato->fetchAll(PDO::FETCH_ASSOC);
+                    $prep_query_interessato->closeCursor();
 
-                $prep_query_interessato->closeCursor();
-
-                //lista di tutti i domini
-                $sql = "CALL MostraDomini()";
-                $mostra_domini = $pdo->prepare($sql);
-                $mostra_domini->execute();
-                $domini = $mostra_domini->fetchAll(PDO::FETCH_ASSOC);
-
-                $mostra_domini->closeCursor();
+                    //lista di tutti i domini
+                    $sql = "CALL MostraDomini()";
+                    $mostra_domini = $pdo->prepare($sql);
+                    $mostra_domini->execute();
+                    $domini = $mostra_domini->fetchAll(PDO::FETCH_ASSOC);
+                    $mostra_domini->closeCursor();
+                } catch (PDOException $e) {
+                    echo "Errore Stored Procedure: " . $e->getMessage();
+                    header("Location: logout.php");
+                    exit;
+                }
 
                 //TODO: non usare gli echo, vedi premium_home.php, stampa delle radio
                 foreach ($domini as $dominio) {
@@ -167,11 +177,17 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
     <div class="space">
         <h2>Rispondi ai sondaggi</h2>
         <?php
-        $mostra_sondaggi_accettati = $pdo->prepare("CALL MostraSondaggiAccettati(:param1)");
-        $mostra_sondaggi_accettati->bindParam(':param1', $email, PDO::PARAM_STR);
-        $mostra_sondaggi_accettati->execute();
-        $sondaggi_accettati = $mostra_sondaggi_accettati->fetchAll(PDO::FETCH_ASSOC);
-        $mostra_sondaggi_accettati->closeCursor();
+        try {
+            $mostra_sondaggi_accettati = $pdo->prepare("CALL MostraSondaggiAccettati(:param1)");
+            $mostra_sondaggi_accettati->bindParam(':param1', $email, PDO::PARAM_STR);
+            $mostra_sondaggi_accettati->execute();
+            $sondaggi_accettati = $mostra_sondaggi_accettati->fetchAll(PDO::FETCH_ASSOC);
+            $mostra_sondaggi_accettati->closeCursor();
+        } catch (PDOException $e) {
+            echo "Errore Stored Procedure: " . $e->getMessage();
+            header("Location: logout.php");
+            exit;
+        }
         ?>
 
         <?php foreach ($sondaggi_accettati as $sondaggio_accettato) { ?>
@@ -181,26 +197,31 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
                 $creatore = $sondaggio_accettato['EmailUtentecreante']; // di base impostiamo come creatore la la mail dell'utente...
                 // ...se, pero', e' null; allora il sondaggio è stato creato da un'azienda (lo controlliamo per sicurezza),
                 // dunque impostiamo come creatore il nome dell'azienda usando il CF che conosciamo per ricavarne il nome
-                if (!isset($sondaggio_accettato['EmailUtentecreante']) && isset($sondaggio_accettato['CFAziendacreante'])) {
-                    $mostra_dati_azienda = $pdo->prepare("SELECT * FROM Azienda WHERE CF = :cf_azienda");
-                    $mostra_dati_azienda->bindParam(':cf_azienda', $sondaggio_accettato['CFAziendacreante'], PDO::PARAM_STR);
-                    $mostra_dati_azienda->execute();
-                    $dati_azienda = $mostra_dati_azienda->fetch(PDO::FETCH_ASSOC);
-                    $mostra_dati_azienda->closeCursor();
-                    $creatore = $dati_azienda['Nome'];
+                try {
+                    if (!isset($sondaggio_accettato['EmailUtentecreante']) && isset($sondaggio_accettato['CFAziendacreante'])) {
+                        $mostra_dati_azienda = $pdo->prepare("SELECT * FROM Azienda WHERE CF = :cf_azienda");
+                        $mostra_dati_azienda->bindParam(':cf_azienda', $sondaggio_accettato['CFAziendacreante'], PDO::PARAM_STR);
+                        $mostra_dati_azienda->execute();
+                        $dati_azienda = $mostra_dati_azienda->fetch(PDO::FETCH_ASSOC);
+                        $mostra_dati_azienda->closeCursor();
+                        $creatore = $dati_azienda['Nome'];
+                    }
+                    $risposte_domande_aperte = $pdo->prepare("CALL MostraRisposteDomandeAperteSondaggio(:param1, :param2)");
+                    $risposte_domande_aperte->bindParam(':param1', $email, PDO::PARAM_STR);
+                    $risposte_domande_aperte->bindParam(':param2', $codice_sondaggio, PDO::PARAM_INT);
+                    $risposte_domande_aperte->execute();
+                    $risposte_domande_aperte->closeCursor();
+
+                    $opzioni_domande_chiuse = $pdo->prepare("CALL MostraOpzioniDomandeChiuseSondaggio(:param1, :param2)");
+                    $opzioni_domande_chiuse->bindParam(':param1', $email, PDO::PARAM_STR);
+                    $opzioni_domande_chiuse->bindParam(':param2', $codice_sondaggio, PDO::PARAM_INT);
+                    $opzioni_domande_chiuse->execute();
+                    $opzioni_domande_chiuse->closeCursor();
+                } catch (PDOException $e) {
+                    echo "Errore Stored Procedure: " . $e->getMessage();
+                    header("Location: logout.php");
+                    exit;
                 }
-                $risposte_domande_aperte = $pdo->prepare("CALL MostraRisposteDomandeAperteSondaggio(:param1, :param2)");
-                $risposte_domande_aperte->bindParam(':param1', $email, PDO::PARAM_STR);
-                $risposte_domande_aperte->bindParam(':param2', $codice_sondaggio, PDO::PARAM_INT);
-                $risposte_domande_aperte->execute();
-                $risposte_domande_aperte->closeCursor();
-
-                $opzioni_domande_chiuse = $pdo->prepare("CALL MostraOpzioniDomandeChiuseSondaggio(:param1, :param2)");
-                $opzioni_domande_chiuse->bindParam(':param1', $email, PDO::PARAM_STR);
-                $opzioni_domande_chiuse->bindParam(':param2', $codice_sondaggio, PDO::PARAM_INT);
-                $opzioni_domande_chiuse->execute();
-                $opzioni_domande_chiuse->closeCursor();
-
                 $sondaggio_completato = true;
                 // se entrambe le query ritornano una tabella vuota vuol dire che ancora non ho risposto al sondaggio
                 if (($risposte_domande_aperte->rowCount() === 0) && ($opzioni_domande_chiuse->rowCount() === 0)) {
@@ -232,11 +253,17 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
         <ul>
             <?php
             //lista di tutti gli inviti dell'utente
-            $mostra_inviti_utente = $pdo->prepare("CALL MostraInvitiUtente(:param1)");
-            $mostra_inviti_utente->bindParam(':param1', $email, PDO::PARAM_STR);
-            $mostra_inviti_utente->execute();
-            $info_inviti = $mostra_inviti_utente->fetchAll(PDO::FETCH_ASSOC);
-            $mostra_inviti_utente->closeCursor();
+            try {
+                $mostra_inviti_utente = $pdo->prepare("CALL MostraInvitiUtente(:param1)");
+                $mostra_inviti_utente->bindParam(':param1', $email, PDO::PARAM_STR);
+                $mostra_inviti_utente->execute();
+                $info_inviti = $mostra_inviti_utente->fetchAll(PDO::FETCH_ASSOC);
+                $mostra_inviti_utente->closeCursor();
+            } catch (PDOException $e) {
+                echo "Errore Stored Procedure: " . $e->getMessage();
+                header("Location: logout.php");
+                exit;
+            }
 
             foreach ($info_inviti as $info_invito) {
                 echo '<li> ';
@@ -259,12 +286,17 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
         <ul>
             <?php
             //array con tutti i premi vinti dall'utente di sessione
-            $prep_query_premi_vinti = $pdo->prepare('SELECT * FROM Vincente JOIN Premio ON Vincente.NomePremio=Premio.Nome WHERE Vincente.EmailUtente = :email');
-            $prep_query_premi_vinti->bindParam(':email', $_SESSION["email"], PDO::PARAM_STR);
-            $prep_query_premi_vinti->execute();
-            $premi_vinti = $prep_query_premi_vinti->fetchAll(PDO::FETCH_ASSOC);
-
-            $prep_query_premi_vinti->closeCursor();
+            try {
+                $prep_query_premi_vinti = $pdo->prepare('SELECT * FROM Vincente JOIN Premio ON Vincente.NomePremio=Premio.Nome WHERE Vincente.EmailUtente = :email');
+                $prep_query_premi_vinti->bindParam(':email', $_SESSION["email"], PDO::PARAM_STR);
+                $prep_query_premi_vinti->execute();
+                $premi_vinti = $prep_query_premi_vinti->fetchAll(PDO::FETCH_ASSOC);
+                $prep_query_premi_vinti->closeCursor();
+            } catch (PDOException $e) {
+                echo "Errore Stored Procedure: " . $e->getMessage();
+                header("Location: logout.php");
+                exit;
+            }
 
             foreach ($premi_vinti as $premio_vinto) {
                 echo '<li><label name="premio_vinto" value="' . $premio_vinto["NomePremio"] . '"';

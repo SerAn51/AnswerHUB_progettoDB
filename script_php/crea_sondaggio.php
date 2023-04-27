@@ -92,7 +92,7 @@ if (isset($_POST["crea"])) {
             if ($utente_o_azienda) {
                 header("Location: ../premium_home.php?error=10");
             } else {
-                header("Location: ../azienda_home.php?error=10");
+                header("Location: ../azienda_home.php?error=11");
             }
             exit;
         }

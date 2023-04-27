@@ -6,56 +6,61 @@ if ((!(empty($_SESSION["email"]))) || (!(empty($_SESSION["cf_azienda"])))) {
     header("Location: index.php");
 }
 
-
-// se submit ha inviato i dati
-if (isset($_POST["submit"])) {
-    if (isset($_POST['checkbox_accesso_azienda']) && $_POST['checkbox_accesso_azienda'] == 'on') { // La checkbox è stata selezionata
-        $cf_azienda = $_POST["cf_azienda"];
-        $password = $_POST["password"];
-        //usa una query per controllare se la email inserita esiste nel db (esiste l'utente)
-        $query_sql = "SELECT * FROM Azienda WHERE CF = ?";
-        $stmt = $pdo->prepare($query_sql);
-        $stmt->execute([$cf_azienda]);
-        //estrazione della riga e confronto i dati della riga con i dati inseriti dall'utente
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (isset($row['CF'])) { //il CF esiste nel db
-            if ($password != $row['Pwd']) { //se ha sbagliato password
-                $messaggio = "Password sbagliata, riprova";
+try {
+    // se submit ha inviato i dati
+    if (isset($_POST["submit"])) {
+        if (isset($_POST['checkbox_accesso_azienda']) && $_POST['checkbox_accesso_azienda'] == 'on') { // La checkbox è stata selezionata
+            $cf_azienda = $_POST["cf_azienda"];
+            $password = $_POST["password"];
+            //usa una query per controllare se la email inserita esiste nel db (esiste l'utente)
+            $query_sql = "SELECT * FROM Azienda WHERE CF = ?";
+            $stmt = $pdo->prepare($query_sql);
+            $stmt->execute([$cf_azienda]);
+            //estrazione della riga e confronto i dati della riga con i dati inseriti dall'utente
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (isset($row['CF'])) { //il CF esiste nel db
+                if ($password != $row['Pwd']) { //se ha sbagliato password
+                    $messaggio = "Password sbagliata, riprova";
+                    $tipo_messaggio = "errore";
+                } else { //se la password e' corretta
+                    $_SESSION["login"] = true;
+                    $_SESSION["cf_azienda"] = $row["CF"];
+                    $_SESSION["email"] = null;
+                    header("Location: index.php"); //reindirizza a index.php
+                }
+            } else {
+                $messaggio = "Errore, azienda non registrata";
                 $tipo_messaggio = "errore";
-            } else { //se la password e' corretta
-                $_SESSION["login"] = true;
-                $_SESSION["cf_azienda"] = $row["CF"];
-                $_SESSION["email"] = null;
-                header("Location: index.php"); //reindirizza a index.php
             }
         } else {
-            $messaggio = "Errore, azienda non registrata";
-            $tipo_messaggio = "errore";
-        }
-    } else {
-        $email = $_POST["email"];
-        $password = $_POST["password"];
-        //usa una query per controllare se la email inserita esiste nel db (esiste l'utente)
-        $query_sql = "SELECT * FROM Utente WHERE Email = ?";
-        $stmt = $pdo->prepare($query_sql);
-        $stmt->execute([$email]);
-        //estrazione della riga e confronto i dati della riga con i dati inseriti dall'utente
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (isset($row['Email'])) { //l'email esiste nel db
-            if ($password != $row['Pwd']) { //se ha sbagliato password
-                $messaggio = "Password sbagliata, riprova";
+            $email = $_POST["email"];
+            $password = $_POST["password"];
+            //usa una query per controllare se la email inserita esiste nel db (esiste l'utente)
+            $query_sql = "SELECT * FROM Utente WHERE Email = ?";
+            $stmt = $pdo->prepare($query_sql);
+            $stmt->execute([$email]);
+            //estrazione della riga e confronto i dati della riga con i dati inseriti dall'utente
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (isset($row['Email'])) { //l'email esiste nel db
+                if ($password != $row['Pwd']) { //se ha sbagliato password
+                    $messaggio = "Password sbagliata, riprova";
+                    $tipo_messaggio = "errore";
+                } else { //se la password e' corretta
+                    $_SESSION["login"] = true;
+                    $_SESSION["email"] = $row["Email"];
+                    $_SESSION["cf_azienda"] = null;
+                    header("Location: index.php"); //reindirizza a index.php
+                }
+            } else {
+                $messaggio = "Errore, non sei registrato/a";
                 $tipo_messaggio = "errore";
-            } else { //se la password e' corretta
-                $_SESSION["login"] = true;
-                $_SESSION["email"] = $row["Email"];
-                $_SESSION["cf_azienda"] = null;
-                header("Location: index.php"); //reindirizza a index.php
             }
-        } else {
-            $messaggio = "Errore, non sei registrato/a";
-            $tipo_messaggio = "errore";
         }
     }
+} catch (PDOException $e) {
+    echo "Errore Stored Procedure: " . $e->getMessage();
+    header("Location: logout.php");
+    exit;
 }
 ?>
 

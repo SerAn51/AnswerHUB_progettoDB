@@ -1,60 +1,65 @@
 <?php
-require 'config_connessione.php'; // instaura la connessione con il db
+try {
+    require 'config_connessione.php'; // instaura la connessione con il db
 
-$codice_sondaggio = $_GET['cod_sondaggio'];
-$id_domanda = $_GET['id_domanda'];
+    $codice_sondaggio = $_GET['cod_sondaggio'];
+    $id_domanda = $_GET['id_domanda'];
 
-// controllo per evitare che si cambi url e si faccia l'accesso ad un sondaggio di un altro utente premium/azienda, al massimo se cambio url per il get del codice posso mettere il codice di un sondaggio da me (utente premium/azienda) gestito:
+    // controllo per evitare che si cambi url e si faccia l'accesso ad un sondaggio di un altro utente premium/azienda, al massimo se cambio url per il get del codice posso mettere il codice di un sondaggio da me (utente premium/azienda) gestito:
 // se email non e' vuota vuol dire che ho richiamato gestisci_domanda come utente premium
-if (!(empty($_SESSION["email"]))) {
-    $check_sondaggio = $pdo->prepare("SELECT Codice FROM Sondaggio WHERE EmailUtentecreante = :email AND Codice = :codice");
-    $check_sondaggio->bindParam(':email', $_SESSION['email'], PDO::PARAM_STR);
-    // altrimenti l'ho richiamato come azienda
-} else if (!(empty($_SESSION["cf_azienda"]))) {
-    $check_sondaggio = $pdo->prepare("SELECT Codice FROM Sondaggio WHERE CFAziendacreante = :cf_azienda AND Codice = :codice");
-    $check_sondaggio->bindParam(':cf_azienda', $_SESSION['cf_azienda'], PDO::PARAM_STR);
-}
-$check_sondaggio->bindParam(':codice', $codice_sondaggio, PDO::PARAM_INT);
-$check_sondaggio->execute();
-$sondaggio = $check_sondaggio->fetch(PDO::FETCH_ASSOC);
-$check_sondaggio->closeCursor();
-if (!$sondaggio) {
+    if (!(empty($_SESSION["email"]))) {
+        $check_sondaggio = $pdo->prepare("SELECT Codice FROM Sondaggio WHERE EmailUtentecreante = :email AND Codice = :codice");
+        $check_sondaggio->bindParam(':email', $_SESSION['email'], PDO::PARAM_STR);
+        // altrimenti l'ho richiamato come azienda
+    } else if (!(empty($_SESSION["cf_azienda"]))) {
+        $check_sondaggio = $pdo->prepare("SELECT Codice FROM Sondaggio WHERE CFAziendacreante = :cf_azienda AND Codice = :codice");
+        $check_sondaggio->bindParam(':cf_azienda', $_SESSION['cf_azienda'], PDO::PARAM_STR);
+    }
+    $check_sondaggio->bindParam(':codice', $codice_sondaggio, PDO::PARAM_INT);
+    $check_sondaggio->execute();
+    $sondaggio = $check_sondaggio->fetch(PDO::FETCH_ASSOC);
+    $check_sondaggio->closeCursor();
+    if (!$sondaggio) {
+        header("Location: index.php");
+        exit;
+    }
+
+    // controllo per evitare che si cambi url e si faccia l'accesso ad una domanda di un altro utente premium/azienda, al massimo se cambio url per il get dell'ID della domanda posso mettere quella di una domanda chiusa da me (utente premium/azienda) gestita:
+    $aperta_chiusa = "CHIUSA";
+    if (!(empty($_SESSION["email"]))) {
+        $check_domanda = $pdo->prepare("SELECT ID FROM Domanda WHERE EmailUtenteinserente = :email AND ID = :id AND ApertaChiusa = :aperta_chiusa");
+        $check_domanda->bindParam(':email', $_SESSION['email'], PDO::PARAM_STR);
+    } else if (!(empty($_SESSION["cf_azienda"]))) {
+        $check_domanda = $pdo->prepare("SELECT ID FROM Domanda WHERE CFAziendainserente = :cf_azienda AND ID = :id AND ApertaChiusa = :aperta_chiusa");
+        $check_domanda->bindParam(':cf_azienda', $_SESSION['cf_azienda'], PDO::PARAM_STR);
+    }
+    $check_domanda->bindParam(':id', $id_domanda, PDO::PARAM_INT);
+    $check_domanda->bindParam(':aperta_chiusa', $aperta_chiusa, PDO::PARAM_STR);
+    $check_domanda->execute();
+    $domanda = $check_domanda->fetch(PDO::FETCH_ASSOC);
+    $check_domanda->closeCursor();
+    if (!$domanda) {
+        header("Location: index.php");
+        exit;
+    }
+
+    $mostra_opzioni_domanda = $pdo->prepare("CALL MostraOpzioni(:id_domanda)");
+    $mostra_opzioni_domanda->bindParam(':id_domanda', $id_domanda, PDO::PARAM_INT);
+    $mostra_opzioni_domanda->execute();
+    $opzioni_domanda = $mostra_opzioni_domanda->fetchAll(PDO::FETCH_ASSOC);
+    $mostra_opzioni_domanda->closeCursor();
+
+
+    $check_inviti = $pdo->prepare("SELECT * FROM Invito WHERE CodiceSondaggio = :codice_sondaggio");
+    $check_inviti->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
+    $check_inviti->execute();
+    $inviti = $check_inviti->fetchAll();
+    $check_inviti->closeCursor();
+} catch (PDOException $e) {
+    echo "Errore Stored Procedure: " . $e->getMessage();
     header("Location: index.php");
     exit;
 }
-
-// controllo per evitare che si cambi url e si faccia l'accesso ad una domanda di un altro utente premium/azienda, al massimo se cambio url per il get dell'ID della domanda posso mettere quella di una domanda chiusa da me (utente premium/azienda) gestita:
-$aperta_chiusa = "CHIUSA";
-if (!(empty($_SESSION["email"]))) {
-    $check_domanda = $pdo->prepare("SELECT ID FROM Domanda WHERE EmailUtenteinserente = :email AND ID = :id AND ApertaChiusa = :aperta_chiusa");
-    $check_domanda->bindParam(':email', $_SESSION['email'], PDO::PARAM_STR);
-} else if (!(empty($_SESSION["cf_azienda"]))) {
-    $check_domanda = $pdo->prepare("SELECT ID FROM Domanda WHERE CFAziendainserente = :cf_azienda AND ID = :id AND ApertaChiusa = :aperta_chiusa");
-    $check_domanda->bindParam(':cf_azienda', $_SESSION['cf_azienda'], PDO::PARAM_STR);
-}
-$check_domanda->bindParam(':id', $id_domanda, PDO::PARAM_INT);
-$check_domanda->bindParam(':aperta_chiusa', $aperta_chiusa, PDO::PARAM_STR);
-$check_domanda->execute();
-$domanda = $check_domanda->fetch(PDO::FETCH_ASSOC);
-$check_domanda->closeCursor();
-if (!$domanda) {
-    header("Location: index.php");
-    exit;
-}
-
-$mostra_opzioni_domanda = $pdo->prepare("CALL MostraOpzioni(:id_domanda)");
-$mostra_opzioni_domanda->bindParam(':id_domanda', $id_domanda, PDO::PARAM_INT);
-$mostra_opzioni_domanda->execute();
-$opzioni_domanda = $mostra_opzioni_domanda->fetchAll(PDO::FETCH_ASSOC);
-$mostra_opzioni_domanda->closeCursor();
-
-
-$check_inviti = $pdo->prepare("SELECT * FROM Invito WHERE CodiceSondaggio = :codice_sondaggio");
-$check_inviti->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
-$check_inviti->execute();
-$inviti = $check_inviti->fetchAll();
-$check_inviti->closeCursor();
-
 ?>
 
 <!DOCTYPE html>

@@ -11,17 +11,22 @@ if (!(empty($_SESSION["email"]))) {
 
 function inserisciUtente($pdo, $email, $password, $nome, $cognome, $data_nascita, $luogo_nascita, $tipo_utente, $collezione_log)
 {
-    $sql = "CALL InserisciUtente(:param1, :param2, :param3, :param4, :param5, :param6, :param7)";
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':param1', $email, PDO::PARAM_STR);
-    $stmt->bindParam(':param2', $password, PDO::PARAM_STR);
-    $stmt->bindParam(':param3', $nome, PDO::PARAM_STR);
-    $stmt->bindParam(':param4', $cognome, PDO::PARAM_STR);
-    $stmt->bindParam(':param5', $data_nascita, PDO::PARAM_STR);
-    $stmt->bindParam(':param6', $luogo_nascita, PDO::PARAM_STR);
-    $stmt->bindParam(':param7', $tipo_utente, PDO::PARAM_STR);
-    $stmt->execute();
-
+    try {
+        $sql = "CALL InserisciUtente(:param1, :param2, :param3, :param4, :param5, :param6, :param7)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':param1', $email, PDO::PARAM_STR);
+        $stmt->bindParam(':param2', $password, PDO::PARAM_STR);
+        $stmt->bindParam(':param3', $nome, PDO::PARAM_STR);
+        $stmt->bindParam(':param4', $cognome, PDO::PARAM_STR);
+        $stmt->bindParam(':param5', $data_nascita, PDO::PARAM_STR);
+        $stmt->bindParam(':param6', $luogo_nascita, PDO::PARAM_STR);
+        $stmt->bindParam(':param7', $tipo_utente, PDO::PARAM_STR);
+        $stmt->execute();
+    } catch (PDOException $e) {
+        echo "Errore Stored Procedure: " . $e->getMessage();
+        header("Location: index.php");
+        exit;
+    }
     // Informazione da inserire nella collezione di log
     $informazione_log = array(
         "data" => new MongoDB\BSON\UTCDateTime(),
@@ -54,14 +59,19 @@ if (isset($_POST["submit"])) { // se submit avviene con successo
     //inserisco i dati nel database
     if (isset($password) && isset($conferma_password)) {
         if ($password === $conferma_password) { //controllo che la password e la conferma siano uguali
-            //controlla che l'utente già non sia registrato
-            $query_sql = "SELECT * FROM Utente WHERE Email = ?";
-            $stmt = $pdo->prepare($query_sql);
-            $stmt->execute([$email]);
-            //estrazione della riga e inserimento in db
-            //TODO: transazione
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
+            //controlla che l'utente già non sia registrato
+            try {
+                $query_sql = "SELECT * FROM Utente WHERE Email = ?";
+                $stmt = $pdo->prepare($query_sql);
+                $stmt->execute([$email]);
+                //estrazione della riga e inserimento in db
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            } catch (PDOException $e) {
+                echo "Errore Stored Procedure: " . $e->getMessage();
+                header("Location: index.php");
+                exit;
+            }
             //se e' null l'utente non esiste, quindi lo inserisco
             if (!(isset($row['Email']))) { //isset() verifica se una variabile è stata impostata e se il suo valore non è NULL. True se la variabile è stata impostata e ha un valore diverso da NULL, false in caso contrario.
 

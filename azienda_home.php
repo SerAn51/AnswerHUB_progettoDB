@@ -2,6 +2,7 @@
 require 'config_connessione.php'; // instaura la connessione con il db
 
 //utile per mostrare la lista di sondaggi
+try {+0}
 $mostra_sondaggi_creati = $pdo->prepare("SELECT * FROM Sondaggio WHERE CFAziendacreante = :cf_azienda");
 $mostra_sondaggi_creati->bindParam(':cf_azienda', $_SESSION["cf_azienda"], PDO::PARAM_STR);
 $mostra_sondaggi_creati->execute();
@@ -95,7 +96,7 @@ $mostra_sondaggi_creati->closeCursor();
             <?php if (isset($_GET['error'])) {
                 if ($_GET['error'] == 10) {
                     echo "Errore, titolo gia' presente";
-                } else if ($_GET['error'] == 20) {
+                } else if ($_GET['error'] == 11) {
                     echo "Errore, imposta una successiva a quella odierna";
                 }
             } else if (isset($_GET['success']) && $_GET['success'] == 10) {
@@ -119,7 +120,7 @@ $mostra_sondaggi_creati->closeCursor();
     </div>
 
 
-    <!--GESTIONE SONDAGGI: INVITO DI INVITI E INSERIMENTO DOMANDA-->
+    <!--GESTIONE SONDAGGI: INVIO DI INVITI E INSERIMENTO DOMANDA-->
     <div class="space">
         <h2>Gestione sondaggi</h2>
         <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
@@ -135,6 +136,19 @@ $mostra_sondaggi_creati->closeCursor();
             <label>
                 <a href="gestisci_domanda.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>"><?php echo $sondaggio_creato['Titolo']; ?></a>
             </label>
+
+            <?php if (isset($_GET['error'])) {
+                if ($_GET['error'] == 20) {
+                    echo "Errore: questo sondaggio non ha domande, aggiungi delle domande";
+                } else if ($_GET['error'] == 21) {
+                    echo "Errore: una domanda e' senza opzioni";
+                } else if ($_GET['error'] == 22) {
+                    echo "Non ci sono utenti interessati al dominio di questo sondaggio";
+                }
+            } else if (isset($_GET['success']) && $_GET['success'] == 20) {
+                echo "Sondaggio creato con successo";
+            }
+            ?>
 
             <?php
             // se e' stato invitato almeno un utente, non mostrare piu' il bottone per invitare (a differenza del poter eliminare il sondaggio, lasciare in questo caso la possibilità di invitare non farebbe altro che duplicare gli inviti per gli stessi utenti, inutile ed inconsistente)

@@ -4,11 +4,16 @@
         <h2>Premi disponibili</h2>
         <?php
         //array con tutti i premi vinti dall'utente di sessione
-        $prep_proc_premi = $pdo->prepare('CALL VisualizzaPremi()');
-        $prep_proc_premi->execute();
-        $premi = $prep_proc_premi->fetchAll(PDO::FETCH_ASSOC);
-
-        $prep_proc_premi->closeCursor();
+        try {
+            $prep_proc_premi = $pdo->prepare('CALL VisualizzaPremi()');
+            $prep_proc_premi->execute();
+            $premi = $prep_proc_premi->fetchAll(PDO::FETCH_ASSOC);
+            $prep_proc_premi->closeCursor();
+        } catch (PDOException $e) {
+            echo "Errore Stored Procedure: " . $e->getMessage();
+            header("Location: logout.php");
+            exit;
+        }
 
         foreach ($premi as $premio) {
             // leggi il contenuto del blob dal database
@@ -36,11 +41,16 @@
         <h2>Classifica utenti</h2>
         <?php
         //array con tutti i premi vinti dall'utente di sessione
-        $prep_proc_classifica = $pdo->prepare('CALL VisualizzaClassifica()');
-        $prep_proc_classifica->execute();
-        $classifica_utenti = $prep_proc_classifica->fetchAll(PDO::FETCH_ASSOC);
-
-        $prep_proc_classifica->closeCursor();
+        try {
+            $prep_proc_classifica = $pdo->prepare('CALL VisualizzaClassifica()');
+            $prep_proc_classifica->execute();
+            $classifica_utenti = $prep_proc_classifica->fetchAll(PDO::FETCH_ASSOC);
+            $prep_proc_classifica->closeCursor();
+        } catch (PDOException $e) {
+            echo "Errore Stored Procedure: " . $e->getMessage();
+            header("Location: logout.php");
+            exit;
+        }
 
         foreach ($classifica_utenti as $classifica_utente) {
             echo '<li><label name="utente_in_classifica" value="' . $classifica_utente["Email"] . '"';
