@@ -24,7 +24,7 @@
 
 .logout_btn:hover {
     width: 150px;
-    transition-delay: .2s;
+    transition-delay: .0.5s;
 }
 
 .logout_btn:hover>.paragraph {
@@ -39,18 +39,18 @@
 }
 
 .logout_btn:hover>.logout_icon-wrapper .logout_icon path {
-    stroke: #0F2849;
+    stroke: #091d3e;
 }
 
 .paragraph {
-    color: #0F2849;
+    color: #091d3e;
     visibility: hidden;
     opacity: 0;
     font-size: 18px;
     margin-right: 20px;
     padding-left: 20px;
-    -webkit-transition: .2s linear;
-    transition: .2s linear;
+    -webkit-transition: .0.5s linear;
+    transition: .0.5s linear;
     font-weight: bold;
     text-transform: uppercase;
 }
@@ -68,12 +68,12 @@
 
 .logout_icon {
     transform: scale(.9);
-    transition: .2s linear;
+    transition: .1s linear;
 }
 
 .logout_icon path {
-    stroke: #0F2849;
+    stroke: #091d3e;
     stroke-width: 2px;
-    -webkit-transition: .2s linear;
-    transition: .2s linear;
+    -webkit-transition: .0.5s linear;
+    transition: .0.5s linear;
 }

@@ -81,7 +81,7 @@ var_dump($codice_sondaggio);
             body {
                 text-align: center;
 
-                background-color: #0F2849;
+                background-color: #091d3e;
                 font-family: 'Poppins', sans-serif;
                 height: 100vh;
                 display: grid;
@@ -90,10 +90,9 @@ var_dump($codice_sondaggio);
                 grid-template-rows: 100px 1fr 10px;
                 /*Divido le righe in una da 60px che sarà l'header, e 1fr per il contenuto main*/
                 grid-template-areas:
-                    "side header"
-                    "side main"
-                    "side footer";
-
+                    "header"
+                    "main"
+                    "footer";
             }
 
             .header {
@@ -119,12 +118,12 @@ var_dump($codice_sondaggio);
             }
 
             header h2 {
-                color: #0F2849;
+                color: #091d3e;
                 margin-left: 20px;
             }
 
             .footer {
-                background-color: #0F2849;
+                background-color: #091d3e;
                 grid-area: footer;
             }
 
@@ -148,7 +147,7 @@ var_dump($codice_sondaggio);
 
             .space {
                 background-color: #ffffff;
-                color: #0c2840;
+                color: #091d3e;
                 border-radius: 30px;
                 /*border: 2px solid #0F2849;*/
                 box-shadow: 0 0 50px #ccc;
@@ -203,8 +202,8 @@ var_dump($codice_sondaggio);
             input,
             label,
             button {
-                margin-top: 0.70rem;
-                margin-bottom: 0.70rem;
+                margin-top: 0.30rem;
+                margin-bottom: 0.30rem;
             }
 
             .item {
@@ -276,7 +275,7 @@ var_dump($codice_sondaggio);
         - Mostra un messaggio di errore se sto creando un sondaggio di cui gia' esiste il nome-->
         <div class="space">
             <form action="script_php/crea_sondaggio.php" method="POST">
-                <h2>Crea sondaggio</h2>
+                <h1>Crea sondaggio</h1>
                 <?php if (isset($_GET['error'])) {
                     if ($_GET['error'] == 10) {
                         echo "Errore, titolo gia' presente";
@@ -357,7 +356,8 @@ var_dump($codice_sondaggio);
     2) seleziono il sondaggio dalla lista di sondaggi e gestitsco in una pagina a parte...in cui mostro anche tutte le altre domande per aiutare l'utente premium ad avere un'idea a 360 gradi del sondaggio-->
         <div class="space">
             <ul>
-                <h2>Inserisci domanda</h2>
+                <h1>Inserisci domanda</h1>
+                <h3>Elenco sondaggi:</h3>
                 <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
                     <li>
                         <a href="gestisci_domanda.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>">
@@ -385,7 +385,8 @@ var_dump($codice_sondaggio);
 inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad una pagina con la lista degli utenti da invitare, con checkbox-->
         <div class="space">
             <ul>
-                <h2>Invita utenti</h2>
+                <h1>Invita utenti</h1>
+                <h3>Elenco sondaggi:</h3>
                 <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
                     <li>
                         <a href="inviti_sondaggio.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>">
@@ -411,7 +412,8 @@ inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad u
         <!--ELIMINA SONDAGGIO-->
         <div class="space">
             <ul>
-                <h2>Elimina sondaggio</h2>
+                <h1>Elimina sondaggio</h1>
+                <h3>Elenco sondaggi:</h3>
                 <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
                     <form action="script_php/elimina_sondaggio.php" method="POST">
                         <?php
@@ -473,7 +475,8 @@ inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad u
         <!--VISUALIZZA LE RISPOSTE DI UN SINDAGGIO-->
         <div class="space">
             <ul>
-                <h2>Visualizza risposte sondaggio</h2>
+                <h1>Visualizza risposte sondaggio</h1>
+                <h3>Elenco sondaggi:</h3>
                 <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
 
                     <li>
@@ -503,7 +506,8 @@ inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad u
         <!--STATISTICHE AGGREGATE SONDAGGIO-->
         <div class="space">
             <ul>
-                <h2>Statistiche aggregate sondaggio</h2>
+                <h1>Statistiche aggregate sondaggio</h1>
+                <h3>Elenco sondaggi:</h3>
                 <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
                     <?php $codice_sondaggio = $sondaggio_creato['Codice']; ?>
                     <form action="visualizza_statistiche_aggregate.php" method="POST">

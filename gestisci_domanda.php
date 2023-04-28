@@ -60,29 +60,13 @@ try {
     <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="stile_css/checkbox_style.css">
+    <link rel="stylesheet" href="stile_css/gestisci_domanda.css">
+    <link rel="stylesheet" href="stile_css/bottone_logout.css">
+    <link rel="stylesheet" href="stile_css/crea_sondaggio_inputs.css">
+    <link rel="stylesheet" href="stile_css/upload_file.css">
+    <link rel="stylesheet" href="stile_css/crea_sondaggio_button.css">
 
     <style>
-        * {
-            font-family: 'Poppins', sans-serif;
-            background: #0c2840;
-            color: #f3f7f9;
-        }
-
-        .space {
-            border: 2px solid #f3f7f9;
-            border-radius: 30px;
-            display: flex;
-            justify-content: center;
-            text-align: center;
-            width: auto;
-            padding: 10px;
-            margin: 20px;
-        }
-
-        li {
-            list-style: none;
-        }
-
         #inputbox_max_caratteri_domanda_aperta {
             display: none;
         }
@@ -96,138 +80,207 @@ try {
 
 <body>
 
-    <!--MOSTRA TUTTE LE DOMANDE-->
-    <div class="space">
-        <!--Mostra tutte le domande: lista di domande, le chiuse sono cliccabili e rimandano ad una pagina che mostra le opzioni e il form per inserire opzioni-->
-        <h2>Domande</h2>
-        <!--Eventuale messaggio di successo-->
-        <?php if (isset($_GET['success']) && $_GET['success'] == 20) {
-            echo "Domanda rimossa con successo";
-        } ?>
-        <ul>
-            <?php foreach ($domande_sondaggio as $domanda) { ?>
-                <li>
-                    <form action="script_php/rimuovi_domanda.php" method="POST">
-                        <!--Nome del sondaggio-->
-                        <?php if ($domanda["ApertaChiusa"] == "CHIUSA") { ?>
-                            <label for="bottone">
-                                <a
-                                    href="gestisci_opzioni.php?cod_sondaggio=<?php echo $codice_sondaggio; ?>&id_domanda=<?php echo $domanda['ID']; ?>"><?php echo $domanda['Testo']; ?></a>
-                            </label>
-                        <?php } else if ($domanda["ApertaChiusa"] == "APERTA") { ?>
-                            <?php echo $domanda['Testo']; ?>
-                        <?php } ?>
-                        <!--Che sia domanda chiusa o aperta, mostro un bottone per rimuovere la domanda-->
-                        <!--Nel momento in cui rimuovo domanda, mi si deve rimuovere la reference in:
-                        - ComponenteSondaggioDomanda
-                        - DomandaAperta o DomandaChiusa
-                        - In Opzione se eliminato una CHIUSA
-                        Questo viene gia' gestito dalle foreign key del db-->
-                        <?php
-                        // se non ci sono utenti invitati mostra il bottone per eliminare, se ci sono mostra i bottoni solo se nessuno ha ancora accettato l'invito
-                        $tutti_sospesi = true;
+    <header class="header">
+        <a href="premium_home.php" class="home">
+            <button class="logout_btn">
+                <p class="paragraph"> Home </p>
+                <span class="logout_icon-wrapper">
+                    <svg class="logout_icon" width="30px" height="30px" viewBox="0 0 1024 1024" class="icon"
+                        version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#000000">
+                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                        <g id="SVGRepo_iconCarrier">
+                            <path
+                                d="M981.4 502.3c-9.1 0-18.3-2.9-26-8.9L539 171.7c-15.3-11.8-36.7-11.8-52 0L70.7 493.4c-18.6 14.4-45.4 10.9-59.7-7.7-14.4-18.6-11-45.4 7.7-59.7L435 104.3c46-35.5 110.2-35.5 156.1 0L1007.5 426c18.6 14.4 22 41.1 7.7 59.7-8.5 10.9-21.1 16.6-33.8 16.6z"
+                                fill="#000000"></path>
+                            <path
+                                d="M810.4 981.3H215.7c-70.8 0-128.4-57.6-128.4-128.4V534.2c0-23.5 19.1-42.6 42.6-42.6s42.6 19.1 42.6 42.6v318.7c0 23.8 19.4 43.2 43.2 43.2h594.8c23.8 0 43.2-19.4 43.2-43.2V534.2c0-23.5 19.1-42.6 42.6-42.6s42.6 19.1 42.6 42.6v318.7c-0.1 70.8-57.7 128.4-128.5 128.4z"
+                                fill="#00000000000"></path>
+                        </g>
+                    </svg>
+                </span>
+            </button>
+        </a>
+        <h2>Inserisci domanda</h2>
+        <a href="logout.php" class="logout">
+            <button class="logout_btn">
+                <p class="paragraph"> Logout </p>
+                <span class="logout_icon-wrapper">
+                    <svg class="logout_icon" width="30px" height="30px" viewBox="0 0 24 24" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                        <g id="SVGRepo_iconCarrier">
+                            <path
+                                d="M14 4L17.5 4C20.5577 4 20.5 8 20.5 12C20.5 16 20.5577 20 17.5 20H14M3 12L15 12M3 12L7 8M3 12L7 16"
+                                stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            </path>
+                        </g>
+                    </svg>
+                </span>
+            </button>
+        </a>
+    </header>
 
-                        // se la query restituisce almeno una riga, vuol dire che ho invitato almeno un utente quindi non posso piu' rimuovere opzioni-->
-                        if (($inviti && count($inviti) > 0)) {
-                            foreach ($inviti as $invito) {
-                                if ($invito['Esito'] == "ACCETTATO") {
-                                    $tutti_sospesi = false;
-                                    break;
-                                }
-                            }
-                        } ?>
-                        <?php
+    <main class="main">
 
-                        // se non ci sono invitati la variabile booleana non e' stata modificata quindi accedo,
-                        // se tutti gli invitati sono con Esito='Sospeso' oppure con Esito='Rifiutato' ho eseguito i controlli ma la variabile booleana non e' stata modificata, quindi posso eliminare il sondaggio
-                        if ($tutti_sospesi) {
-                            ?>
-                            <input type="hidden" name="codice_sondaggio" id="codice_sondaggio"
-                                value="<?php echo $codice_sondaggio ?>">
-                            <input type="hidden" name="id_domanda" id="id_domanda" value="<?php echo $domanda['ID'] ?>">
-                            <input type="submit" name="bottone" id="bottone" value="Elimina">
-                        <?php } ?>
-                    </form>
-                </li>
-            <?php } ?>
-        </ul>
-    </div>
+        <!--CREA UNA NUOVA DOMANDA-->
+        <div class="space_inserisci_domanda">
+            <?php
+            // se non ci sono utenti invitati dai la possibilita' di inserire una nuova domanda;
+            // se ci sono, continua a dare la possibilità solo se nessuno ha ancora accettato l'invito
+            $tutti_sospesi_due = true;
 
-    <!--CREA UNA NUOVA DOMANDA-->
-    <div class="space">
-        <h2>Inserisci una nuova domanda</h2>
-
-        <?php
-        // se non ci sono utenti invitati dai la possibilita' di inserire una nuova domanda;
-        // se ci sono, continua a dare la possibilità solo se nessuno ha ancora accettato l'invito
-        $tutti_sospesi_due = true;
-
-        // se la query restituisce almeno una riga, vuol dire che ho invitato almeno un utente quindi non posso piu' aggiungere domande-->
-        if (($inviti && count($inviti) > 0)) {
-            foreach ($inviti as $invito) {
-                if ($invito['Esito'] == "ACCETTATO") {
-                    $tutti_sospesi_due = false;
-                    break;
+            // se la query restituisce almeno una riga, vuol dire che ho invitato almeno un utente quindi non posso piu' aggiungere domande-->
+            if (($inviti && count($inviti) > 0)) {
+                foreach ($inviti as $invito) {
+                    if ($invito['Esito'] == "ACCETTATO") {
+                        $tutti_sospesi_due = false;
+                        break;
+                    }
                 }
-            }
-        } ?>
-        <?php
+            } ?>
+            <?php
 
-        // se non ci sono invitati la variabile booleana non e' stata modificata quindi posso aggiungere una domanda,
-        // se tutti gli invitati sono con Esito='Sospeso' oppure con Esito='Rifiutato' ho eseguito i controlli ma la variabile booleana non e' stata modificata, quindi posso aggiungere una domanda
-        if ($tutti_sospesi_due) {
-            ?>
-            <!--L'inserimento deve avvenire in Domanda, in ComponenteSondaggioDomanda e
+            // se non ci sono invitati la variabile booleana non e' stata modificata quindi posso aggiungere una domanda,
+            // se tutti gli invitati sono con Esito='Sospeso' oppure con Esito='Rifiutato' ho eseguito i controlli ma la variabile booleana non e' stata modificata, quindi posso aggiungere una domanda
+            if ($tutti_sospesi_due) {
+                ?>
+                <!--L'inserimento deve avvenire in Domanda, in ComponenteSondaggioDomanda e
             se APERTA anche in DomandaAperta, altrimenti in DomandaChiusa
             (in questo caso, si devono inserire le opzioni...vedi space "Domande"-->
-            <p>I campi con * sono obbligatori</p>
-            <form action="script_php/inserimento_domanda.php" method="POST" enctype="multipart/form-data">
-                <?php
-                if ((isset($_GET['error']))) {
-                    if ($_GET['error'] == 10) {
-                        echo "Tipo immagine non valido, supportati: PNG, JPEG";
-                    } else if ($_GET['error'] == 20) {
-                        echo "Domanda con stesso testo gia' esistente";
+                <form action="script_php/inserimento_domanda.php" method="POST" enctype="multipart/form-data">
+                    <h2>Inserisci una nuova domanda</h2>
+                    <p>I campi con * sono obbligatori</p>
+                    <?php
+                    if ((isset($_GET['error']))) {
+                        if ($_GET['error'] == 10) {
+                            echo "Tipo immagine non valido, supportati: PNG, JPEG";
+                        } else if ($_GET['error'] == 20) {
+                            echo "Domanda con stesso testo gia' esistente";
+                        }
+                    } else if (isset($_GET['success']) && $_GET['success'] == 10) {
+                        echo "Domanda inserita con successo";
                     }
-                } else if (isset($_GET['success']) && $_GET['success'] == 10) {
-                    echo "Domanda inserita con successo";
-                }
-                ?>
-                <!--input box Testo-->
-                <input type="text" name="testo" id="testo" required>
-                <label for="testo">Testo domanda*<label>
-                        <!--input box Foto-->
-                        <input type="file" name="foto" id="foto">
-                        <label for="foto">Foto</label>
-                        <!--input box Punteggio-->
-                        <input type="number" min="0" name="punteggio" id="punteggio">
-                        <label for="punteggio">Punteggio</label>
-                        <!--checkbox per inserire max caratteri risposta se la domanda e' APERTA, altrimenti si da per scontato sia chiusa-->
-                        <label name="label_checkbox_aperta" id="label_checkbox_aperta" for="checkbox_aperta">Spunta se la
-                            domanda e' aperta</label>
-                        <input type="checkbox" name="checkbox_aperta" id="checkbox_aperta">
-                        <!--input box Codice amministratore-->
-                        <div name="inputbox_max_caratteri_domanda_aperta" id="inputbox_max_caratteri_domanda_aperta"
-                            class="inputbox">
+                    ?>
+                    <!--input box Testo-->
+                    <div class="input-group">
+                        <input type="text" name="testo" id="testo" required autocomplete="off" class="input">
+                        <label class="user-label" for="testo">Testo domanda*<label>
+                    </div>
+                    <br>
+                    <!--input box Foto-->
+                    <input type="file" name="foto" id="foto">
+                    <br>
+                    <!--input box Punteggio-->
+                    <div class="input-group">
+                        <input type="number" min="0" name="punteggio" id="punteggio" required autocomplete="off"
+                            class="input">
+                        <label class="user-label">Punteggio*</label>
+                    </div>
+                    <br>
+                    <!--checkbox per inserire max caratteri risposta se la domanda e' APERTA, altrimenti si da per scontato sia chiusa-->
+
+                    <label name="label_checkbox_aperta" id="label_checkbox_aperta" for="checkbox_aperta">Spunta se
+                        la
+                        domanda e' aperta</label>
+                    <input type="checkbox" name="checkbox_aperta" id="checkbox_aperta">
+                    <br>
+                    <!--input box massimo caratteri se risposta aperta-->
+                    <div name="inputbox_max_caratteri_domanda_aperta" id="inputbox_max_caratteri_domanda_aperta"
+                        class="inputbox">
+                        <div class="input-group">
                             <!--TODO: gestire lato utente il max_caratteri-->
                             <input type="number" min="1" max="3000" name="max_caratteri_domanda_aperta"
-                                id="max_caratteri_domanda_aperta">
-                            <label for="max_caratteri_domanda_aperta">Numero massimo di caratteri</label>
+                                id="max_caratteri_domanda_aperta" class="input">
+                            <label class="user-label" for="max_caratteri_domanda_aperta">Max caratteri</label>
                             <!--Mi trovo ad usare un form, invio anche il codice con post così da non dover gestire eventuali cambiamenti di url-->
                             <input type="hidden" name="codice_sondaggio" id="codice_sondaggio"
                                 value="<?php echo $codice_sondaggio; ?>">
                         </div>
-                        <!--bottone crea domanda-->
-                        <input type="submit" name="crea" id="crea" value="Crea">
-            </form>
-        <?php } else {
-            echo "Un utente invitato ha accettato, per questo sondaggio non e' piu' possibile inserire domande";
-        } ?>
+                        <br>
+                    </div>
+                    <!--bottone crea domanda-->
+                    <button class="crea" type="submit" name="crea" id="crea">
+                        Crea
+                        <div class="arrow-wrapper">
+                            <div class="arrow"></div>
 
-    </div>
+                        </div>
+                    </button>
+                </form>
+            <?php } else {
+                echo "Un utente invitato ha accettato, per questo sondaggio non e' piu' possibile inserire domande";
+            } ?>
+        </div>
 
-    <a href="premium_home.php">Torna alla home</a>
-    <a href="logout.php">Effettua il logout</a>
+        <!--MOSTRA TUTTE LE DOMANDE-->
+        <!--Mostra tutte le domande: lista di domande, le chiuse sono cliccabili e rimandano ad una pagina che mostra le opzioni e il form per inserire opzioni-->
+        <div class="space_domande">
+            <ul>
+                <h2>Domande</h2>
+                <!--Eventuale messaggio di successo per domanda rimossa-->
+                <?php if (isset($_GET['success']) && $_GET['success'] == 20) {
+                    echo "Domanda rimossa con successo";
+                } ?>
+                <?php if (empty($domande_sondaggio)) {
+                    echo "Non ci sono domande, inseriscine una!";
+                } else { ?>
+                    <div class="lista_scrollabile">
+                        <?php foreach ($domande_sondaggio as $domanda) { ?>
+                            <li>
+                                <form action="script_php/rimuovi_domanda.php" method="POST">
+                                    <!--Nome del sondaggio-->
+                                    <?php if ($domanda["ApertaChiusa"] == "CHIUSA") { ?>
+                                        <label for="bottone">
+                                            <a
+                                                href="gestisci_opzioni.php?cod_sondaggio=<?php echo $codice_sondaggio; ?>&id_domanda=<?php echo $domanda['ID']; ?>"><?php echo $domanda['Testo']; ?></a>
+                                        </label>
+                                    <?php } else if ($domanda["ApertaChiusa"] == "APERTA") { ?>
+                                        <?php echo $domanda['Testo']; ?>
+                                    <?php } ?>
+                                    <!--Che sia domanda chiusa o aperta, mostro un bottone per rimuovere la domanda-->
+                                    <!--Nel momento in cui rimuovo domanda, mi si deve rimuovere la reference in:
+                                    - ComponenteSondaggioDomanda
+                                    - DomandaAperta o DomandaChiusa
+                                    - In Opzione se eliminato una CHIUSA
+                                Questo viene gia' gestito dalle foreign key del db-->
+                                    <?php
+                                    // se non ci sono utenti invitati mostra il bottone per eliminare, se ci sono mostra i bottoni solo se nessuno ha ancora accettato l'invito
+                                    $tutti_sospesi = true;
+
+                                    // se la query restituisce almeno una riga, vuol dire che ho invitato almeno un utente quindi non posso piu' rimuovere opzioni
+                                    if (($inviti && count($inviti) > 0)) {
+                                        foreach ($inviti as $invito) {
+                                            if ($invito['Esito'] == "ACCETTATO") {
+                                                $tutti_sospesi = false;
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    // se non ci sono invitati la variabile booleana non e' stata modificata quindi accedo,
+                                    // se tutti gli invitati sono con Esito='Sospeso' oppure con Esito='Rifiutato' ho eseguito i controlli ma la variabile booleana non e' stata modificata, quindi posso eliminare il sondaggio
+                                    if ($tutti_sospesi) { ?>
+                                        <input type="hidden" name="codice_sondaggio" id="codice_sondaggio"
+                                            value="<?php echo $codice_sondaggio ?>">
+                                        <input type="hidden" name="id_domanda" id="id_domanda" value="<?php echo $domanda['ID'] ?>">
+                                        <input type="submit" name="bottone" id="bottone" value="Elimina">
+                                    <?php }
+                                    ?>
+                                </form>
+                            </li>
+                        <?php } ?>
+                    </div>
+                <?php } ?>
+            </ul>
+
+        </div>
+    </main>
+
+    <section class="footer">
+
+    </section>
 </body>
 
 </html>

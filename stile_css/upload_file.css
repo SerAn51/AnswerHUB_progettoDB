@@ -1,0 +1,91 @@
+HTML CSSResult Skip Results Iframe EDIT ON input[type="file"] {
+    outline: none;
+    padding: 4px;
+    margin: -4px;
+}
+
+input[type="file"]::before {
+    top: 16px;
+}
+
+input[type="file"]::after {
+    top: 14px;
+}
+
+/* ------- From Step 2 ------- */
+
+input[type="file"] {
+    position: relative;
+}
+
+input[type="file"]::file-selector-button {
+    width: 136px;
+    color: transparent;
+    border-color: #091d3e;
+}
+
+/* Faked label styles and icon */
+input[type="file"]::before {
+    position: absolute;
+    pointer-events: none;
+    /*   top: 11px; */
+    left: 40px;
+    color: #091d3e;
+    content: "Carica foto";
+    border-color: #091d3e;
+}
+
+input[type="file"]::after {
+    position: absolute;
+    pointer-events: none;
+    /*   top: 10px; */
+    left: 16px;
+    height: 20px;
+    width: 20px;
+    content: "";
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' fill='%23000000'%3E%3Cg id='SVGRepo_bgCarrier' stroke-width='0'%3E%3C/g%3E%3Cg id='SVGRepo_tracerCarrier' stroke-linecap='round' stroke-linejoin='round'%3E%3C/g%3E%3Cg id='SVGRepo_iconCarrier'%3E%3Ctitle%3E%3C/title%3E%3Cg id='Complete'%3E%3Cg id='upload'%3E%3Cg%3E%3Cpath d='M3,12.3v7a2,2,0,0,0,2,2H19a2,2,0,0,0,2-2v-7' fill='none' stroke='%23091d3e' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'%3E%3C/path%3E%3Cg%3E%3Cpolyline data-name='Right' fill='none' id='Right-2' points='7.9 6.7 12 2.7 16.1 6.7' stroke='%23091d3e' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'%3E%3C/polyline%3E%3Cline fill='none' stroke='%23091d3e' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' x1='12' x2='12' y1='16.3' y2='4.8'%3E%3C/line%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    border-color: #091d3e;
+}
+
+/* ------- From Step 1 ------- */
+
+/* file upload button */
+input[type="file"]::file-selector-button {
+    border-radius: 30px;
+    padding: 0 16px;
+    height: 40px;
+    cursor: pointer;
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.16);
+    box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.05);
+    margin-right: 16px;
+    transition: background-color 200ms;
+    border-color: #091d3e;
+}
+
+/* file upload button hover state */
+input[type="file"]::file-selector-button:hover {
+    background-color: #f3f4f6;
+    border-color: #091d3e;
+}
+
+/* file upload button active state */
+input[type="file"]::file-selector-button:active {
+    background-color: #e5e7eb;
+    border-color: #091d3e;
+}
+
+/* ------------------------ */
+
+/* default boilerplate to center input */
+/*
+body {
+    min-height: 100vh;
+    max-width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5vmax;
+    box-sizing: border-box;
+}
+*/

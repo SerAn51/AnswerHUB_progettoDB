@@ -23,19 +23,3 @@ letter-spacing: 1px;
 .delete_button:hover {
 background: #ff362b52;
 }
-
-/*
-.delete_button:hover .svg-icon {
-animation: spin 2s linear infinite;
-}
-
-@keyframes spin {
-0% {
-transform: rotate(0deg);
-}
-
-100% {
-transform: rotate(-360deg);
-}
-}
-*/

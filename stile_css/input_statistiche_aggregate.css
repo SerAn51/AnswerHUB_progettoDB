@@ -15,7 +15,7 @@
 
 .btn::after {
     content: '';
-    border-bottom: 3px double #0c2840;
+    border-bottom: 3px double #091d3e;
     width: 0;
     height: 100%;
     position: absolute;
