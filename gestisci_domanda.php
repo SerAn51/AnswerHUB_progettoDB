@@ -65,6 +65,7 @@ try {
     <link rel="stylesheet" href="stile_css/crea_sondaggio_inputs.css">
     <link rel="stylesheet" href="stile_css/upload_file.css">
     <link rel="stylesheet" href="stile_css/crea_sondaggio_button.css">
+    <link rel="stylesheet" href="stile_css/bottone_opzioni.css">
 
     <style>
         #inputbox_max_caratteri_domanda_aperta {
@@ -232,10 +233,9 @@ try {
                                 <form action="script_php/rimuovi_domanda.php" method="POST">
                                     <!--Nome del sondaggio-->
                                     <?php if ($domanda["ApertaChiusa"] == "CHIUSA") { ?>
-                                        <label for="bottone">
-                                            <a
-                                                href="gestisci_opzioni.php?cod_sondaggio=<?php echo $codice_sondaggio; ?>&id_domanda=<?php echo $domanda['ID']; ?>"><?php echo $domanda['Testo']; ?></a>
-                                        </label>
+                                        <a
+                                            href="gestisci_opzioni.php?cod_sondaggio=<?php echo $codice_sondaggio; ?>&id_domanda=<?php echo $domanda['ID']; ?>"><?php echo $domanda['Testo']; ?>
+                                        </a>
                                     <?php } else if ($domanda["ApertaChiusa"] == "APERTA") { ?>
                                         <?php echo $domanda['Testo']; ?>
                                     <?php } ?>

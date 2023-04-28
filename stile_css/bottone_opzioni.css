@@ -1,0 +1,59 @@
+.bottone_opzioni {
+    position: relative;
+    width: 150px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border: 1px solid #34974d;
+    background-color: #3aa856;
+}
+
+.bottone_opzioni,
+.button__icon,
+.button__text {
+    transition: all 0.3s;
+}
+
+.bottone_opzioni .button__text {
+    transform: translateX(30px);
+    color: #fff;
+    font-weight: 600;
+}
+
+.bottone_opzioni .button__icon {
+    position: absolute;
+    transform: translateX(109px);
+    height: 100%;
+    width: 39px;
+    background-color: #34974d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bottone_opzioni .svg {
+    width: 30px;
+    stroke: #fff;
+}
+
+.bottone_opzioni:hover {
+    background: #34974d;
+}
+
+.bottone_opzioni:hover .button__text {
+    color: transparent;
+}
+
+.bottone_opzioni:hover .button__icon {
+    width: 148px;
+    transform: translateX(0);
+}
+
+.bottone_opzioni:active .button__icon {
+    background-color: #2e8644;
+}
+
+.bottone_opzioni:active {
+    border: 1px solid #2e8644;
+}
