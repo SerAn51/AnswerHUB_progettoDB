@@ -1,0 +1,187 @@
+body {
+    text-align: center;
+
+    background-color: #091d3e;
+    font-family: 'Poppins', sans-serif;
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr;
+    /*Divido le colonne in 300px per la sidebar, 1 frazione per tutto il resto*/
+    grid-template-rows: 100px 1fr 10px;
+    /*Divido le righe in una da 60px che sarà l'header, e 1fr per il contenuto main*/
+    grid-template-areas:
+        "header"
+        "main"
+        "footer";
+}
+
+.header {
+    border-radius: 30px;
+    background-color: #f1f1fa;
+    grid-area: header;
+
+    padding: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+
+    display: flex;
+    justify-content: center;
+    /* Centra gli elementi orizzontalmente */
+    align-items: center;
+    /* Centra gli elementi verticalmente */
+    height: 50px;
+
+}
+
+.header h1 {
+    margin: 0;
+    padding: 0;
+    color: #091d3e;
+}
+
+.header .home {
+    margin-right: 20px;
+    /* Aggiungi un margine a destra per separare .home da h1 */
+}
+
+.header .logout {
+    margin-left: 20px;
+    /* Aggiungi un margine a sinistra per separare .logout da h1 */
+}
+
+.header a {
+    text-decoration: none;
+}
+
+.footer {
+    background-color: #091d3e;
+    grid-area: footer;
+}
+
+.main {
+    border-radius: 30px;
+    background-color: #f1f1fa;
+
+    padding: 20px;
+    margin: 20px;
+    grid-area: main;
+
+    display: grid;
+    grid-template-columns: 1fr;
+    /*Divido il main in 3 colonne*/
+    grid-template-rows: 1fr;
+    grid-template-areas:
+        "c1";
+    gap: 10px;
+}
+
+.space {
+    background-color: #ffffff;
+    color: #091d3e;
+    border-radius: 30px;
+    /*border: 2px solid #0F2849;*/
+    box-shadow: 0 0 50px #ccc;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    width: 25vw;
+    padding: 10px;
+    margin: 20px;
+    justify-self: center;
+}
+
+.space h2 {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.space p {
+    margin-top: 0;
+    margin-bottom: 30px;
+}
+
+.space h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.space:nth-child(1) {
+    grid-area: c1;
+}
+
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+ul li {
+    text-align: left;
+}
+
+.lista_scrollabile {
+    height: 50vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.lista_scrollabile::-webkit-scrollbar {
+    width: 5px;
+    height: 100%;
+}
+
+.lista_scrollabile::-webkit-scrollbar-thumb {
+    background-color: #091d3e;
+    border-radius: 30px;
+}
+
+.lista_scrollabile ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.lista_scrollabile li {
+    padding: 10px;
+    margin: 0;
+}
+
+.lista_scrollabile li a {
+    text-decoration: none;
+}
+
+.space form {
+    display: flex;
+    flex-direction: column;
+    /* Opzionale: allinea gli elementi in verticale */
+    align-items: center;
+    /* Allinea gli elementi in orizzontale */
+    justify-content: flex-start;
+    /* Allinea gli elementi in verticale */
+}
+
+input,
+label,
+button {
+    margin-top: 0.30rem;
+    margin-bottom: 0.30rem;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    /* Allinea verticalmente */
+    gap: 10px;
+    /* Aggiunge uno spazio tra i due elementi */
+}
+
+.item .delete_button {
+    margin-left: auto;
+    /* Sposta il pulsante a destra */
+}
+
+.item .titolo {
+    text-transform: uppercase;
+}
