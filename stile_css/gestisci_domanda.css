@@ -35,7 +35,7 @@ body {
 
 }
 
-.header h2 {
+.header h1 {
     margin: 0;
     padding: 0;
     color: #091d3e;
@@ -43,12 +43,12 @@ body {
 
 .header .home {
     margin-right: 20px;
-    /* Aggiungi un margine a destra per separare .home da h2 */
+    /* Aggiungi un margine a destra per separare .home da h1 */
 }
 
 .header .logout {
     margin-left: 20px;
-    /* Aggiungi un margine a sinistra per separare .logout da h2 */
+    /* Aggiungi un margine a sinistra per separare .logout da h1 */
 }
 
 .header a {
@@ -107,7 +107,7 @@ body {
     justify-self: left;
 }
 
-.space_inserisci_domanda h2 {
+.space_inserisci_domanda h1 {
     margin-top: 0;
     margin-bottom: 0;
 }
@@ -117,11 +117,12 @@ body {
     margin-bottom: 30px;
 }
 
-.main .space h2 {
+.space_domande h1 {
+    margin-top: 0;
     margin-bottom: 0;
 }
 
-.main .space p {
+.space_domande h3 {
     margin-top: 0;
     margin-bottom: 30px;
 }
@@ -165,6 +166,10 @@ ul {
 .lista_scrollabile li {
     padding: 10px;
     margin: 0;
+}
+
+.lista_scrollabile li a {
+    text-decoration: none;
 }
 
 

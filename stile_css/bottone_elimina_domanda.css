@@ -1,0 +1,61 @@
+.noselect {
+    width: 90px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    background: red;
+    border: none;
+    border-radius: 30px;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.15);
+    background: #e62222;
+}
+
+.noselect,
+.noselect span {
+    transition: 200ms;
+}
+
+.noselect .text {
+    transform: translateX(5px);
+    color: white;
+    font-weight: bold;
+}
+
+.noselect .icon {
+    position: relative;
+    border-left: 1px solid #c41b1b;
+    transform: translateX(10px);
+    height: 20px;
+    width: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.noselect svg {
+    width: 10px;
+    fill: #eee;
+}
+
+.noselect:hover {
+    background: #ff3636;
+}
+
+.noselect:hover .text {
+    color: transparent;
+}
+
+.noselect:hover .icon {
+    width: 150px;
+    border-left: none;
+    transform: translateX(-22.5px);
+}
+
+.noselect:focus {
+    outline: none;
+}
+
+.noselect:active .icon svg {
+    transform: scale(0.8);
+}

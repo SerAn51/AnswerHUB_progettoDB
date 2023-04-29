@@ -66,6 +66,8 @@ try {
     <link rel="stylesheet" href="stile_css/upload_file.css">
     <link rel="stylesheet" href="stile_css/crea_sondaggio_button.css">
     <link rel="stylesheet" href="stile_css/bottone_opzioni.css">
+    <link rel="stylesheet" href="stile_css/non_bottone_domanda_aperta.css">
+    <link rel="stylesheet" href="stile_css/bottone_elimina_domanda.css">
 
     <style>
         #inputbox_max_caratteri_domanda_aperta {
@@ -102,7 +104,7 @@ try {
                 </span>
             </button>
         </a>
-        <h2>Inserisci domanda</h2>
+        <h1>Inserisci domanda</h1>
         <a href="logout.php" class="logout">
             <button class="logout_btn">
                 <p class="paragraph"> Logout </p>
@@ -151,7 +153,7 @@ try {
             se APERTA anche in DomandaAperta, altrimenti in DomandaChiusa
             (in questo caso, si devono inserire le opzioni...vedi space "Domande"-->
                 <form action="script_php/inserimento_domanda.php" method="POST" enctype="multipart/form-data">
-                    <h2>Inserisci una nuova domanda</h2>
+                    <h1>Inserisci una nuova domanda</h1>
                     <p>I campi con * sono obbligatori</p>
                     <?php
                     if ((isset($_GET['error']))) {
@@ -219,7 +221,7 @@ try {
         <!--Mostra tutte le domande: lista di domande, le chiuse sono cliccabili e rimandano ad una pagina che mostra le opzioni e il form per inserire opzioni-->
         <div class="space_domande">
             <ul>
-                <h2>Domande</h2>
+                <h1>Domande</h1>
                 <!--Eventuale messaggio di successo per domanda rimossa-->
                 <?php if (isset($_GET['success']) && $_GET['success'] == 20) {
                     echo "Domanda rimossa con successo";
@@ -227,6 +229,7 @@ try {
                 <?php if (empty($domande_sondaggio)) {
                     echo "Non ci sono domande, inseriscine una!";
                 } else { ?>
+                    <h3>Elenco domande:</h3>
                     <div class="lista_scrollabile">
                         <?php foreach ($domande_sondaggio as $domanda) { ?>
                             <li>
@@ -234,10 +237,34 @@ try {
                                     <!--Nome del sondaggio-->
                                     <?php if ($domanda["ApertaChiusa"] == "CHIUSA") { ?>
                                         <a
-                                            href="gestisci_opzioni.php?cod_sondaggio=<?php echo $codice_sondaggio; ?>&id_domanda=<?php echo $domanda['ID']; ?>"><?php echo $domanda['Testo']; ?>
+                                            href="gestisci_opzioni.php?cod_sondaggio=<?php echo $codice_sondaggio; ?>&id_domanda=<?php echo $domanda['ID']; ?>">
+                                            <div class="domanda_chiusa">
+                                                <span class="tooltip">Gestisci opzioni</span>
+                                                <span>
+                                                    <?php echo $domanda['Testo']; ?>
+                                                </span>
+                                            </div>
                                         </a>
                                     <?php } else if ($domanda["ApertaChiusa"] == "APERTA") { ?>
-                                        <?php echo $domanda['Testo']; ?>
+                                            <?php
+                                            try {
+                                                $max_caratteri_risposta = $pdo->prepare("SELECT * FROM DomandaAperta WHERE ID = ?");
+                                                $max_caratteri_risposta->execute([$domanda['ID']]);
+                                                $max_caratteri = $max_caratteri_risposta->fetch(PDO::FETCH_ASSOC);
+                                            } catch (PDOException $e) {
+                                                echo "Errore Stored Procedure: " . $e->getMessage();
+                                                header("Location: index.php");
+                                                exit;
+                                            }
+                                            ?>
+                                            <div class="domanda_aperta">
+                                                <span class="tooltip">Max caratteri:
+                                                <?php echo 'Max caratteri: ' . $max_caratteri['MaxCaratteriRisposta']; ?>
+                                                </span>
+                                                <span>
+                                                <?php echo $domanda['Testo']; ?>
+                                                </span>
+                                            </div>
                                     <?php } ?>
                                     <!--Che sia domanda chiusa o aperta, mostro un bottone per rimuovere la domanda-->
                                     <!--Nel momento in cui rimuovo domanda, mi si deve rimuovere la reference in:
@@ -265,7 +292,15 @@ try {
                                         <input type="hidden" name="codice_sondaggio" id="codice_sondaggio"
                                             value="<?php echo $codice_sondaggio ?>">
                                         <input type="hidden" name="id_domanda" id="id_domanda" value="<?php echo $domanda['ID'] ?>">
-                                        <input type="submit" name="bottone" id="bottone" value="Elimina">
+
+                                        <button type="submit" name="bottone" id="bottone" class="noselect"><span
+                                                class="text">Elimina</span><span class="icon"><svg
+                                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                                    <path
+                                                        d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z">
+                                                    </path>
+                                                </svg></span></button>
+                                        <!--<input type="submit" name="bottone" id="bottone" value="Elimina">-->
                                     <?php }
                                     ?>
                                 </form>
