@@ -272,7 +272,7 @@ var_dump($codice_sondaggio);
         </h2>
         <a href="funzioni_semplice_premium.php">Vai alle funzioni da utente semplice</a>
         <a href="logout.php">
-            <button class="logout_btn">
+            <button class="logout_btn" onclick="return confirm('Confermi logout?')">
                 <p class="paragraph"> Logout </p>
                 <span class="logout_icon-wrapper">
                     <svg class="logout_icon" width="30px" height="30px" viewBox="0 0 24 24" fill="none"

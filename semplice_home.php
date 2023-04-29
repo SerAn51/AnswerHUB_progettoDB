@@ -48,6 +48,7 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
     <link rel="stylesheet" href="stile_css/bottone_logout.css">
     <link rel="stylesheet" href="stile_css/tabella_classifica_utenti.css">
     <link rel="stylesheet" href="stile_css/tabella_premi.css">
+    <link rel="stylesheet" href="stile_css/bottone_diventa_premium.css">
 
     <style>
         body {
@@ -65,7 +66,6 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
                 "side header"
                 "side main"
                 "side footer";
-
         }
 
         .header {
@@ -82,7 +82,6 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
             display: flex;
             justify-content: space-between;
             align-items: center;
-
         }
 
         .header a {
@@ -231,12 +230,16 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
         <h2>Ciao
             <?php echo $dati_utente["Nome"]; ?>
         </h2>
-        <h2>
-            Diventa utente premium:
-            <form action="script_php/diventa_premium.php" method="POST">
-                <input type="submit" name="diventa_premium" id="diventa_premium" value="Abbonati">
-            </form>
-        </h2>
+        <form action="script_php/diventa_premium.php" method="POST">
+            <button
+                onclick="return confirm('Confermando attiverai un abbonamento da 10$ che scadrà tra 1 anno. Confermi?')"
+                class="premium" type="submit" name="diventa_premium" id="diventa_premium">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 24">
+                    <path d="m18 0 8 12 10-8-4 20H4L0 4l10 8 8-12z"></path>
+                </svg>
+                Premium (10$)
+            </button>
+        </form>
         <h2>
             Spunta per registrarti come amministratore:
             <form action="script_php/diventa_amministratore.php" method="POST">
@@ -258,7 +261,8 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
             </form>
         </h2>
         <a href="logout.php">
-            <button class="logout_btn">
+            <button class="logout_btn"
+                onclick="return confirm('Confermi logout?')">
                 <p class="paragraph"> Logout </p>
                 <span class="logout_icon-wrapper">
                     <svg class="logout_icon" width="30px" height="30px" viewBox="0 0 24 24" fill="none"

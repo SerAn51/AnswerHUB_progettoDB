@@ -93,7 +93,7 @@ try {
 
     <header class="header">
         <a href="premium_home.php" class="home">
-            <button class="logout_btn">
+            <button class="logout_btn" onclick="return confirm('Confermi logout?')">
                 <p class="paragraph"> Home </p>
                 <span class="logout_icon-wrapper">
                     <svg class="logout_icon" width="30px" height="30px" viewBox="0 0 1024 1024" class="icon"

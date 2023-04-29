@@ -69,7 +69,7 @@ if (isset($_POST["statistiche_aggregate"])) {
         </a>
         <h1>Statistiche aggregate</h1>
         <a href="logout.php" class="logout">
-            <button class="logout_btn">
+            <button class="logout_btn" onclick="return confirm('Confermi logout?')">
                 <p class="paragraph"> Logout </p>
                 <span class="logout_icon-wrapper">
                     <svg class="logout_icon" width="30px" height="30px" viewBox="0 0 24 24" fill="none"

@@ -50,7 +50,6 @@
 <!--INSERIMENTO PER LE RISPOSTE DI UN SONDAGGIO O VISUALIZZAZIONE RISPOSTE SONDAGGIO COMPLETATO-->
 <!--Idea: lista sondaggi accettati, cliccabili, che rimandano alla pagina con la lista di domande a cui rispondere.-->
 <div class="space">
-    <h2>Rispondi ai sondaggi</h2>
     <?php
     try {
         $mostra_sondaggi_accettati = $pdo->prepare("CALL MostraSondaggiAccettati(:param1)");
@@ -65,59 +64,62 @@
     }
     ?>
 
-    <?php foreach ($sondaggi_accettati as $sondaggio_accettato) { ?>
-        <form action="rispondi_visualizza_sondaggio.php" method="POST">
-            <?php $codice_sondaggio = $sondaggio_accettato['Codice'];
+    <ul>
+        <h2>Rispondi ai sondaggi</h2>
+        <?php foreach ($sondaggi_accettati as $sondaggio_accettato) { ?>
+            <form action="rispondi_visualizza_sondaggio.php" method="POST">
+                <?php $codice_sondaggio = $sondaggio_accettato['Codice'];
 
-            $creatore = $sondaggio_accettato['EmailUtentecreante']; // di base impostiamo come creatore la la mail dell'utente...
-            // ...se, pero', e' null; allora il sondaggio è stato creato da un'azienda (lo controlliamo per sicurezza),
-            // dunque impostiamo come creatore il nome dell'azienda usando il CF che conosciamo per ricavarne il nome
-            try {
-                if (!isset($sondaggio_accettato['EmailUtentecreante']) && isset($sondaggio_accettato['CFAziendacreante'])) {
-                    $mostra_dati_azienda = $pdo->prepare("SELECT * FROM Azienda WHERE CF = :cf_azienda");
-                    $mostra_dati_azienda->bindParam(':cf_azienda', $sondaggio_accettato['CFAziendacreante'], PDO::PARAM_STR);
-                    $mostra_dati_azienda->execute();
-                    $dati_azienda = $mostra_dati_azienda->fetch(PDO::FETCH_ASSOC);
-                    $mostra_dati_azienda->closeCursor();
-                    $creatore = $dati_azienda['Nome'];
+                $creatore = $sondaggio_accettato['EmailUtentecreante']; // di base impostiamo come creatore la la mail dell'utente...
+                // ...se, pero', e' null; allora il sondaggio è stato creato da un'azienda (lo controlliamo per sicurezza),
+                // dunque impostiamo come creatore il nome dell'azienda usando il CF che conosciamo per ricavarne il nome
+                try {
+                    if (!isset($sondaggio_accettato['EmailUtentecreante']) && isset($sondaggio_accettato['CFAziendacreante'])) {
+                        $mostra_dati_azienda = $pdo->prepare("SELECT * FROM Azienda WHERE CF = :cf_azienda");
+                        $mostra_dati_azienda->bindParam(':cf_azienda', $sondaggio_accettato['CFAziendacreante'], PDO::PARAM_STR);
+                        $mostra_dati_azienda->execute();
+                        $dati_azienda = $mostra_dati_azienda->fetch(PDO::FETCH_ASSOC);
+                        $mostra_dati_azienda->closeCursor();
+                        $creatore = $dati_azienda['Nome'];
+                    }
+                    $risposte_domande_aperte = $pdo->prepare("CALL MostraRisposteDomandeAperteSondaggio(:param1, :param2)");
+                    $risposte_domande_aperte->bindParam(':param1', $email, PDO::PARAM_STR);
+                    $risposte_domande_aperte->bindParam(':param2', $codice_sondaggio, PDO::PARAM_INT);
+                    $risposte_domande_aperte->execute();
+                    $risposte_domande_aperte->closeCursor();
+
+                    $opzioni_domande_chiuse = $pdo->prepare("CALL MostraOpzioniDomandeChiuseSondaggio(:param1, :param2)");
+                    $opzioni_domande_chiuse->bindParam(':param1', $email, PDO::PARAM_STR);
+                    $opzioni_domande_chiuse->bindParam(':param2', $codice_sondaggio, PDO::PARAM_INT);
+                    $opzioni_domande_chiuse->execute();
+                    $opzioni_domande_chiuse->closeCursor();
+                } catch (PDOException $e) {
+                    echo "Errore Stored Procedure: " . $e->getMessage();
+                    header("Location: logout.php");
+                    exit;
                 }
-                $risposte_domande_aperte = $pdo->prepare("CALL MostraRisposteDomandeAperteSondaggio(:param1, :param2)");
-                $risposte_domande_aperte->bindParam(':param1', $email, PDO::PARAM_STR);
-                $risposte_domande_aperte->bindParam(':param2', $codice_sondaggio, PDO::PARAM_INT);
-                $risposte_domande_aperte->execute();
-                $risposte_domande_aperte->closeCursor();
+                $sondaggio_completato = true;
+                // se entrambe le query ritornano una tabella vuota vuol dire che ancora non ho risposto al sondaggio
+                if (($risposte_domande_aperte->rowCount() === 0) && ($opzioni_domande_chiuse->rowCount() === 0)) {
+                    $sondaggio_completato = false;
+                }
+                ?>
 
-                $opzioni_domande_chiuse = $pdo->prepare("CALL MostraOpzioniDomandeChiuseSondaggio(:param1, :param2)");
-                $opzioni_domande_chiuse->bindParam(':param1', $email, PDO::PARAM_STR);
-                $opzioni_domande_chiuse->bindParam(':param2', $codice_sondaggio, PDO::PARAM_INT);
-                $opzioni_domande_chiuse->execute();
-                $opzioni_domande_chiuse->closeCursor();
-            } catch (PDOException $e) {
-                echo "Errore Stored Procedure: " . $e->getMessage();
-                header("Location: logout.php");
-                exit;
-            }
-            $sondaggio_completato = true;
-            // se entrambe le query ritornano una tabella vuota vuol dire che ancora non ho risposto al sondaggio
-            if (($risposte_domande_aperte->rowCount() === 0) && ($opzioni_domande_chiuse->rowCount() === 0)) {
-                $sondaggio_completato = false;
-            }
-            ?>
-
-            <label <?php echo $sondaggio_completato == true ? 'for="visualizza_risposte"' : 'for="rispondi"'; ?>>
-                Titolo:
-                <?php echo $sondaggio_accettato['Titolo']; ?>
-                Creatore:
-                <?php echo $creatore; ?>
-            </label>
-            <input type="hidden" name="codice_sondaggio" id="codice_sondaggio" value="<?php echo $codice_sondaggio ?>">
-            <?php if ($sondaggio_completato) { // se e' true significa il sondaggio e' stato gia' completato?>
-                <input type="submit" name="visualizza_risposte" id="visualizza_risposte" value="Visualizza risposte">
-            <?php } else { ?>
-                <input type="submit" name="rispondi" id="rispondi" value="Rispondi">
-            <?php } ?>
-        </form>
-    <?php } ?>
+                <label <?php echo $sondaggio_completato == true ? 'for="visualizza_risposte"' : 'for="rispondi"'; ?>>
+                    Titolo:
+                    <?php echo $sondaggio_accettato['Titolo']; ?>
+                    Creatore:
+                    <?php echo $creatore; ?>
+                </label>
+                <input type="hidden" name="codice_sondaggio" id="codice_sondaggio" value="<?php echo $codice_sondaggio ?>">
+                <?php if ($sondaggio_completato) { // se e' true significa il sondaggio e' stato gia' completato?>
+                    <input type="submit" name="visualizza_risposte" id="visualizza_risposte" value="Visualizza risposte">
+                <?php } else { ?>
+                    <input type="submit" name="rispondi" id="rispondi" value="Rispondi">
+                <?php } ?>
+            </form>
+        <?php } ?>
+    </ul>
 </div>
 
 <!--VISUALIZZAZIONE E ACCETTAZIONE/RIFIUTO DEGLI INVITI A PARTECIPARE AD UN SONDAGGIO-->
