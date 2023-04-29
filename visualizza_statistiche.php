@@ -1,5 +1,5 @@
 <!--VISUALIZZARE I PREMI DISPONIBILI-->
-<div class="space">
+<div class="space" id="premi">
     <ul>
         <h2>Premi disponibili</h2>
         <?php
@@ -14,29 +14,80 @@
             header("Location: logout.php");
             exit;
         }
-
-        foreach ($premi as $premio) {
-            // leggi il contenuto del blob dal database
-            $blob = $premio["Foto"];
-
-            // decodifica il contenuto del blob in una stringa base64
-            $base64 = base64_encode($blob);
-
-            // determina il tipo di immagine dal contenuto del blob con la funzione getimagesizefromstring e prendendo il valore della chiave mime che dice il tipo dell'immagine
-            $image_info = getimagesizefromstring($blob);
-            $mime_type = $image_info["mime"];
-
-            // visualizza l'elememento di lista con l'immagine
-            echo '<li><label name="premio_disponibile" value="' . $premio["Nome"] . '"';
-            echo '>' . $premio["Nome"] . ' ' . $premio["Descrizione"] . ' <img width="50px" src="data:' . $mime_type . ';base64,' . $base64 . '"> ';
-            echo $premio["Puntinecessari"] . ' ' . $premio["EmailUtenteAmministratore"] . '</li>';
-        }
         ?>
+
+        <div class="elenco_premi">
+            <div class="wrapper_premi">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Descrizione</th>
+                            <th>Foto</th>
+                            <th>Punti</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        foreach ($premi as $premio) {
+                            // leggi il contenuto del blob dal database
+                            $blob = $premio["Foto"];
+
+                            // decodifica il contenuto del blob in una stringa base64
+                            $base64 = base64_encode($blob);
+
+                            // determina il tipo di immagine dal contenuto del blob con la funzione getimagesizefromstring e prendendo il valore della chiave mime che dice il tipo dell'immagine
+                            $image_info = getimagesizefromstring($blob);
+                            $mime_type = $image_info["mime"];
+
+                            // visualizza l'elememento di lista con l'immagine
+                            ?>
+                            <tr>
+                                <td class="nome">
+                                    <?php echo $premio["Nome"] ?>
+                                </td>
+                                <td class="descrizione">
+                                    <?php echo $premio["Descrizione"]; ?>
+                                </td>
+                                <td class="foto">
+                                    <img src="data:<?php echo $mime_type; ?>;base64,<?php echo $base64; ?>">
+                                </td>
+                                <td class="punti">
+                                    <?php echo $premio["Puntinecessari"]; ?>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <?php
+        /*
+        foreach ($premi as $premio) {
+        // leggi il contenuto del blob dal database
+        $blob = $premio["Foto"];
+        // decodifica il contenuto del blob in una stringa base64
+        $base64 = base64_encode($blob);
+        // determina il tipo di immagine dal contenuto del blob con la funzione getimagesizefromstring e prendendo il valore della chiave mime che dice il tipo dell'immagine
+        $image_info = getimagesizefromstring($blob);
+        $mime_type = $image_info["mime"];
+        // visualizza l'elememento di lista con l'immagine
+        ?>
+        <li>
+        <label name="premio_disponibile" value="<?php echo $premio["Nome"]; ?>">
+        <?php echo $premio["Nome"] . ' ' . $premio["Descrizione"]; ?>
+        <img src="data:<?php echo $mime_type; ?>;base64,<?php echo $base64; ?>">
+        <?php echo $premio["Puntinecessari"]; ?>
+        </label>
+        </li>
+        
+        <?php } */?>
     </ul>
 </div>
 
 <!--VISUALIZZARE LA CLASSIFICA DEGLI UTENTI IN BASE AL CAMPO TOTALEBONUS-->
-<div class="space">
+<div class="space" id="classifica">
     <ul>
         <h2>Classifica utenti</h2>
         <?php
@@ -51,11 +102,50 @@
             header("Location: logout.php");
             exit;
         }
-
-        foreach ($classifica_utenti as $classifica_utente) {
-            echo '<li><label name="utente_in_classifica" value="' . $classifica_utente["Email"] . '"';
-            echo '>' . $classifica_utente["Email"] . ' ' . $classifica_utente["Totalebonus"];
-        }
         ?>
+
+
+        <?php
+        /*
+        foreach ($classifica_utenti as $classifica_utente) { ?>
+        <li>
+        <label name="utente_in_classifica" value="<?php echo $classifica_utente["Email"]; ?>">
+        <?php echo $classifica_utente["Email"] . " " . $classifica_utente["Totalebonus"]; ?>
+        </label>
+        </li>
+        <?php } */?>
+
+        <div class="classifica_utenti">
+            <div class="wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Pos</th>
+                            <th>Utente</th>
+                            <th>Punti</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $posizione = 0;
+                        foreach ($classifica_utenti as $classifica_utente) {
+                            $posizione++;
+                            ?>
+                            <tr>
+                                <td class="posizione">
+                                    <?php echo $posizione ?>
+                                </td>
+                                <td class="utente">
+                                    <?php echo $classifica_utente["Email"]; ?>
+                                </td>
+                                <td class="punti">
+                                    <?php echo $classifica_utente["Totalebonus"]; ?>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </ul>
 </div>

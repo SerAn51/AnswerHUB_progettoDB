@@ -64,6 +64,7 @@ try {
 <body>
 
     <header class="header">
+        <h1>Risposte sondaggio</h1>
         <a href="premium_home.php" class="home">
             <button class="logout_btn">
                 <p class="paragraph"> Home </p>
@@ -84,7 +85,6 @@ try {
                 </span>
             </button>
         </a>
-        <h1>Risposte sondaggio</h1>
         <a href="logout.php" class="logout">
             <button class="logout_btn">
                 <p class="paragraph"> Logout </p>
@@ -166,7 +166,8 @@ try {
                                     <?php
                                     $email = $utente_rispondente['EmailUtente'];
                                     ?>
-                                    <li><!--Mostra risposta aperta o mostra opzione selezionata, in base a domanda APERTA o CHIUSA-->
+                                    <li>
+                                        <!--Mostra risposta aperta o mostra opzione selezionata, in base a domanda APERTA o CHIUSA-->
                                         <?php if ($domanda_sondaggio['ApertaChiusa'] == 'APERTA') { ?>
                                             <?php
                                             try {
@@ -181,7 +182,11 @@ try {
                                                 header("Location: index.php");
                                                 exit;
                                             }
-                                            echo 'Utente: ' . $email . ' Risposta: ' . $risposta['Testo'];
+                                            echo '<strong>Utente:</strong> ' . $email;
+                                            ?>
+                                            <br>
+                                            <?php
+                                            echo '<strong>Risposta:</strong> ' . $risposta['Testo'];
                                             ?>
                                         <?php } else if ($domanda_sondaggio['ApertaChiusa'] == 'CHIUSA') { ?>
                                                 <?php
@@ -198,8 +203,12 @@ try {
                                                     exit;
                                                 }
                                                 ?>
-                                            <?php echo 'Utente: ' . $email . ' Risposta: ' . $opzione_selezionata['Testo']; ?>
-                                                </label>
+                                                <?php
+                                                echo '<strong>Utente:</strong> ' . $email;
+                                                ?>
+                                                <br>
+                                                <?php
+                                                echo '<strong>Risposta:</strong> ' . $opzione_selezionata['Testo']; ?>
                                         <?php } ?>
 
                                     </li>

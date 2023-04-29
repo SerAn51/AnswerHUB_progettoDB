@@ -223,7 +223,7 @@ if (isset($_POST["statistiche_aggregate"])) {
             </ul>
         </div>
 
-        <!--DISTRIBUZIONE DELLE RISPOSTE SULLE VARIE OPZIONI-->
+        <!--VALORE MEDIO/MINIMO E MASSIMO DEL NUMERO DI CARATTERI-->
         <div class="space">
             <ul>
                 <h2>
@@ -236,8 +236,8 @@ if (isset($_POST["statistiche_aggregate"])) {
                     <div class="lista_scrollabile">
                         <?php
                         foreach ($domande_sondaggio as $domanda_sondaggio) { ?>
-                            <li>
-                                <?php if ($domanda_sondaggio['ApertaChiusa'] == 'APERTA') { ?>
+                            <?php if ($domanda_sondaggio['ApertaChiusa'] == 'APERTA') { ?>
+                                <li>
                                     <?php echo $domanda_sondaggio['Testo'] . ':<br>'; ?>
                                     <?php
 
@@ -276,9 +276,8 @@ if (isset($_POST["statistiche_aggregate"])) {
                                         echo "Media: " . $totale_lunghezza / $num_risposte . " | " . "Minimo: " . $min . " | " . "Massimo: " . $max;
                                     }
                                     ?>
-                                <?php } ?>
-                            </li>
-
+                                </li>
+                            <?php } ?>
                         <?php } ?>
                     </div>
                 <?php } ?>

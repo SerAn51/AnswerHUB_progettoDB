@@ -204,7 +204,7 @@ try {
                                                 <input type="checkbox" name="utenti_selezionati[]"
                                                     value="<?php echo $utente_interessato['Email'] ?>">
                                                 <label for="utente_interessato[]">
-                                                    <?php echo $utente_interessato['Email'] . ' ' . $utente_interessato['Nome'];
+                                                    <?php echo $utente_interessato['Email'] . ' | ' . $utente_interessato['Nome'];
                                                     echo ' ' . $utente_interessato['Cognome']; ?>
                                                 </label>
                                             </li>

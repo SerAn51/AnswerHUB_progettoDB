@@ -25,30 +25,31 @@ body {
     margin-right: 20px;
     margin-top: 20px;
     margin-bottom: 10px;
-
     display: flex;
-    justify-content: center;
-    /* Centra gli elementi orizzontalmente */
+    justify-content: space-between;
     align-items: center;
-    /* Centra gli elementi verticalmente */
-    height: 50px;
 
 }
 
 .header h1 {
-    margin: 0;
+    margin-left: 20px;
     padding: 0;
     color: #091d3e;
+    order: 1;
+}
+
+.header .home,
+.header .logout {
+    margin-right: 20px;
 }
 
 .header .home {
-    margin-right: 20px;
-    /* Aggiungi un margine a destra per separare .home da h1 */
+    order: 2;
+    translate: 420px;
 }
 
 .header .logout {
-    margin-left: 20px;
-    /* Aggiungi un margine a sinistra per separare .logout da h1 */
+    order: 3;
 }
 
 .header a {

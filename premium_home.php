@@ -76,6 +76,8 @@ var_dump($codice_sondaggio);
         <link rel="stylesheet" href="stile_css/bottone_elimina_sondaggio.css">
         <link rel="stylesheet" href="stile_css/bottone_invita.css">
         <link rel="stylesheet" href="stile_css/bottone_logout.css">
+        <link rel="stylesheet" href="stile_css/tabella_classifica_utenti.css">
+        <link rel="stylesheet" href="stile_css/tabella_premi.css">
 
         <style>
             body {
@@ -189,6 +191,39 @@ var_dump($codice_sondaggio);
                 padding: 0;
             }
 
+            .lista_scrollabile {
+                height: 60vh;
+                overflow-y: scroll;
+                overflow-x: hidden;
+            }
+
+            .lista_scrollabile::-webkit-scrollbar {
+                width: 5px;
+                height: 100%;
+            }
+
+            .lista_scrollabile::-webkit-scrollbar-thumb {
+                background-color: #091d3e;
+                border-radius: 30px;
+            }
+
+            .lista_scrollabile ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .lista_scrollabile li {
+                padding: 20px;
+                margin: 0;
+                border-color: #091d3e;
+                border-radius: 30px;
+            }
+
+            .lista_scrollabile li a {
+                text-decoration: none;
+            }
+
             form {
                 display: flex;
                 flex-direction: column;
@@ -221,6 +256,10 @@ var_dump($codice_sondaggio);
 
             .item .titolo {
                 text-transform: uppercase;
+            }
+
+            .space~#premi img {
+                width: 70%;
             }
         </style>
     </head>
@@ -359,25 +398,27 @@ var_dump($codice_sondaggio);
             <ul>
                 <h1>Inserisci domanda</h1>
                 <h3>Elenco sondaggi:</h3>
-                <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
-                    <li>
-                        <a href="gestisci_domanda.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>">
-                            <button class="link_sondaggio_button">
-                                <span class="circle" aria-hidden="true">
-                                    <span class="icon arrow"></span>
-                                </span>
-                                <span class="link_sondaggio_button-text">
-                                    <?php echo $sondaggio_creato['Titolo']; ?>
-                                </span>
-                            </button>
-                        </a>
-                        <!--
+                <div class="lista_scrollabile">
+                    <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
+                        <li>
+                            <a href="gestisci_domanda.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>">
+                                <button class="link_sondaggio_button">
+                                    <span class="circle" aria-hidden="true">
+                                        <span class="icon arrow"></span>
+                                    </span>
+                                    <span class="link_sondaggio_button-text">
+                                        <?php echo $sondaggio_creato['Titolo']; ?>
+                                    </span>
+                                </button>
+                            </a>
+                            <!--
                         <label>
                             <a href="gestisci_domanda.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>"><?php echo $sondaggio_creato['Titolo']; ?></a>
                         </label>
                         -->
-                    </li>
-                <?php } ?>
+                        </li>
+                    <?php } ?>
+                </div>
             </ul>
         </div>
 
@@ -388,25 +429,27 @@ inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad u
             <ul>
                 <h1>Invita utenti</h1>
                 <h3>Elenco sondaggi:</h3>
-                <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
-                    <li>
-                        <a href="inviti_sondaggio.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>">
-                            <button class="link_sondaggio_button">
-                                <span class="circle" aria-hidden="true">
-                                    <span class="icon arrow"></span>
-                                </span>
-                                <span class="link_sondaggio_button-text">
-                                    <?php echo $sondaggio_creato['Titolo']; ?>
-                                </span>
-                            </button>
-                        </a>
-                        <!--
+                <div class="lista_scrollabile">
+                    <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
+                        <li>
+                            <a href="inviti_sondaggio.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>">
+                                <button class="link_sondaggio_button">
+                                    <span class="circle" aria-hidden="true">
+                                        <span class="icon arrow"></span>
+                                    </span>
+                                    <span class="link_sondaggio_button-text">
+                                        <?php echo $sondaggio_creato['Titolo']; ?>
+                                    </span>
+                                </button>
+                            </a>
+                            <!--
                         <label>
                             <a href="inviti_sondaggio.php?cod_sondaggio=<?php //echo $sondaggio_creato['Codice']; ?>"><?php //echo $sondaggio_creato['Titolo']; ?></a>
                         </label>
                     -->
-                    </li>
-                <?php } ?>
+                        </li>
+                    <?php } ?>
+                </div>
             </ul>
         </div>
 
@@ -415,61 +458,63 @@ inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad u
             <ul>
                 <h1>Elimina sondaggio</h1>
                 <h3>Elenco sondaggi:</h3>
-                <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
-                    <form action="script_php/elimina_sondaggio.php" method="POST">
-                        <?php
-                        try {
-                            //utile per verificare che ci siano invitati al sondaggio
-                            $codice_sondaggio = $sondaggio_creato['Codice'];
-                            $check_inviti = $pdo->prepare("SELECT * FROM Invito WHERE CodiceSondaggio = :codice_sondaggio");
-                            $check_inviti->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
-                            $check_inviti->execute();
-                            $inviti = $check_inviti->fetchAll();
-                            $check_inviti->closeCursor();
-                        } catch (PDOException $e) {
-                            echo "Errore Stored Procedure: " . $e->getMessage();
-                            header("Location: logout.php");
-                            exit;
-                        }
-                        ?>
-                        <!--Quando rimuovo da Sondaggio, deve rimuovere automaticamente anche da:
+                <div class="lista_scrollabile">
+                    <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
+                        <form action="script_php/elimina_sondaggio.php" method="POST">
+                            <?php
+                            try {
+                                //utile per verificare che ci siano invitati al sondaggio
+                                $codice_sondaggio = $sondaggio_creato['Codice'];
+                                $check_inviti = $pdo->prepare("SELECT * FROM Invito WHERE CodiceSondaggio = :codice_sondaggio");
+                                $check_inviti->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
+                                $check_inviti->execute();
+                                $inviti = $check_inviti->fetchAll();
+                                $check_inviti->closeCursor();
+                            } catch (PDOException $e) {
+                                echo "Errore Stored Procedure: " . $e->getMessage();
+                                header("Location: logout.php");
+                                exit;
+                            }
+                            ?>
+                            <!--Quando rimuovo da Sondaggio, deve rimuovere automaticamente anche da:
                         - ComponenteSondaggioDomanda
                         - Invito (se ci sono inviti e almeno uno non e' in sospeso, non mostra l'opzione, quindi la possibilità che rimuovendo un sondaggio vengano eliminati gli inviti non esiste)-->
-                        <li class="item">
-                            <label class="titolo">
-                                <!--<form action="script_php/elimina_sondaggio.php" method="POST">-->
-                                <?php echo $sondaggio_creato['Titolo']; ?>
-                            </label>
+                            <li class="item">
+                                <label class="titolo">
+                                    <!--<form action="script_php/elimina_sondaggio.php" method="POST">-->
+                                    <?php echo $sondaggio_creato['Titolo']; ?>
+                                </label>
 
-                            <?php
-                            // se non ci sono utenti invitati mostra il bottone per eliminare, se ci sono mostra i bottoni solo se nessuno ha ancora accettato l'invito
-                            $tutti_sospesi = true;
+                                <?php
+                                // se non ci sono utenti invitati mostra il bottone per eliminare, se ci sono mostra i bottoni solo se nessuno ha ancora accettato l'invito
+                                $tutti_sospesi = true;
 
-                            // se la query restituisce almeno una riga, vuol dire che ho invitato almeno un utente quindi non posso piu' rimuovere sondaggi-->
-                            if (($inviti && count($inviti) > 0)) {
-                                foreach ($inviti as $invito) {
-                                    if ($invito['Esito'] == "ACCETTATO") {
-                                        $tutti_sospesi = false;
-                                        break;
+                                // se la query restituisce almeno una riga, vuol dire che ho invitato almeno un utente quindi non posso piu' rimuovere sondaggi-->
+                                if (($inviti && count($inviti) > 0)) {
+                                    foreach ($inviti as $invito) {
+                                        if ($invito['Esito'] == "ACCETTATO") {
+                                            $tutti_sospesi = false;
+                                            break;
+                                        }
                                     }
-                                }
-                            } ?>
-                            <?php
-                            // se non ci sono invitati la variabile booleana non e' stata modificata quindi posso eliminare i sondaggi,
-                            // se tutti gli invitati sono con Esito='Sospeso' oppure con Esito='Rifiutato' ho eseguito i controlli ma la variabile booleana non e' stata modificata, quindi posso eliminare il sondaggio
-                            if ($tutti_sospesi) {
-                                ?>
-                                <input type="hidden" name="codice_sondaggio" id="codice_sondaggio"
-                                    value="<?php echo $codice_sondaggio ?>">
+                                } ?>
+                                <?php
+                                // se non ci sono invitati la variabile booleana non e' stata modificata quindi posso eliminare i sondaggi,
+                                // se tutti gli invitati sono con Esito='Sospeso' oppure con Esito='Rifiutato' ho eseguito i controlli ma la variabile booleana non e' stata modificata, quindi posso eliminare il sondaggio
+                                if ($tutti_sospesi) {
+                                    ?>
+                                    <input type="hidden" name="codice_sondaggio" id="codice_sondaggio"
+                                        value="<?php echo $codice_sondaggio ?>">
 
-                                <button class="delete_button" type="submit" name="elimina" id="elimina">
-                                    <span class="lable">X</span>
-                                </button>
-                                <!--<input type="submit" name="elimina" id="elimina" value="Elimina">-->
-                            <?php } ?>
-                        </li>
-                    </form>
-                <?php } ?>
+                                    <button class="delete_button" type="submit" name="elimina" id="elimina">
+                                        <span class="lable">X</span>
+                                    </button>
+                                    <!--<input type="submit" name="elimina" id="elimina" value="Elimina">-->
+                                <?php } ?>
+                            </li>
+                        </form>
+                    <?php } ?>
+                </div>
             </ul>
         </div>
 
@@ -478,29 +523,31 @@ inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad u
             <ul>
                 <h1>Visualizza risposte sondaggio</h1>
                 <h3>Elenco sondaggi:</h3>
-                <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
+                <div class="lista_scrollabile">
+                    <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
 
-                    <li>
-                        <a
-                            href="visualizza_risposte_sondaggio.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>">
-                            <button class="link_sondaggio_button">
-                                <span class="circle" aria-hidden="true">
-                                    <span class="icon arrow"></span>
-                                </span>
-                                <span class="link_sondaggio_button-text">
-                                    <?php echo $sondaggio_creato['Titolo']; ?>
-                                </span>
-                            </button>
-                        </a>
-                        <!--
+                        <li>
+                            <a
+                                href="visualizza_risposte_sondaggio.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>">
+                                <button class="link_sondaggio_button">
+                                    <span class="circle" aria-hidden="true">
+                                        <span class="icon arrow"></span>
+                                    </span>
+                                    <span class="link_sondaggio_button-text">
+                                        <?php echo $sondaggio_creato['Titolo']; ?>
+                                    </span>
+                                </button>
+                            </a>
+                            <!--
                         <label>
                             <a
                                 href="visualizza_risposte_sondaggio.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>"><?php echo $sondaggio_creato['Titolo']; ?></a>
                         </label>
                         -->
-                    </li>
+                        </li>
 
-                <?php } ?>
+                    <?php } ?>
+                </div>
             </ul>
         </div>
 
@@ -509,36 +556,28 @@ inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad u
             <ul>
                 <h1>Statistiche aggregate sondaggio</h1>
                 <h3>Elenco sondaggi:</h3>
-                <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
-                    <?php $codice_sondaggio = $sondaggio_creato['Codice']; ?>
-                    <form action="visualizza_statistiche_aggregate.php" method="POST">
-                        <button class="btn" type="submit" name="statistiche_aggregate" id="statistiche_aggregate">
-                            <?php echo $sondaggio_creato['Titolo']; ?>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" height="15px"
-                                width="15px" class="icon">
-                                <path stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10"
-                                    stroke-width="1.5" stroke="#292D32"
-                                    d="M8.91016 19.9201L15.4302 13.4001C16.2002 12.6301 16.2002 11.3701 15.4302 10.6001L8.91016 4.08008">
-                                </path>
-                            </svg>
-                        </button>
-                        <input type="hidden" name="codice_sondaggio" id="codice_sondaggio"
-                            value="<?php echo $codice_sondaggio ?>">
+                <div class="lista_scrollabile">
+                    <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
+                        <li>
+                            <?php $codice_sondaggio = $sondaggio_creato['Codice']; ?>
+                            <form action="visualizza_statistiche_aggregate.php" method="POST">
+                                <button class="link_sondaggio_button" type="submit" name="statistiche_aggregate"
+                                    id="statistiche_aggregate">
+                                    <span class="circle" aria-hidden="true">
+                                        <span class="icon arrow"></span>
+                                    </span>
+                                    <span class="link_sondaggio_button-text">
+                                        <?php echo $sondaggio_creato['Titolo']; ?>
+                                    </span>
+                                </button>
+                                <input type="hidden" name="codice_sondaggio" id="codice_sondaggio"
+                                    value="<?php echo $codice_sondaggio ?>">
+                            </form>
+                        </li>
 
-                        <!--
-                    <?php //$codice_sondaggio = $sondaggio_creato['Codice']; ?>
-                    <label>
-                        <?php //echo $sondaggio_creato['Titolo']; ?>
-                    </label>
 
-                    <input type="hidden" name="codice_sondaggio" id="codice_sondaggio"
-                        value="<?php //echo $codice_sondaggio ?>">
-                    <input type="submit" name="statistiche_aggregate" id="statistiche_aggregate"
-                        value="Visualizza statistiche aggregate">
-                -->
-                    </form>
-
-                <?php } ?>
+                    <?php } ?>
+                </div>
             </ul>
         </div>
 
