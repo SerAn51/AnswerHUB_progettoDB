@@ -39,6 +39,15 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
     <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="stile_css/checkbox_style.css">
+    <link rel="stylesheet" href="stile_css/input_statistiche_aggregate.css">
+    <link rel="stylesheet" href="stile_css/radio_seleziona_sondaggio.css">
+    <link rel="stylesheet" href="stile_css/crea_sondaggio_inputs.css">
+    <link rel="stylesheet" href="stile_css/crea_sondaggio_button.css">
+    <link rel="stylesheet" href="stile_css/bottone_elimina_sondaggio.css">
+    <link rel="stylesheet" href="stile_css/bottone_invita.css">
+    <link rel="stylesheet" href="stile_css/bottone_logout.css">
+    <link rel="stylesheet" href="stile_css/tabella_classifica_utenti.css">
+    <link rel="stylesheet" href="stile_css/tabella_premi.css">
 
     <style>
         body {
