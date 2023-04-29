@@ -1,0 +1,259 @@
+body {
+    text-align: center;
+
+    background-color: #091d3e;
+    font-family: 'Poppins', sans-serif;
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr;
+    /*Divido le colonne in 300px per la sidebar, 1 frazione per tutto il resto*/
+    grid-template-rows: 100px 1fr 10px;
+    /*Divido le righe in una da 60px che sarà l'header, e 1fr per il contenuto main*/
+    grid-template-areas:
+        "header"
+        "main"
+        "footer";
+}
+
+.header {
+    border-radius: 30px;
+    background-color: #f1f1fa;
+    grid-area: header;
+
+    padding: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+
+    display: flex;
+    justify-content: center;
+    /* Centra gli elementi orizzontalmente */
+    align-items: center;
+    /* Centra gli elementi verticalmente */
+    height: 50px;
+
+}
+
+.header h1 {
+    margin: 0;
+    padding: 0;
+    color: #091d3e;
+}
+
+.header .home {
+    margin-right: 20px;
+    /* Aggiungi un margine a destra per separare .home da h1 */
+}
+
+.header .logout {
+    margin-left: 20px;
+    /* Aggiungi un margine a sinistra per separare .logout da h1 */
+}
+
+.header a {
+    text-decoration: none;
+}
+
+.footer {
+    background-color: #091d3e;
+    grid-area: footer;
+}
+
+.main {
+    border-radius: 30px;
+    background-color: #f1f1fa;
+
+    padding: 20px;
+    margin: 20px;
+    grid-area: main;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+}
+
+.space {
+    background-color: #ffffff;
+    color: #091d3e;
+    border-radius: 30px;
+    /*border: 2px solid #0F2849;*/
+    box-shadow: 0 0 50px #ccc;
+    border-radius: 30px;
+    display: flex;
+    text-align: center;
+    width: 55%;
+    height: 200px;
+    padding: 10px;
+    margin: 20px;
+    text-align: left;
+}
+
+.space .titolo_immagine {
+    width: 400px;
+    height: auto;
+    position: relative;
+}
+
+.space .titolo_immagine h1 {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.space .titolo_immagine img {
+    width: 90%;
+    /* impostiamo la larghezza dell'immagine al 90% della larghezza del contenitore */
+    height: auto;
+    /* impostiamo l'altezza dell'immagine in modo che si adatti proporzionalmente */
+    position: absolute;
+    /* posizioniamo in modo assoluto l'immagine all'interno del contenitore */
+    top: 50%;
+    /* posizioniamo l'immagine a metà altezza del contenitore */
+    left: 50%;
+    /* posizioniamo l'immagine a metà larghezza del contenitore */
+    transform: translate(-50%, -50%);
+    /* centrare l'immagine all'interno del contenitore */
+    border-radius: 30px;
+}
+
+.space .risposte_utenti {
+    margin-left: 40px;
+}
+
+.space .risposte_utenti h3 {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.space p {
+    margin-top: 0;
+    margin-bottom: 30px;
+}
+
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.lista_scrollabile {
+    height: 50vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.lista_scrollabile::-webkit-scrollbar {
+    width: 5px;
+    height: 100%;
+}
+
+.lista_scrollabile::-webkit-scrollbar-thumb {
+    background-color: #091d3e;
+    border-radius: 30px;
+}
+
+.lista_scrollabile ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.lista_scrollabile li {
+    padding: 20px;
+    margin: 0;
+    border-color: #091d3e;
+    border-radius: 30px;
+}
+
+.lista_scrollabile li a {
+    text-decoration: none;
+}
+
+.space_aggiungi_opzione form {
+    display: flex;
+    flex-direction: column;
+    /* Opzionale: allinea gli elementi in verticale */
+    align-items: center;
+    /* Allinea gli elementi in orizzontale */
+}
+
+.space_rimuovi_opzione form {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.space_rimuovi_opzione .lista_scrollabile h3 {
+    flex: 1;
+    margin-right: 40px;
+    margin-top: 30px;
+}
+
+.space_rimuovi_opzione .lista_scrollabile button {
+    flex-shrink: 0;
+    margin-top: 25px;
+}
+
+input,
+label,
+button {
+    margin-top: 0.30rem;
+    margin-bottom: 0.30rem;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    /* Allinea verticalmente */
+    gap: 10px;
+    /* Aggiunge uno spazio tra i due elementi */
+}
+
+.item .delete_button {
+    margin-left: auto;
+    /* Sposta il pulsante a destra */
+}
+
+.item .titolo {
+    text-transform: uppercase;
+}
+
+.space_rimuovi_opzione .lista_scrollabile h3 {
+    flex: 1;
+    margin-right: 40px;
+    margin-top: 30px;
+}
+
+.space_rimuovi_opzione .lista_scrollabile button {
+    flex-shrink: 0;
+    margin-top: 25px;
+}
+
+input,
+label,
+button {
+    margin-top: 0.30rem;
+    margin-bottom: 0.30rem;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    /* Allinea verticalmente */
+    gap: 10px;
+    /* Aggiunge uno spazio tra i due elementi */
+}
+
+.item .delete_button {
+    margin-left: auto;
+    /* Sposta il pulsante a destra */
+}
+
+.item .titolo {
+    text-transform: uppercase;
+}

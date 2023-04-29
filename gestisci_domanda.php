@@ -129,31 +129,31 @@ try {
 
         <!--CREA UNA NUOVA DOMANDA-->
         <div class="space_inserisci_domanda">
-            <?php
-            // se non ci sono utenti invitati dai la possibilita' di inserire una nuova domanda;
-            // se ci sono, continua a dare la possibilità solo se nessuno ha ancora accettato l'invito
-            $tutti_sospesi_due = true;
+            <form action="script_php/inserimento_domanda.php" method="POST" enctype="multipart/form-data">
+                <h1>Inserisci una nuova domanda</h1>
+                <?php
+                // se non ci sono utenti invitati dai la possibilita' di inserire una nuova domanda;
+                // se ci sono, continua a dare la possibilità solo se nessuno ha ancora accettato l'invito
+                $tutti_sospesi_due = true;
 
-            // se la query restituisce almeno una riga, vuol dire che ho invitato almeno un utente quindi non posso piu' aggiungere domande-->
-            if (($inviti && count($inviti) > 0)) {
-                foreach ($inviti as $invito) {
-                    if ($invito['Esito'] == "ACCETTATO") {
-                        $tutti_sospesi_due = false;
-                        break;
+                // se la query restituisce almeno una riga, vuol dire che ho invitato almeno un utente quindi non posso piu' aggiungere domande-->
+                if (($inviti && count($inviti) > 0)) {
+                    foreach ($inviti as $invito) {
+                        if ($invito['Esito'] == "ACCETTATO") {
+                            $tutti_sospesi_due = false;
+                            break;
+                        }
                     }
-                }
-            } ?>
-            <?php
+                } ?>
+                <?php
 
-            // se non ci sono invitati la variabile booleana non e' stata modificata quindi posso aggiungere una domanda,
-            // se tutti gli invitati sono con Esito='Sospeso' oppure con Esito='Rifiutato' ho eseguito i controlli ma la variabile booleana non e' stata modificata, quindi posso aggiungere una domanda
-            if ($tutti_sospesi_due) {
-                ?>
-                <!--L'inserimento deve avvenire in Domanda, in ComponenteSondaggioDomanda e
+                // se non ci sono invitati la variabile booleana non e' stata modificata quindi posso aggiungere una domanda,
+                // se tutti gli invitati sono con Esito='Sospeso' oppure con Esito='Rifiutato' ho eseguito i controlli ma la variabile booleana non e' stata modificata, quindi posso aggiungere una domanda
+                if ($tutti_sospesi_due) {
+                    ?>
+                    <!--L'inserimento deve avvenire in Domanda, in ComponenteSondaggioDomanda e
             se APERTA anche in DomandaAperta, altrimenti in DomandaChiusa
             (in questo caso, si devono inserire le opzioni...vedi space "Domande"-->
-                <form action="script_php/inserimento_domanda.php" method="POST" enctype="multipart/form-data">
-                    <h1>Inserisci una nuova domanda</h1>
                     <p>I campi con * sono obbligatori</p>
                     <?php
                     if ((isset($_GET['error']))) {
@@ -213,8 +213,8 @@ try {
                     </button>
                 </form>
             <?php } else {
-                echo "Un utente invitato ha accettato, per questo sondaggio non e' piu' possibile inserire domande";
-            } ?>
+                    echo "Un utente invitato ha accettato, per questo sondaggio non e' piu' possibile inserire domande";
+                } ?>
         </div>
 
         <!--MOSTRA TUTTE LE DOMANDE-->
