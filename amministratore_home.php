@@ -202,6 +202,7 @@ if (!(empty($_SESSION["email"]))) {
             <?php echo $dati_utente["Nome"]; ?>
         </h2>
         <a href="funzioni_semplice_amministratore.php">Vai alle funzioni da utente semplice</a>
+        <a href="visualizza_log.php">Visualizza log</a>
         <a href="logout.php">
             <button class="logout_btn">
                 <p class="paragraph"> Logout </p>
