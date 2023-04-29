@@ -224,11 +224,14 @@ try {
                 <h1>Domande</h1>
                 <!--Eventuale messaggio di successo per domanda rimossa-->
                 <?php if (isset($_GET['success']) && $_GET['success'] == 20) {
-                    echo "Domanda rimossa con successo";
-                } ?>
+                    echo "Domanda rimossa con successo"; ?>
+                    <br><br>
+                <?php } ?>
                 <?php if (empty($domande_sondaggio)) {
                     echo "Non ci sono domande, inseriscine una!";
                 } else { ?>
+                    <p>Passa il mouse sulla domanda <br> per gestire le opzioni <br><br> Se la domanda e' aperta viene
+                        mostrato il massimo numero di caratteri per la risposta</p>
                     <h3>Elenco domande:</h3>
                     <div class="lista_scrollabile">
                         <?php foreach ($domande_sondaggio as $domanda) { ?>
@@ -259,7 +262,7 @@ try {
                                             ?>
                                             <div class="domanda_aperta">
                                                 <span class="tooltip">Max caratteri:
-                                                <?php echo 'Max caratteri: ' . $max_caratteri['MaxCaratteriRisposta']; ?>
+                                                <?php echo $max_caratteri['MaxCaratteriRisposta']; ?>
                                                 </span>
                                                 <span>
                                                 <?php echo $domanda['Testo']; ?>
@@ -299,7 +302,8 @@ try {
                                                     <path
                                                         d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z">
                                                     </path>
-                                                </svg></span></button>
+                                                </svg></span>
+                                        </button>
                                         <!--<input type="submit" name="bottone" id="bottone" value="Elimina">-->
                                     <?php }
                                     ?>
