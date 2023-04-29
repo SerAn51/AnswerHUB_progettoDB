@@ -104,8 +104,8 @@ if (isset($_POST["invia"])) {
                 }
             }
 
-            //reindirizza alla pagina index.php
-            header("Location: ../index.php");
+            //reindirizza alla pagina da cui è stato chiamato questo file
+            header('Location: ' . $_SERVER['HTTP_REFERER']);
             exit(); //termina l'esecuzione dello script dopo il reindirizzamento
 
         } else {

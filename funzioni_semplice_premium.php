@@ -1,25 +1,43 @@
 <?php
 require 'config_connessione.php'; // instaura la connessione con il db
 
-$email = $_SESSION["email"];
-// ora usa l'email passata tra una pagina e l'altra (salvato nella sessione) per fare una query sql
 try {
-    $query_sql = "SELECT * FROM Utente WHERE Email = ?";
-    $stmt = $pdo->prepare($query_sql);
-    $stmt->execute([$email]);
-    //estrazione della riga cosi' da poter usare i dati
-    $dati_utente = $stmt->fetch(PDO::FETCH_ASSOC);
+    //LOGIN: se vado su questa pagina senza accesso, reindirizza al login
+    if (!(empty($_SESSION["email"]))) {
+        $email = $_SESSION["email"];
+        // ora usa l'email passata tra una pagina e l'altra (salvato nella sessione) per fare una query sql
+        $query_sql = "SELECT * FROM UtentePremium JOIN Utente ON UtentePremium.Email=Utente.Email WHERE UtentePremium.Email = ?";
+        $stmt = $pdo->prepare($query_sql);
+        $stmt->execute([$email]);
+        //estrazione della riga cosi' da poter usare i dati
+        $dati_utente = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        //se sono semplice/amministratore e cambio l'url per andare nella home dell'utente premium, rimango sulla home semplice/amministratore
+        if ($dati_utente["PAS"] === "SEMPLICE") {
+            header("Location: semplice_home.php");
+        } else if ($dati_utente["PAS"] === "AMMINISTRATORE") {
+            header("Location: amministratore_home.php");
+        }
+    } else {
+        header("Location: login.php"); //inoltre, cosi' che se provo ad andare in index dall'url, mi rimanda al login
+    }
 } catch (PDOException $e) {
     echo "Errore Stored Procedure: " . $e->getMessage();
     header("Location: logout.php");
     exit;
 }
 
-//se sono amministratore/premium e cambio l'url per andare nella home dell'utente semplice, rimango sulla home amministratore/premium
-if ($dati_utente["PAS"] === "AMMINISTRATORE") {
-    header("Location: amministratore_home.php");
-} else if ($dati_utente["PAS"] === "PREMIUM") {
-    header("Location: premium_home.php");
+try {
+    //utile per mostrare la lista di sondaggi
+    $mostra_sondaggi_creati = $pdo->prepare("SELECT * FROM Sondaggio WHERE EmailUtentecreante = :email");
+    $mostra_sondaggi_creati->bindParam(':email', $_SESSION["email"], PDO::PARAM_STR);
+    $mostra_sondaggi_creati->execute();
+    $sondaggi_creati = $mostra_sondaggi_creati->fetchAll(PDO::FETCH_ASSOC);
+    $mostra_sondaggi_creati->closeCursor();
+} catch (PDOException $e) {
+    echo "Errore Stored Procedure: " . $e->getMessage();
+    header("Location: logout.php");
+    exit;
 }
 ?>
 
@@ -39,12 +57,19 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
     <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="stile_css/checkbox_style.css">
+    <link rel="stylesheet" href="stile_css/input_statistiche_aggregate.css">
+    <link rel="stylesheet" href="stile_css/radio_seleziona_sondaggio.css">
+    <link rel="stylesheet" href="stile_css/crea_sondaggio_inputs.css">
+    <link rel="stylesheet" href="stile_css/crea_sondaggio_button.css">
+    <link rel="stylesheet" href="stile_css/bottone_elimina_sondaggio.css">
+    <link rel="stylesheet" href="stile_css/bottone_invita.css">
+    <link rel="stylesheet" href="stile_css/bottone_logout.css">
 
     <style>
         body {
             text-align: center;
 
-            background-color: #0F2849;
+            background-color: #091d3e;
             font-family: 'Poppins', sans-serif;
             height: 100vh;
             display: grid;
@@ -53,10 +78,9 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
             grid-template-rows: 100px 1fr 10px;
             /*Divido le righe in una da 60px che sarà l'header, e 1fr per il contenuto main*/
             grid-template-areas:
-                "side header"
-                "side main"
-                "side footer";
-
+                "header"
+                "main"
+                "footer";
         }
 
         .header {
@@ -82,12 +106,12 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
         }
 
         header h2 {
-            color: #0F2849;
+            color: #091d3e;
             margin-left: 20px;
         }
 
         .footer {
-            background-color: #0F2849;
+            background-color: #091d3e;
             grid-area: footer;
         }
 
@@ -111,7 +135,7 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
 
         .space {
             background-color: #ffffff;
-            color: #0c2840;
+            color: #091d3e;
             border-radius: 30px;
             /*border: 2px solid #0F2849;*/
             box-shadow: 0 0 50px #ccc;
@@ -166,8 +190,8 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
         input,
         label,
         button {
-            margin-top: 0.70rem;
-            margin-bottom: 0.70rem;
+            margin-top: 0.30rem;
+            margin-bottom: 0.30rem;
         }
 
         .item {
@@ -186,68 +210,20 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
         .item .titolo {
             text-transform: uppercase;
         }
-
-        /*Mostra l'inputbox per inserire il codice amministratore*/
-        #inputbox_codice_amm {
-            display: none;
-        }
-
-        #checkbox_codice_amm:checked~#inputbox_codice_amm {
-            display: block;
-            transition: .5s;
-        }
-
-        /*Gestione messaggi*/
-        .accettato,
-        .rifiutato {
-            margin: 5px;
-            width: 6%;
-            border: 0;
-            border-radius: 10px;
-            cursor: pointer;
-        }
-
-        .accetta {
-            background-color: green;
-        }
-
-        .rifiuta {
-            background-color: darkred;
-        }
     </style>
 </head>
 
 <body>
+
     <header class="header">
         <h2>Ciao
-            <?php echo $dati_utente["Nome"]; ?>
+            <?php var_dump($dati_utente["PAS"]);
+            echo $dati_utente["Nome"]; ?>
         </h2>
         <h2>
-            Diventa utente premium:
-            <form action="script_php/diventa_premium.php" method="POST">
-                <input type="submit" name="diventa_premium" id="diventa_premium" value="Abbonati">
-            </form>
+            Funzioni utente semplice
         </h2>
-        <h2>
-            Spunta per registrarti come amministratore:
-            <form action="script_php/diventa_amministratore.php" method="POST">
-                <?php
-                if ((isset($_GET['error'])) && ($_GET['error'] == 10)) {
-                    echo "Codice errato";
-                }
-                ?>
-                <!--checkbox per inserire codice amministratore-->
-                <label name="label_checkbox_codice_amm" id="label_checkbox_codice_amm" for="checkbox_codice_amm">
-                    <input type="checkbox" name="checkbox_codice_amm" id="checkbox_codice_amm">
-                    <!--input box Codice amministratore-->
-                    <div name="inputbox_codice_amm" id="inputbox_codice_amm" class="inputbox">
-                        <input type="text" name="codice_amm" id="codice_amm">
-                        <label for="codice_amm">Codice fornito</label>
-                        <input type="submit" name="diventa_amministratore" id="diventa_ammnistratore"
-                            value="Abbonati per diventare un utente premium">
-                    </div>
-            </form>
-        </h2>
+        <a href="premium_home.php">Torna alle funzioni premium</a>
         <a href="logout.php">
             <button class="logout_btn">
                 <p class="paragraph"> Logout </p>
@@ -269,10 +245,13 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
     </header>
 
     <main class="main">
-        <!--require funzioni semplice-->
+
+        <h1>Funzioni utente semplice</h1>
         <?php
         include 'funzioni_semplice.php';
         ?>
+
+        <h1>Statistiche visibili da tutti gli utenti</h1>
         <!--STATISTICHE (VISIBILI DA TUTTI GLI UTENTI)-->
         <!--inclue statistiche.php, si è optato per include in quanto le statistiche non sono fondamentali e se c'è un errore l'applicazione continua a funzionare, con require ci sarebbe un fatal error-->
         <?php
