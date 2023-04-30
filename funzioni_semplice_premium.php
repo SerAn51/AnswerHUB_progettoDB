@@ -64,6 +64,12 @@ try {
     <link rel="stylesheet" href="stile_css/bottone_elimina_sondaggio.css">
     <link rel="stylesheet" href="stile_css/bottone_invita.css">
     <link rel="stylesheet" href="stile_css/bottone_logout.css">
+    <link rel="stylesheet" href="stile_css/tabella_classifica_utenti.css">
+    <link rel="stylesheet" href="stile_css/tabella_premi.css">
+    <link rel="stylesheet" href="stile_css/bottone_diventa_premium.css">
+    <link rel="stylesheet" href="stile_css/bottone_rispondi_visualizza_risposte.css">
+    <link rel="stylesheet" href="stile_css/bottone_accetta_invito.css">
+    <link rel="stylesheet" href="stile_css/bottone_rifiuta_invito.css">
 
     <style>
         body {
@@ -245,13 +251,10 @@ try {
     </header>
 
     <main class="main">
-
-        <h1>Funzioni utente semplice</h1>
+        <!--Funzioni utente semplice-->
         <?php
         include 'funzioni_semplice.php';
         ?>
-
-        <h1>Statistiche visibili da tutti gli utenti</h1>
         <!--STATISTICHE (VISIBILI DA TUTTI GLI UTENTI)-->
         <!--inclue statistiche.php, si è optato per include in quanto le statistiche non sono fondamentali e se c'è un errore l'applicazione continua a funzionare, con require ci sarebbe un fatal error-->
         <?php

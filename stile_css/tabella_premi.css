@@ -75,14 +75,14 @@ th {
 .foto {
     min-width: 200px;
     max-width: 300px;
-    height: 100px;
 }
 
 td.foto {
-    padding: 0;
+    padding: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 80%;
 }
 
 td.foto img {

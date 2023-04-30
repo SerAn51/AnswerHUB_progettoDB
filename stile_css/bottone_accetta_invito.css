@@ -1,0 +1,63 @@
+.accetta {
+    position: relative;
+    width: 130px;
+    height: 40px;
+    margin: 0 10px 0 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border: 1px solid #34974d;
+    border-radius: 30px;
+    background-color: #3aa856;
+    float: left;
+}
+
+.accetta,
+.accetta_icon,
+.accetta_text {
+    transition: all 0.3s;
+}
+
+.accetta .accetta_text {
+    transform: translateX(15px);
+    color: #fff;
+    font-weight: 600;
+}
+
+.accetta .accetta_icon {
+    position: absolute;
+    transform: translateX(84px);
+    height: 100%;
+    width: 39px;
+    background-color: #34974d;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.accetta .svg {
+    width: 30px;
+    stroke: #fff;
+}
+
+.accetta:hover {
+    background: #34974d;
+}
+
+.accetta:hover .accetta_text {
+    color: transparent;
+}
+
+.accetta:hover .accetta_icon {
+    width: 122px;
+    transform: translateX(0);
+}
+
+.accetta:active .accetta_icon {
+    background-color: #2e8644;
+}
+
+.accetta:active {
+    border: 1px solid #2e8644;
+}

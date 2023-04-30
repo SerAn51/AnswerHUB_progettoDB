@@ -1,0 +1,36 @@
+.visualizza_rispondi_sondaggio {
+    cursor: pointer;
+    font-weight: 700;
+    font-family: Helvetica, "sans-serif";
+    transition: all .2s;
+    padding: 5px 10px;
+    border-radius: 100px;
+    background: #091d3e;
+    border: 1px solid transparent;
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    margin: 0;
+}
+
+.visualizza_rispondi_sondaggio span {
+    color: #f1f1f1;
+}
+
+.visualizza_rispondi_sondaggio:hover {
+    background: #1a73e8;
+}
+
+.visualizza_rispondi_sondaggio>svg {
+    width: 34px;
+    margin-left: 10px;
+    transition: transform .3s ease-in-out;
+}
+
+.visualizza_rispondi_sondaggio:hover svg {
+    transform: translateX(5px);
+}
+
+.visualizza_rispondi_sondaggio:active {
+    transform: scale(0.95);
+}

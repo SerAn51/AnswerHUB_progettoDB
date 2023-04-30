@@ -1,7 +1,7 @@
 <!--VISUALIZZARE I PREMI DISPONIBILI-->
 <div class="space" id="premi">
     <ul>
-        <h2>Premi disponibili</h2>
+        <h1>Premi disponibili</h1>
         <?php
         //array con tutti i premi vinti dall'utente di sessione
         try {
@@ -61,35 +61,13 @@
                 </table>
             </div>
         </div>
-
-        <?php
-        /*
-        foreach ($premi as $premio) {
-        // leggi il contenuto del blob dal database
-        $blob = $premio["Foto"];
-        // decodifica il contenuto del blob in una stringa base64
-        $base64 = base64_encode($blob);
-        // determina il tipo di immagine dal contenuto del blob con la funzione getimagesizefromstring e prendendo il valore della chiave mime che dice il tipo dell'immagine
-        $image_info = getimagesizefromstring($blob);
-        $mime_type = $image_info["mime"];
-        // visualizza l'elememento di lista con l'immagine
-        ?>
-        <li>
-        <label name="premio_disponibile" value="<?php echo $premio["Nome"]; ?>">
-        <?php echo $premio["Nome"] . ' ' . $premio["Descrizione"]; ?>
-        <img src="data:<?php echo $mime_type; ?>;base64,<?php echo $base64; ?>">
-        <?php echo $premio["Puntinecessari"]; ?>
-        </label>
-        </li>
-        
-        <?php } */?>
     </ul>
 </div>
 
 <!--VISUALIZZARE LA CLASSIFICA DEGLI UTENTI IN BASE AL CAMPO TOTALEBONUS-->
 <div class="space" id="classifica">
     <ul>
-        <h2>Classifica utenti</h2>
+        <h1>Classifica utenti</h1>
         <?php
         //array con tutti i premi vinti dall'utente di sessione
         try {
@@ -103,17 +81,6 @@
             exit;
         }
         ?>
-
-
-        <?php
-        /*
-        foreach ($classifica_utenti as $classifica_utente) { ?>
-        <li>
-        <label name="utente_in_classifica" value="<?php echo $classifica_utente["Email"]; ?>">
-        <?php echo $classifica_utente["Email"] . " " . $classifica_utente["Totalebonus"]; ?>
-        </label>
-        </li>
-        <?php } */?>
 
         <div class="classifica_utenti">
             <div class="wrapper">

@@ -1,0 +1,62 @@
+.rifiuta {
+    position: relative;
+    width: 130px;
+    height: 40px;
+    margin: 0 0 10px 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border: 1px solid #973434;
+    border-radius: 30px;
+    background-color: #a83a3a;
+}
+
+.rifiuta,
+.rifiuta_icon,
+.rifiuta_text {
+    transition: all 0.3s;
+}
+
+.rifiuta .rifiuta_text {
+    transform: translateX(15px);
+    color: #fff;
+    font-weight: 600;
+}
+
+.rifiuta .rifiuta_icon {
+    position: absolute;
+    transform: translateX(84px);
+    height: 100%;
+    width: 39px;
+    background-color: #973434;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rifiuta .svg {
+    width: 30px;
+    stroke: #fff;
+}
+
+.rifiuta:hover {
+    background: #973434;
+}
+
+.rifiuta:hover .rifiuta_text {
+    color: transparent;
+}
+
+.rifiuta:hover .rifiuta_icon {
+    width: 122px;
+    transform: translateX(0);
+}
+
+.rifiuta:active .rifiuta_icon {
+    background-color: #862e2e;
+}
+
+.rifiuta:active {
+    border: 1px solid #862e2e;
+}
