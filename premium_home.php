@@ -39,16 +39,6 @@ try {
     header("Location: logout.php");
     exit;
 }
-
-//utile per verificare che ci siano invitati al sondaggio
-/*
-$check_inviti = $pdo->prepare("SELECT * FROM Invito WHERE CodiceSondaggio = :codice_sondaggio");
-$check_inviti->bindParam(':codice_sondaggio', $codice_sondaggio, PDO::PARAM_INT);
-$check_inviti->execute();
-$inviti = $check_inviti->fetchAll();
-$check_inviti->closeCursor();
-var_dump($codice_sondaggio);
-*/
 ?>
 
 <!DOCTYPE html>
@@ -604,12 +594,6 @@ inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad u
                                     </span>
                                 </button>
                             </a>
-                            <!--
-                        <label>
-                            <a
-                                href="visualizza_risposte_sondaggio.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>"><?php echo $sondaggio_creato['Titolo']; ?></a>
-                        </label>
-                        -->
                         </li>
 
                     <?php } ?>

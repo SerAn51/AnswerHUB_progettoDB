@@ -14,7 +14,7 @@ function accettaRifiutaInvito($pdo, $decisione, string $email, string $id_invito
         $prep_proc_accetta_rifiuta_invito->execute();
     } catch (PDOException $e) {
         echo "Errore Stored Procedure: " . $e->getMessage();
-        header("Location: logout.php");
+        //header("Location: ../logout.php");
         exit;
     }
 }
