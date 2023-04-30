@@ -288,10 +288,6 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
             text-align: left;
         }
 
-        .lista_scrollabile .testo {
-            flex-direction: column;
-        }
-
         .lista_scrollabile .testo .descrizione {
             display: flex;
             justify-content: center;

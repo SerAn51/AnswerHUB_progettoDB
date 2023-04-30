@@ -92,7 +92,7 @@
     ?>
 
     <ul>
-        <h1>Rispondi ai sondaggi</h1>
+        <h1>Rispondi/visualizza sondaggi</h1>
         <div class="lista_scrollabile">
             <?php foreach ($sondaggi_accettati as $sondaggio_accettato) { ?>
                 <li>
@@ -133,13 +133,19 @@
                             $sondaggio_completato = false;
                         }
                         ?>
-
                         <label>
-                            <strong>Titolo:</strong>
-                            <?php echo $sondaggio_accettato['Titolo']; ?>
-                            <br>
-                            <strong>Creatore:</strong>
-                            <?php echo $creatore; ?>
+                            <div class="invito">
+                                <label class="lista_scrollabile_orizzontalmente">
+                                    <strong>Titolo:</strong>
+                                    <?php echo $sondaggio_accettato['Titolo']; ?>
+                                </label>
+                            </div>
+                            <div class="invito">
+                                <label class="lista_scrollabile_orizzontalmente">
+                                    <strong>Creatore:</strong>
+                                    <?php echo $creatore; ?>
+                                </label>
+                            </div>
                         </label>
                         <input type="hidden" name="codice_sondaggio" id="codice_sondaggio"
                             value="<?php echo $codice_sondaggio ?>">

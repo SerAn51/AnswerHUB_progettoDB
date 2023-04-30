@@ -180,8 +180,13 @@ try {
                     <form action="script_php/manda_inviti.php" method="POST">
                         <ul>
                             <?php if (isset($dati_sondaggio) && is_array($dati_sondaggio)) { ?>
-                                <h2>Seleziona gli utenti da invitare per il sondaggio
-                                    <?php echo $dati_sondaggio['Titolo']; ?>
+                                <h2 class="invito">
+                                    Seleziona gli utenti da invitare per il sondaggio
+                                    <div class="contenitore_scrollabile">
+                                        <label class="lista_scrollabile_orizzontalmente">
+                                            <?php echo $dati_sondaggio['Titolo']; ?>
+                                        </label>
+                                    </div>
                                 </h2>
                             <?php } ?>
                             <?php
