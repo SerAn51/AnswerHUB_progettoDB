@@ -1,3 +1,4 @@
+.sondaggio,
 .domanda_chiusa {
     position: relative;
     background: #091d3e;
@@ -44,6 +45,7 @@
     transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
+.sondaggio:hover .tooltip,
 .domanda_chiusa:hover .tooltip {
     top: -45px;
     opacity: 1;
@@ -59,6 +61,13 @@ svg:hover .tooltip {
 .domanda_chiusa:hover,
 .domanda_chiusa:hover .tooltip,
 .domanda_chiusa:hover .tooltip::before {
+    background-color: #1a73e8;
+    color: #f1f1fa;
+}
+
+.sondaggio:hover,
+.sondaggio:hover .tooltip,
+.sondaggio:hover .tooltip::before {
     background-color: #1a73e8;
     color: #f1f1fa;
 }

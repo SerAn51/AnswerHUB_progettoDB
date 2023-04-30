@@ -1,0 +1,64 @@
+.invita {
+    position: relative;
+    width: 95px;
+    height: 40px;
+    margin: 40px 0 0 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border: 1px solid #34974d;
+    border-radius: 30px;
+    background-color: #3aa856;
+    float: left;
+}
+
+.invita,
+.invita_icon,
+.invita_text {
+    transition: all 0.3s;
+}
+
+.invita .invita_text {
+    transform: translateX(8px);
+    color: #fff;
+    font-weight: 600;
+    font-size: small;
+}
+
+.invita .invita_icon {
+    position: absolute;
+    transform: translateX(50px);
+    height: 100%;
+    width: 39px;
+    background-color: #34974d;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.invita .svg {
+    width: 30px;
+    stroke: #fff;
+}
+
+.invita:hover {
+    background: #34974d;
+}
+
+.invita:hover .invita_text {
+    color: transparent;
+}
+
+.invita:hover .invita_icon {
+    width: 80px;
+    transform: translateX(0);
+}
+
+.invita:active .invita_icon {
+    background-color: #2e8644;
+}
+
+.invita:active {
+    border: 1px solid #2e8644;
+}

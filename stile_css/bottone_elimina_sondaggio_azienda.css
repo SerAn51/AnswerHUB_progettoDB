@@ -1,0 +1,65 @@
+.elimina {
+    position: relative;
+    width: 95px;
+    height: 40px;
+    margin: 0;
+    margin-top: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border: 1px solid #973434;
+    border-radius: 30px;
+    background-color: #a83a3a;
+    float: left;
+}
+
+.elimina,
+.elimina_icon,
+.elimina_text {
+    transition: all 0.3s;
+}
+
+.elimina .elimina_text {
+    transform: translateX(0px);
+    color: #fff;
+    font-weight: 600;
+    font-size: small;
+}
+
+.elimina .elimina_icon {
+    position: absolute;
+    transform: translateX(50px);
+    height: 100%;
+    width: 39px;
+    background-color: #973434;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.elimina .svg {
+    width: 30px;
+    stroke: #fff;
+}
+
+.elimina:hover {
+    background: #973434;
+}
+
+.elimina:hover .elimina_text {
+    color: transparent;
+}
+
+.elimina:hover .elimina_icon {
+    width: 80px;
+    transform: translateX(0);
+}
+
+.elimina:active .elimina_icon {
+    background-color: #862e2e;
+}
+
+.elimina:active {
+    border: 1px solid #862e2e;
+}

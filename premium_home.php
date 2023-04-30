@@ -388,32 +388,19 @@ try {
                     <input type="Text" name="titolo" id="titolo" required autocomplete="off" class="input">
                     <label class="user-label">Titolo</label>
                 </div>
-                <!--
-                <label for="titolo">Titolo</label>
-                <input type="Text" name="titolo" id="titolo" required>
-                -->
                 <br>
                 <div class="input-group">
                     <input type="number" min="1" name="max_utenti" id="max_utenti" required autocomplete="off"
                         class="input">
                     <label class="user-label">Max utenti</label>
                 </div>
-                <!--
-                <label for="max_utenti">Max utenti</label>
-                <input type="number" min="1" name="max_utenti" id="max_utenti" required>
-                -->
                 <br>
                 <div class="input-group">
                     <input type="date" name="data_chiusura" id="data_chiusura" required autocomplete="off"
                         class="input">
                     <label class="user-label">Data di chiusura</label>
                 </div>
-                <!--
-                <label for="data_chiusura">Data di chiusura</label>
-                <input type="date" name="data_chiusura" id="data_chiusura" required>
-                -->
                 <br>
-
                 <ul>
                     <h4>Seleziona dominio:</h4>
                     <div class="dominio_lista_scrollabile">
@@ -443,7 +430,6 @@ try {
 
                     </div>
                 </button>
-                <!--<input type="submit" name="crea" id="crea" value="Crea">-->
             </form>
         </div>
 
@@ -581,7 +567,6 @@ inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad u
                 <h3>Elenco sondaggi:</h3>
                 <div class="lista_scrollabile">
                     <?php foreach ($sondaggi_creati as $sondaggio_creato) { ?>
-
                         <li>
                             <a
                                 href="visualizza_risposte_sondaggio.php?cod_sondaggio=<?php echo $sondaggio_creato['Codice']; ?>">
@@ -595,7 +580,6 @@ inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad u
                                 </button>
                             </a>
                         </li>
-
                     <?php } ?>
                 </div>
             </ul>
@@ -624,8 +608,6 @@ inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad u
                                     value="<?php echo $codice_sondaggio ?>">
                             </form>
                         </li>
-
-
                     <?php } ?>
                 </div>
             </ul>
