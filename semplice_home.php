@@ -54,7 +54,7 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
         body {
             text-align: center;
 
-            background-color: #0F2849;
+            background-color: #091d3e;
             font-family: 'Poppins', sans-serif;
             height: 100vh;
             display: grid;
@@ -205,6 +205,10 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
             transition: .5s;
         }
 
+        .inputbox label {
+            color: #091d3e;
+        }
+
         /*Gestione messaggi*/
         .accettato,
         .rifiutato {
@@ -221,6 +225,29 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
 
         .rifiuta {
             background-color: darkred;
+        }
+
+        .diventa_amministratore h3 {
+            display: inline-block;
+            color: #091d3e;
+            margin: 0;
+        }
+
+        .diventa_amministratore form {
+            display: inline-block;
+            color: #091d3e;
+        }
+
+        .diventa_amministratore form input[type="submit"] {
+            border-radius: 30px;
+            background-color: #091d3e;
+            color: #f1f1fa;
+            border-style: none;
+        }
+
+        .diventa_amministratore form input[type="text"] {
+            border-radius: 30px;
+            border-color: #091d3e;
         }
     </style>
 </head>
@@ -240,9 +267,9 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
                 Premium (10$)
             </button>
         </form>
-        <h2>
-            Spunta per registrarti come amministratore:
+        <div class="diventa_amministratore">
             <form action="script_php/diventa_amministratore.php" method="POST">
+                <h3>Spunta per registrarti come amministratore:</h3>
                 <?php
                 if ((isset($_GET['error'])) && ($_GET['error'] == 10)) {
                     echo "Codice errato";
@@ -253,16 +280,14 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
                     <input type="checkbox" name="checkbox_codice_amm" id="checkbox_codice_amm">
                     <!--input box Codice amministratore-->
                     <div name="inputbox_codice_amm" id="inputbox_codice_amm" class="inputbox">
-                        <input type="text" name="codice_amm" id="codice_amm">
-                        <label for="codice_amm">Codice fornito</label>
+                        <input type="text" name="codice_amm" id="codice_amm" placeholder="Codice fornito">
                         <input type="submit" name="diventa_amministratore" id="diventa_ammnistratore"
-                            value="Abbonati per diventare un utente premium">
+                            value="Diventa amministratore">
                     </div>
             </form>
-        </h2>
+        </div>
         <a href="logout.php">
-            <button class="logout_btn"
-                onclick="return confirm('Confermi logout?')">
+            <button class="logout_btn" onclick="return confirm('Confermi logout?')">
                 <p class="paragraph"> Logout </p>
                 <span class="logout_icon-wrapper">
                     <svg class="logout_icon" width="30px" height="30px" viewBox="0 0 24 24" fill="none"
