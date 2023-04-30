@@ -6,7 +6,7 @@
 .radio-button {
     display: flex;
     gap: 10px;
-    justify-content: center;
+    justify-content: left;
     margin: 10px;
     position: relative;
     align-items: center;

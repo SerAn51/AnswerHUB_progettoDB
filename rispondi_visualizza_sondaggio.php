@@ -213,95 +213,117 @@ if ((isset($_POST["rispondi"])) || (isset($_POST["visualizza_risposte"]))) {
                 <div class="space">
                     <!--Mostra domanda-->
                     <?php $id_domanda = $domanda_sondaggio['ID']; ?>
-                    <h3>
-                        <?php echo $domanda_sondaggio['Testo'] ?>
-                        <!--Se la domanda è aperta, mostro il massimo numero di caratteri-->
-                        <?php if ($domanda_sondaggio['ApertaChiusa'] == "APERTA") { ?>
+
+                    <div class="titolo_immagine">
+                        <div class="lista_scrollabile">
+                            <h2>
+                                <?php echo $domanda_sondaggio['Testo'] ?>
+                                <!--Se la domanda è aperta, mostro il massimo numero di caratteri-->
+                                <?php if ($domanda_sondaggio['ApertaChiusa'] == "APERTA") { ?>
+                                    <?php
+                                    try {
+                                        $max_caratteri_risposta = $pdo->prepare("SELECT * FROM DomandaAperta WHERE ID = ?");
+                                        $max_caratteri_risposta->execute([$id_domanda]);
+                                        $max_caratteri = $max_caratteri_risposta->fetch(PDO::FETCH_ASSOC);
+                                    } catch (PDOException $e) {
+                                        echo "Errore Stored Procedure: " . $e->getMessage();
+                                        header("Location: index.php");
+                                        exit;
+                                    }
+                                    ?>
+                                    <?php echo ' (max caratteri: ' . $max_caratteri['MaxCaratteriRisposta'] . ')'; ?>
+                                <?php } ?>
+                            </h2>
+                        </div>
+
+                        <!--Mostra la foto, se c'e'-->
+                        <?php
+                        if (isset($domanda_sondaggio["Foto"])) { ?>
+                            <?php
+                            // leggi il contenuto del blob dal database
+                            $blob = $domanda_sondaggio["Foto"];
+
+                            // decodifica il contenuto del blob in una stringa base64
+                            $base64 = base64_encode($blob);
+
+                            // determina il tipo di immagine dal contenuto del blob con la funzione getimagesizefromstring e prendendo
+                            //il valore della chiave mime che dice il tipo dell'immagine
+                            $image_info = getimagesizefromstring($blob);
+                            $mime_type = $image_info["mime"];
+                            ?>
+                            <img width="10%" src="data:<?php echo $mime_type; ?>;base64,<?php echo $base64; ?>">
+                        <?php } ?>
+                        <!--Mostra il punteggio-->
+                        <h3>
+                            Punteggio:
+                            <?php echo $domanda_sondaggio['Punteggio'] ?>
+                        </h3>
+                    </div>
+
+                    <div class="campo_risposta">
+                        <!--Mostra risposta aperta o mostra opzione selezionata, in base a domanda APERTA o CHIUSA-->
+                        <?php if ($domanda_sondaggio['ApertaChiusa'] == 'APERTA') { ?>
                             <?php
                             try {
-                                $max_caratteri_risposta = $pdo->prepare("SELECT * FROM DomandaAperta WHERE ID = ?");
-                                $max_caratteri_risposta->execute([$id_domanda]);
-                                $max_caratteri = $max_caratteri_risposta->fetch(PDO::FETCH_ASSOC);
+                                $mostra_risposta = $pdo->prepare("CALL MostraRispostaAperta(:email, :id_domanda_aperta)");
+                                $mostra_risposta->bindParam(':email', $email, PDO::PARAM_STR);
+                                $mostra_risposta->bindParam(':id_domanda_aperta', $id_domanda, PDO::PARAM_INT);
+                                $mostra_risposta->execute();
+                                $risposta = $mostra_risposta->fetch(PDO::FETCH_ASSOC);
+                                $mostra_risposta->closeCursor();
+                                //mostro la risposta alla domanda aperta
+                            ?>
+                            <textarea readonly><?php echo $risposta['Testo']; ?></textarea>
+                            <?php
                             } catch (PDOException $e) {
                                 echo "Errore Stored Procedure: " . $e->getMessage();
                                 header("Location: index.php");
                                 exit;
                             }
                             ?>
-                            <?php echo ' (max caratteri: ' . $max_caratteri['MaxCaratteriRisposta'] . ')'; ?>
+                        <?php } else if ($domanda_sondaggio['ApertaChiusa'] == 'CHIUSA') { ?>
+                                <?php
+                                try {
+                                    $mostra_opzione_selezionata = $pdo->prepare("CALL MostraOpzioneSelezionata(:email, :id_domanda_chiusa)");
+                                    $mostra_opzione_selezionata->bindParam(':email', $email, PDO::PARAM_STR);
+                                    $mostra_opzione_selezionata->bindParam(':id_domanda_chiusa', $id_domanda, PDO::PARAM_INT);
+                                    $mostra_opzione_selezionata->execute();
+                                    $opzione_selezionata = $mostra_opzione_selezionata->fetch(PDO::FETCH_ASSOC);
+                                    $mostra_opzione_selezionata->closeCursor();
+
+                                    $mostra_opzioni_non_selezionate = $pdo->prepare("CALL MostraOpzioniNonSelezionate(:email, :id_domanda_chiusa)");
+                                    $mostra_opzioni_non_selezionate->bindParam(':email', $email, PDO::PARAM_STR);
+                                    $mostra_opzioni_non_selezionate->bindParam(':id_domanda_chiusa', $id_domanda, PDO::PARAM_INT);
+                                    $mostra_opzioni_non_selezionate->execute();
+                                    $opzioni_non_selezionate = $mostra_opzioni_non_selezionate->fetchAll(PDO::FETCH_ASSOC);
+                                    $mostra_opzioni_non_selezionate->closeCursor();
+                                } catch (PDOException $e) {
+                                    echo "Errore Stored Procedure: " . $e->getMessage();
+                                    header("Location: index.php");
+                                    exit;
+                                }
+                                ?>
+
+                                <div class="opzioni">
+                                    <h3>Opzione selezionata:</h3>
+                                    <div class="lista_scrollabile">
+                                        <!--Le opzioni vengono rappresentate con una radio, selezionate o deselezionate in base a quale opzione e' stata scelta-->
+                                        <label class="radio-button">
+                                            <input type="radio" name="opzione_selezionata_<?php echo $id_domanda ?>" checked disabled>
+                                            <span class="radio"></span>
+                                        <?php echo $opzione_selezionata['Testo']; ?>
+                                        </label>
+                                    <?php foreach ($opzioni_non_selezionate as $opzione_non_selezionata) { ?>
+                                            <label class="radio-button">
+                                                <input type="radio" name="opzione_non_selezionata<?php echo $id_domanda ?>" disabled>
+                                                <span class="radio"></span>
+                                            <?php echo $opzione_non_selezionata['Testo']; ?>
+                                            </label>
+                                    <?php } ?>
+                                    </div>
+                                </div>
                         <?php } ?>
-                    </h3>
-                    <!--Mostra la foto, se c'e'-->
-                    <?php
-                    if (isset($domanda_sondaggio["Foto"])) { ?>
-                        <?php
-                        // leggi il contenuto del blob dal database
-                        $blob = $domanda_sondaggio["Foto"];
-
-                        // decodifica il contenuto del blob in una stringa base64
-                        $base64 = base64_encode($blob);
-
-                        // determina il tipo di immagine dal contenuto del blob con la funzione getimagesizefromstring e prendendo
-                        //il valore della chiave mime che dice il tipo dell'immagine
-                        $image_info = getimagesizefromstring($blob);
-                        $mime_type = $image_info["mime"];
-                        ?>
-                        <img width="10%" src="data:<?php echo $mime_type; ?>;base64,<?php echo $base64; ?>">
-                    <?php } ?>
-                    <!--Mostra il punteggio-->
-                    <?php echo $domanda_sondaggio['Punteggio'] ?>
-                    <!--Mostra risposta aperta o mostra opzione selezionata, in base a domanda APERTA o CHIUSA-->
-                    <?php if ($domanda_sondaggio['ApertaChiusa'] == 'APERTA') { ?>
-                        <?php
-                        try {
-                            $mostra_risposta = $pdo->prepare("CALL MostraRispostaAperta(:email, :id_domanda_aperta)");
-                            $mostra_risposta->bindParam(':email', $email, PDO::PARAM_STR);
-                            $mostra_risposta->bindParam(':id_domanda_aperta', $id_domanda, PDO::PARAM_INT);
-                            $mostra_risposta->execute();
-                            $risposta = $mostra_risposta->fetch(PDO::FETCH_ASSOC);
-                            $mostra_risposta->closeCursor();
-                            echo $risposta['Testo'];
-                        } catch (PDOException $e) {
-                            echo "Errore Stored Procedure: " . $e->getMessage();
-                            header("Location: index.php");
-                            exit;
-                        }
-                        ?>
-                    <?php } else if ($domanda_sondaggio['ApertaChiusa'] == 'CHIUSA') { ?>
-                            <?php
-                            try {
-                                $mostra_opzione_selezionata = $pdo->prepare("CALL MostraOpzioneSelezionata(:email, :id_domanda_chiusa)");
-                                $mostra_opzione_selezionata->bindParam(':email', $email, PDO::PARAM_STR);
-                                $mostra_opzione_selezionata->bindParam(':id_domanda_chiusa', $id_domanda, PDO::PARAM_INT);
-                                $mostra_opzione_selezionata->execute();
-                                $opzione_selezionata = $mostra_opzione_selezionata->fetch(PDO::FETCH_ASSOC);
-                                $mostra_opzione_selezionata->closeCursor();
-
-                                $mostra_opzioni_non_selezionate = $pdo->prepare("CALL MostraOpzioniNonSelezionate(:email, :id_domanda_chiusa)");
-                                $mostra_opzioni_non_selezionate->bindParam(':email', $email, PDO::PARAM_STR);
-                                $mostra_opzioni_non_selezionate->bindParam(':id_domanda_chiusa', $id_domanda, PDO::PARAM_INT);
-                                $mostra_opzioni_non_selezionate->execute();
-                                $opzioni_non_selezionate = $mostra_opzioni_non_selezionate->fetchAll(PDO::FETCH_ASSOC);
-                                $mostra_opzioni_non_selezionate->closeCursor();
-                            } catch (PDOException $e) {
-                                echo "Errore Stored Procedure: " . $e->getMessage();
-                                header("Location: index.php");
-                                exit;
-                            }
-                            ?>
-
-                            <!--Le opzioni vengono rappresentate con una radio, selezionate o deselezionate in base a quale opzione e' stata scelta (graficamente non si vede molto)-->
-                            <input type="radio" name="opzione_selezionata_<?php echo $id_domanda ?>" checked disabled>
-                            <label for="opzione_selezionata">
-                            <?php echo $opzione_selezionata['Testo']; ?>
-                            </label>
-                        <?php foreach ($opzioni_non_selezionate as $opzione_non_selezionata) { ?>
-                                <input type="radio" name="opzione_non_selezionata<?php echo $id_domanda ?>" disabled>
-                                <label for="opzione_non_selezionata">
-                                <?php echo $opzione_non_selezionata['Testo']; ?>
-                                </label>
-                        <?php } ?>
-                    <?php } ?>
+                    </div>
                 </div>
             <?php } ?>
         <?php } ?>

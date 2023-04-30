@@ -178,7 +178,8 @@ ul {
     text-decoration: none;
 }
 
-.domanda_chiusa span {
+.domanda_chiusa span,
+.domanda_aperta span {
     display: flex;
     justify-content: center;
     text-align: center;
@@ -240,7 +241,8 @@ ul {
     margin-top: 40px;
 }
 
-.space_domande .domanda_chiusa {
+.space_domande .domanda_chiusa,
+.space_domande .domanda_aperta {
     flex: 1;
     margin-right: 5px;
     margin-top: 40px;

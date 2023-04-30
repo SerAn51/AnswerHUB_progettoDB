@@ -270,7 +270,9 @@ try {
                                                 <?php echo $max_caratteri['MaxCaratteriRisposta']; ?>
                                                 </span>
                                                 <span>
-                                                <?php echo $domanda['Testo']; ?>
+                                                    <label class="lista_scrollabile_orizzontalmente">
+                                                    <?php echo $domanda['Testo']; ?>
+                                                    </label>
                                                 </span>
                                             </div>
                                     <?php } ?>

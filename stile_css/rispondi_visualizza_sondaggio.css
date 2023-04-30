@@ -33,6 +33,7 @@ body {
 
 .header h1 {
     margin-left: 20px;
+    margin-bottom: 0;
     padding: 0;
     color: #091d3e;
     order: 1;
@@ -86,7 +87,7 @@ body {
     box-shadow: 0 0 50px #ccc;
     display: flex;
     text-align: center;
-    width: 100%;
+    width: 60%;
     height: auto;
     padding: 10px;
     margin: 20px;
@@ -230,6 +231,9 @@ button {
 }
 
 .lista_scrollabile {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
     line-height: 1.5em;
     margin: 0 auto;
     max-width: 400px;

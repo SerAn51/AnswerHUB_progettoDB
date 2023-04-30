@@ -54,55 +54,65 @@ if (isset($_POST["submit"])) { // se submit avviene con successo
     $email = $_POST["email"];
     $password = $_POST["password"];
     $conferma_password = $_POST["conferma_password"];
-    //echo $nome . " " . $cognome . " " . $data_nascita . ' ' . $luogo_nascita . ' ' . $email . " " . $password . " " . $conferma_password;
 
-    //inserisco i dati nel database
-    if (isset($password) && isset($conferma_password)) {
-        if ($password === $conferma_password) { //controllo che la password e la conferma siano uguali
+    //CONTROLLO CHE LA DATA DI NASCITA SIA PRECEDENTE AD OGGI
+    // Converti la stringa in un timestamp Unix
+    $timestamp = strtotime($data_nascita);
+    // Ottieni la data corrente come timestamp Unix
+    $oggi = time();
+    // Confronta i timestamp
+    if ($timestamp < $oggi) {
+        //EFFETTUO LA REGISTRAZIONE
+        if (isset($password) && isset($conferma_password)) {
+            if ($password === $conferma_password) { //controllo che la password e la conferma siano uguali
 
-            //controlla che l'utente già non sia registrato
-            try {
-                $query_sql = "SELECT * FROM Utente WHERE Email = ?";
-                $stmt = $pdo->prepare($query_sql);
-                $stmt->execute([$email]);
-                //estrazione della riga e inserimento in db
-                $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            } catch (PDOException $e) {
-                echo "Errore Stored Procedure: " . $e->getMessage();
-                header("Location: logout.php");
-                exit;
-            }
-            //se e' null l'utente non esiste, quindi lo inserisco
-            if (!(isset($row['Email']))) { //isset() verifica se una variabile è stata impostata e se il suo valore non è NULL. True se la variabile è stata impostata e ha un valore diverso da NULL, false in caso contrario.
+                //controlla che l'utente già non sia registrato
+                try {
+                    $query_sql = "SELECT * FROM Utente WHERE Email = ?";
+                    $stmt = $pdo->prepare($query_sql);
+                    $stmt->execute([$email]);
+                    //estrazione della riga e inserimento in db
+                    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                } catch (PDOException $e) {
+                    echo "Errore Stored Procedure: " . $e->getMessage();
+                    header("Location: logout.php");
+                    exit;
+                }
+                //se e' null l'utente non esiste, quindi lo inserisco
+                if (!(isset($row['Email']))) { //isset() verifica se una variabile è stata impostata e se il suo valore non è NULL. True se la variabile è stata impostata e ha un valore diverso da NULL, false in caso contrario.
 
-                //imposta tipo utente a seconda che il codice amministratore ci sia e sia corretto
-                if (isset($_POST['checkbox_codice_amm']) && $_POST['checkbox_codice_amm'] == 'on') { // La checkbox è stata selezionata
-                    $codice_amministratore = $_POST["codice_amm"];
-                    if (isset($codice_amministratore) && ($codice_amministratore == 66)) { //che bello Star Wars
-                        $tipo_utente = "AMMINISTRATORE";
-                        inserisciUtente($pdo, $email, $password, $nome, $cognome, $data_nascita, $luogo_nascita, $tipo_utente);
+                    //imposta tipo utente a seconda che il codice amministratore ci sia e sia corretto
+                    if (isset($_POST['checkbox_codice_amm']) && $_POST['checkbox_codice_amm'] == 'on') { // La checkbox è stata selezionata
+                        $codice_amministratore = $_POST["codice_amm"];
+                        if (isset($codice_amministratore) && ($codice_amministratore == 66)) { //che bello Star Wars
+                            $tipo_utente = "AMMINISTRATORE";
+                            inserisciUtente($pdo, $email, $password, $nome, $cognome, $data_nascita, $luogo_nascita, $tipo_utente, $collezione_log);
+                            $messaggio = "Registrazione avvenuta con successo";
+                            $tipo_messaggio = "successo";
+                        } else {
+                            $messaggio = "Hai sbagliato il codice per iscriverti come amministratore";
+                            $tipo_messaggio = "errore";
+                        }
+                    } else { // La checkbox non è stata selezionata
+                        $tipo_utente = "SEMPLICE";
+                        inserisciUtente($pdo, $email, $password, $nome, $cognome, $data_nascita, $luogo_nascita, $tipo_utente, $collezione_log);
                         $messaggio = "Registrazione avvenuta con successo";
                         $tipo_messaggio = "successo";
-                    } else {
-                        $messaggio = "Hai sbagliato il codice per iscriverti come amministratore";
-                        $tipo_messaggio = "errore";
                     }
-                } else { // La checkbox non è stata selezionata
-                    $tipo_utente = "SEMPLICE";
-                    inserisciUtente($pdo, $email, $password, $nome, $cognome, $data_nascita, $luogo_nascita, $tipo_utente, $collezione_log);
-                    $messaggio = "Registrazione avvenuta con successo";
-                    $tipo_messaggio = "successo";
+                } else {
+                    $messaggio = "Utente gia' esistente";
+                    $tipo_messaggio = "errore";
                 }
             } else {
-                $messaggio = "Utente gia' esistente";
+                $messaggio = "Le password non corrispondono";
                 $tipo_messaggio = "errore";
             }
         } else {
-            $messaggio = "Le password non corrispondono";
+            $messaggio = "Errore";
             $tipo_messaggio = "errore";
         }
     } else {
-        $messaggio = "Errore";
+        $messaggio = "Data di nascita errata";
         $tipo_messaggio = "errore";
     }
 }
