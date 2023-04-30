@@ -14,7 +14,7 @@ function inserisciOpzione($pdo, int $id_domanda_chiusa, string $testo_opzione, $
         $prep_proc_inserisci_opzione->execute();
     } catch (PDOException $e) {
         echo "Errore Stored Procedure: " . $e->getMessage();
-        header("Location: logout.php");
+        header("Location: ../logout.php");
         exit;
     }
 
