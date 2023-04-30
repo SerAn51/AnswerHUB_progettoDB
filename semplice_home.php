@@ -280,12 +280,12 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
             border-color: #f1f1fa;
         }
 
-        .lista_scrollabile li label {
-            text-align: left;
-        }
-
         .accetta .rifiuta {
             display: inline-block;
+        }
+
+        .lista_scrollabile li label {
+            text-align: left;
         }
 
         .lista_scrollabile .testo {
@@ -304,6 +304,12 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
             text-align: center;
         }
 
+        .lista_scrollabile .invito {
+            display: flex;
+            justify-content: center;
+            text-align: center;
+        }
+
         .lista_scrollabile_orizzontalmente {
             margin-top: 0;
             margin-left: 10px;
@@ -312,6 +318,11 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
             white-space: nowrap;
             overflow-y: hidden;
             overflow-x: scroll;
+        }
+
+        .lista_scrollabile .invito .lista_scrollabile_orizzontalmente {
+            width: 300px;
+            margin-bottom: 0;
         }
 
         .lista_scrollabile_orizzontalmente::-webkit-scrollbar {

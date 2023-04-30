@@ -196,17 +196,30 @@
             <?php foreach ($info_inviti as $info_invito) { ?>
                 <li>
                     <label>
-                        <strong>Sondaggio: </strong>
-                        <?php echo $info_invito["Titolo"]; ?>
-                        <br>
-                        <strong>Dominio: </strong>
-                        <?php echo $info_invito["ParolachiaveDominio"]; ?>
-                        <br>
-                        <strong>Data chiusura: </strong>
-                        <?php echo $info_invito["DataChiusura"]; ?>
-                        <br>
-                        <strong>Esito: </strong>
-                        <?php echo $info_invito["Esito"]; ?>
+                        <div class="invito">
+                            <label class="lista_scrollabile_orizzontalmente">
+                                <strong>Sondaggio: </strong>
+                                <?php echo $info_invito["Titolo"]; ?>
+                            </label>
+                        </div>
+                        <div class="invito">
+                            <label class="lista_scrollabile_orizzontalmente">
+                                <strong>Dominio: </strong>
+                                <?php echo $info_invito["ParolachiaveDominio"]; ?>
+                            </label>
+                        </div>
+                        <div class="invito">
+                            <label class="lista_scrollabile_orizzontalmente">
+                                <strong>Data chiusura: </strong>
+                                <?php echo $info_invito["DataChiusura"]; ?>
+                            </label>
+                        </div>
+                        <div class="invito">
+                            <label class="lista_scrollabile_orizzontalmente">
+                                <strong>Esito: </strong>
+                                <?php echo $info_invito["Esito"]; ?>
+                            </label>
+                        </div>
                     </label>
                     <?php if ($info_invito["Esito"] === "SOSPESO") { ?>
                         <!-- creo un form per il bottone accetta e uno per il bottone rifiuta, così da inviare il dato con POST -->

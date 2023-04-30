@@ -308,7 +308,6 @@ try {
     </main>
 
     <section class="footer">
-        <h3 style="color: #f1f1fa"> Credits Andrea Serrano </h3>
     </section>
 </body>
 
