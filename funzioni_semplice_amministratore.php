@@ -307,6 +307,57 @@ try {
         .accetta .rifiuta {
             display: inline-block;
         }
+
+        .lista_scrollabile .testo {
+            flex-direction: column;
+        }
+
+        .lista_scrollabile .testo .descrizione {
+            display: flex;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .lista_scrollabile .testo .parola_chiave {
+            display: flex;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .lista_scrollabile_orizzontalmente {
+            margin-top: 0;
+            margin-left: 10px;
+            height: auto;
+            width: 180px;
+            white-space: nowrap;
+            overflow-y: hidden;
+            overflow-x: scroll;
+        }
+
+        .lista_scrollabile_orizzontalmente::-webkit-scrollbar {
+            width: 100%;
+            height: 5px;
+        }
+
+        .lista_scrollabile_orizzontalmente::-webkit-scrollbar-thumb {
+            background-color: #091d3e;
+            border-radius: 30px;
+        }
+
+        .lista_scrollabile_orizzontalmente ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .lista_scrollabile_orizzontalmente li {
+            padding: 10px;
+            margin: 0;
+        }
+
+        .lista_scrollabile_orizzontalmente li a {
+            text-decoration: none;
+        }
     </style>
 </head>
 

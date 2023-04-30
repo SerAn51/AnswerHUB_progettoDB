@@ -103,7 +103,6 @@ try {
             display: flex;
             justify-content: space-between;
             align-items: center;
-
         }
 
         .header a {
@@ -112,12 +111,12 @@ try {
         }
 
         header h2 {
-            color: #091d3e;
+            color: #0F2849;
             margin-left: 20px;
         }
 
         .footer {
-            background-color: #091d3e;
+            background-color: #0F2849;
             grid-area: footer;
         }
 
@@ -132,7 +131,7 @@ try {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             /*Divido il main in 3 colonne*/
-            grid-template-rows: 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
             grid-template-areas:
                 "c1 c2 c3"
                 "c4 c5 c6";
@@ -141,7 +140,7 @@ try {
 
         .space {
             background-color: #ffffff;
-            color: #091d3e;
+            color: #0c2840;
             border-radius: 30px;
             /*border: 2px solid #0F2849;*/
             box-shadow: 0 0 50px #ccc;
@@ -179,8 +178,33 @@ try {
 
         ul {
             list-style: none;
-            margin: 0;
             padding: 0;
+            margin: 0;
+        }
+
+        .lista_scrollabile {
+            height: 60vh;
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
+
+        .lista_scrollabile::-webkit-scrollbar {
+            width: 5px;
+            height: 100%;
+        }
+
+        .lista_scrollabile::-webkit-scrollbar-thumb {
+            background-color: #091d3e;
+            border-radius: 30px;
+        }
+
+        .lista_scrollabile li {
+            padding: 0px 20px 40px 20px;
+            margin: 0;
+        }
+
+        .lista_scrollabile li a {
+            text-decoration: none;
         }
 
         form {
@@ -193,11 +217,15 @@ try {
             /* Allinea gli elementi in verticale */
         }
 
+        form.accetta_rifiuta_invito {
+            display: inline-block;
+        }
+
         input,
         label,
         button {
-            margin-top: 0.30rem;
-            margin-bottom: 0.30rem;
+            margin-top: 0.70rem;
+            margin-bottom: 0.70rem;
         }
 
         .item {
@@ -216,6 +244,118 @@ try {
         .item .titolo {
             text-transform: uppercase;
         }
+
+        /*Mostra l'inputbox per inserire il codice amministratore*/
+        #inputbox_codice_amm {
+            display: none;
+        }
+
+        #checkbox_codice_amm:checked~#inputbox_codice_amm {
+            display: block;
+            transition: .5s;
+        }
+
+        .inputbox label {
+            color: #091d3e;
+        }
+
+        /*Gestione messaggi*/
+        .accettato,
+        .rifiutato {
+            margin: 5px;
+            width: 6%;
+            border: 0;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .diventa_amministratore h3 {
+            display: inline-block;
+            color: #091d3e;
+            margin: 0;
+        }
+
+        .diventa_amministratore form {
+            display: inline-block;
+            color: #091d3e;
+        }
+
+        .diventa_amministratore form input[type="submit"] {
+            border-radius: 30px;
+            background-color: #091d3e;
+            color: #f1f1fa;
+            border-style: none;
+            transition: 0.2s
+        }
+
+        .diventa_amministratore form input[type="submit"]:hover {
+            background-color: #1a73e8;
+            transition: 0.2s
+        }
+
+        .diventa_amministratore form input[type="text"] {
+            border-radius: 30px;
+            border-color: #f1f1fa;
+        }
+
+        .lista_scrollabile li label {
+            text-align: left;
+        }
+
+        .accetta .rifiuta {
+            display: inline-block;
+        }
+
+        .lista_scrollabile .testo {
+            flex-direction: column;
+        }
+
+        .lista_scrollabile .testo .descrizione {
+            display: flex;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .lista_scrollabile .testo .parola_chiave {
+            display: flex;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .lista_scrollabile_orizzontalmente {
+            margin-top: 0;
+            margin-left: 10px;
+            height: auto;
+            width: 180px;
+            white-space: nowrap;
+            overflow-y: hidden;
+            overflow-x: scroll;
+        }
+
+        .lista_scrollabile_orizzontalmente::-webkit-scrollbar {
+            width: 100%;
+            height: 5px;
+        }
+
+        .lista_scrollabile_orizzontalmente::-webkit-scrollbar-thumb {
+            background-color: #091d3e;
+            border-radius: 30px;
+        }
+
+        .lista_scrollabile_orizzontalmente ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .lista_scrollabile_orizzontalmente li {
+            padding: 10px;
+            margin: 0;
+        }
+
+        .lista_scrollabile_orizzontalmente li a {
+            text-decoration: none;
+        }
     </style>
 </head>
 
@@ -223,8 +363,7 @@ try {
 
     <header class="header">
         <h2>Ciao
-            <?php var_dump($dati_utente["PAS"]);
-            echo $dati_utente["Nome"]; ?>
+            <?php echo $dati_utente["Nome"]; ?>
         </h2>
         <h2>
             Funzioni utente semplice
