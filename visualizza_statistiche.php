@@ -3,7 +3,7 @@
     <ul>
         <h1>Premi disponibili</h1>
         <?php
-        //array con tutti i premi vinti dall'utente di sessione
+        //array con tutti i premi
         try {
             $prep_proc_premi = $pdo->prepare('CALL VisualizzaPremi()');
             $prep_proc_premi->execute();
@@ -69,7 +69,6 @@
     <ul>
         <h1>Classifica utenti</h1>
         <?php
-        //array con tutti i premi vinti dall'utente di sessione
         try {
             $prep_proc_classifica = $pdo->prepare('CALL VisualizzaClassifica()');
             $prep_proc_classifica->execute();

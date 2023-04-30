@@ -267,11 +267,17 @@ if ($dati_utente["PAS"] === "AMMINISTRATORE") {
             background-color: #091d3e;
             color: #f1f1fa;
             border-style: none;
+            transition: 0.2s
+        }
+
+        .diventa_amministratore form input[type="submit"]:hover {
+            background-color: #1a73e8;
+            transition: 0.2s
         }
 
         .diventa_amministratore form input[type="text"] {
             border-radius: 30px;
-            border-color: #091d3e;
+            border-color: #f1f1fa;
         }
 
         .lista_scrollabile li label {

@@ -224,6 +224,39 @@ var_dump($codice_sondaggio);
                 text-decoration: none;
             }
 
+            .dominio_lista_scrollabile {
+                height: 20vh;
+                overflow-y: scroll;
+                overflow-x: hidden;
+            }
+
+            .dominio_lista_scrollabile::-webkit-scrollbar {
+                width: 5px;
+                height: 100%;
+            }
+
+            .dominio_lista_scrollabile::-webkit-scrollbar-thumb {
+                background-color: #091d3e;
+                border-radius: 30px;
+            }
+
+            .dominio_lista_scrollabile ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .dominio_lista_scrollabile .dominio_list_item {
+                padding: 5px;
+                margin: 0;
+                border-color: #091d3e;
+                border-radius: 30px;
+            }
+
+            .dominio_lista_scrollabile li a {
+                text-decoration: none;
+            }
+
             form {
                 display: flex;
                 flex-direction: column;
@@ -355,39 +388,36 @@ var_dump($codice_sondaggio);
                 <input type="date" name="data_chiusura" id="data_chiusura" required>
                 -->
                 <br>
-                <div class="container">
-                    <?php foreach ($domini as $dominio) { ?>
-                        <label>
-                            <input type="radio" id="dominio" name="dominio" value="<?php echo $dominio['Parolachiave']; ?>">
-                            <span>
-                                <?php echo $dominio['Parolachiave']; ?>
-                            </span>
-                        </label>
-                    <?php } ?>
 
-                </div>
-                <!--
-                    Seleziona dominio:
-                    <?php //foreach ($domini as $dominio) { ?>
-                        <li>
-                            <label>
-                                <input type="radio" name="dominio" id="dominio"
-                                    value="<?php //echo $dominio['Parolachiave']; ?>">
-                                <?php //echo $dominio['Parolachiave']; ?>
-                            </label>
-                        </li>
-                    <?php //} ?>
-                </ul>-->
-                <br>
-                <button class="crea" type="submit" name="crea" id="crea">
-                    Crea
-                    <div class="arrow-wrapper">
-                        <div class="arrow"></div>
+                <ul>
+                    <h4>Seleziona dominio:</h4>
+                    <div class="dominio_lista_scrollabile">
+                        <div class="container">
+                            <?php foreach ($domini as $dominio) { ?>
+                                <li class="dominio_list_item">
+                                    <label>
+                                        <input type="radio" id="dominio" name="dominio"
+                                            value="<?php echo $dominio['Parolachiave']; ?>">
+                                        <span>
+                                            <?php echo $dominio['Parolachiave']; ?>
+                                        </span>
+                                    </label>
+                                </li>
 
+                            <?php } ?>
+                        </div>
                     </div>
-                </button>
-                <!--<input type="submit" name="crea" id="crea" value="Crea">-->
-            </form>
+                </ul>
+        <br>
+        <button class="crea" type="submit" name="crea" id="crea">
+            Crea
+            <div class="arrow-wrapper">
+                <div class="arrow"></div>
+
+            </div>
+        </button>
+        <!--<input type="submit" name="crea" id="crea" value="Crea">-->
+        </form>
         </div>
 
         <!--INSERIMENTO DI UNA NUOVA DOMANDA-->

@@ -184,9 +184,6 @@
             <?php foreach ($info_inviti as $info_invito) { ?>
                 <li>
                     <label>
-                        <strong>Esito: </strong>
-                        <?php echo $info_invito["Esito"]; ?>
-                        <br>
                         <strong>Sondaggio: </strong>
                         <?php echo $info_invito["Titolo"]; ?>
                         <br>
@@ -195,6 +192,9 @@
                         <br>
                         <strong>Data chiusura: </strong>
                         <?php echo $info_invito["DataChiusura"]; ?>
+                        <br>
+                        <strong>Esito: </strong>
+                        <?php echo $info_invito["Esito"]; ?>
                     </label>
                     <?php if ($info_invito["Esito"] === "SOSPESO") { ?>
                         <!-- creo un form per il bottone accetta e uno per il bottone rifiuta, così da inviare il dato con POST -->
@@ -226,13 +226,13 @@
 </div>
 
 <!--VISUALIZZAZIONE DEI PREMI CONSEGUITI-->
-<div class="space">
-    <h2>Premi conseguiti</h2>
+<div class="space" id="premi">
     <ul>
+        <h1>Premi conseguiti</h1>
         <?php
         //array con tutti i premi vinti dall'utente di sessione
         try {
-            $prep_query_premi_vinti = $pdo->prepare('SELECT * FROM Vincente JOIN Premio ON Vincente.NomePremio=Premio.Nome WHERE Vincente.EmailUtente = :email');
+            $prep_query_premi_vinti = $pdo->prepare('SELECT * FROM Vincente JOIN Premio ON Vincente.NomePremio=Premio.Nome WHERE Vincente.EmailUtente = :email ORDER BY Premio.Puntinecessari DESC');
             $prep_query_premi_vinti->bindParam(':email', $_SESSION["email"], PDO::PARAM_STR);
             $prep_query_premi_vinti->execute();
             $premi_vinti = $prep_query_premi_vinti->fetchAll(PDO::FETCH_ASSOC);
@@ -242,11 +242,52 @@
             header("Location: logout.php");
             exit;
         }
-
-        foreach ($premi_vinti as $premio_vinto) {
-            echo '<li><label name="premio_vinto" value="' . $premio_vinto["NomePremio"] . '"';
-            echo '>' . $premio_vinto["NomePremio"] . ' ' . $premio_vinto["Descrizione"] . '</li>';
-        }
         ?>
+
+        <div class="elenco_premi">
+            <div class="wrapper_premi">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Descrizione</th>
+                            <th>Foto</th>
+                            <th>Punti</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        foreach ($premi_vinti as $premio_vinto) {
+                            // leggi il contenuto del blob dal database
+                            $blob = $premio_vinto["Foto"];
+
+                            // decodifica il contenuto del blob in una stringa base64
+                            $base64 = base64_encode($blob);
+
+                            // determina il tipo di immagine dal contenuto del blob con la funzione getimagesizefromstring e prendendo il valore della chiave mime che dice il tipo dell'immagine
+                            $image_info = getimagesizefromstring($blob);
+                            $mime_type = $image_info["mime"];
+
+                            // visualizza l'elememento di lista con l'immagine
+                            ?>
+                            <tr>
+                                <td class="nome">
+                                    <?php echo $premio_vinto["NomePremio"] ?>
+                                </td>
+                                <td class="descrizione">
+                                    <?php echo $premio_vinto["Descrizione"]; ?>
+                                </td>
+                                <td class="foto">
+                                    <img src="data:<?php echo $mime_type; ?>;base64,<?php echo $base64; ?>">
+                                </td>
+                                <td class="punti">
+                                    <?php echo $premio_vinto["Puntinecessari"]; ?>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </ul>
 </div>

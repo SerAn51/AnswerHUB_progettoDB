@@ -48,6 +48,20 @@ if (!(empty($_SESSION["email"]))) {
         <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
 
         <link rel="stylesheet" href="stile_css/checkbox_style.css">
+        <link rel="stylesheet" href="stile_css/input_statistiche_aggregate.css">
+        <link rel="stylesheet" href="stile_css/radio_seleziona_sondaggio.css">
+        <link rel="stylesheet" href="stile_css/crea_sondaggio_inputs.css">
+        <link rel="stylesheet" href="stile_css/crea_sondaggio_button.css">
+        <link rel="stylesheet" href="stile_css/bottone_elimina_sondaggio.css">
+        <link rel="stylesheet" href="stile_css/bottone_invita.css">
+        <link rel="stylesheet" href="stile_css/bottone_logout.css">
+        <link rel="stylesheet" href="stile_css/tabella_classifica_utenti.css">
+        <link rel="stylesheet" href="stile_css/tabella_premi.css">
+        <link rel="stylesheet" href="stile_css/bottone_diventa_premium.css">
+        <link rel="stylesheet" href="stile_css/bottone_rispondi_visualizza_risposte.css">
+        <link rel="stylesheet" href="stile_css/bottone_accetta_invito.css">
+        <link rel="stylesheet" href="stile_css/bottone_rifiuta_invito.css">
+
         <style>
             body {
                 text-align: center;
@@ -204,7 +218,7 @@ if (!(empty($_SESSION["email"]))) {
         <a href="funzioni_semplice_amministratore.php">Vai alle funzioni da utente semplice</a>
         <a href="visualizza_log.php">Visualizza log</a>
         <a href="logout.php">
-            <button class="logout_btn">
+            <button class="logout_btn" onclick="return confirm('Confermi logout?')">
                 <p class="paragraph"> Logout </p>
                 <span class="logout_icon-wrapper">
                     <svg class="logout_icon" width="30px" height="30px" viewBox="0 0 24 24" fill="none"

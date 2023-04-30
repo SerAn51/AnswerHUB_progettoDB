@@ -176,17 +176,19 @@ try {
                     <!--Se non esistono utenti con interessati al dominio del sondaggio, mostra messaggio
                 (lo mostri solo se sono passati i controlli precedenti sull'esistenza di domande e opzioni per domande chiuse-->
                     <?php
-                    if (count($utenti_interessati) == 0) {
-                        echo "Non ci sono utenti interessati al dominio di questo sondaggio (non sono considerati eventuali utenti interessati e gia' invitati)";
-                    } else {
-                        ?>
-                        <form action="script_php/manda_inviti.php" method="POST">
-                            <ul>
-                                <?php if (isset($dati_sondaggio) && is_array($dati_sondaggio)) { ?>
-                                    <h2>Seleziona gli utenti da invitare per il sondaggio
-                                        <?php echo $dati_sondaggio['Titolo']; ?>
-                                    </h2>
-                                <?php } ?>
+                    ?>
+                    <form action="script_php/manda_inviti.php" method="POST">
+                        <ul>
+                            <?php if (isset($dati_sondaggio) && is_array($dati_sondaggio)) { ?>
+                                <h2>Seleziona gli utenti da invitare per il sondaggio
+                                    <?php echo $dati_sondaggio['Titolo']; ?>
+                                </h2>
+                            <?php } ?>
+                            <?php
+                            if (count($utenti_interessati) == 0) {
+                                echo "Non ci sono utenti interessati al dominio di questo sondaggio (non sono considerati eventuali utenti interessati e gia' invitati)";
+                            } else {
+                                ?>
                                 <?php if (isset($_GET['error']) && ($_GET['error'] == 10)) {
                                     echo "Devi selezionare almeno un utente";
                                 } else if (isset($_GET['success']) && $_GET['success'] == 10) {
@@ -222,8 +224,8 @@ try {
 
                                 </div>
                             </button>
-                        </form>
-                    <?php } ?>
+                        <?php } ?>
+                    </form>
                 <?php } ?>
             <?php } ?>
         </div>
