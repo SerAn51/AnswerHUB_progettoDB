@@ -294,6 +294,41 @@ var_dump($codice_sondaggio);
             .space~#premi img {
                 width: 70%;
             }
+
+            .lista_scrollabile_orizzontalmente {
+                margin-top: 0;
+                margin-left: 10px;
+                height: auto;
+                width: 180px;
+                white-space: nowrap;
+                overflow-y: hidden;
+                overflow-x: scroll;
+            }
+
+            .lista_scrollabile_orizzontalmente::-webkit-scrollbar {
+                width: 100%;
+                height: 5px;
+            }
+
+            .lista_scrollabile_orizzontalmente::-webkit-scrollbar-thumb {
+                background-color: #091d3e;
+                border-radius: 30px;
+            }
+
+            .lista_scrollabile_orizzontalmente ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .lista_scrollabile_orizzontalmente li {
+                padding: 10px;
+                margin: 0;
+            }
+
+            .lista_scrollabile_orizzontalmente li a {
+                text-decoration: none;
+            }
         </style>
     </head>
 
@@ -399,7 +434,9 @@ var_dump($codice_sondaggio);
                                         <input type="radio" id="dominio" name="dominio"
                                             value="<?php echo $dominio['Parolachiave']; ?>">
                                         <span>
-                                            <?php echo $dominio['Parolachiave']; ?>
+                                            <label class="lista_scrollabile_orizzontalmente">
+                                                <?php echo $dominio['Parolachiave']; ?>
+                                            </label>
                                         </span>
                                     </label>
                                 </li>
@@ -408,16 +445,16 @@ var_dump($codice_sondaggio);
                         </div>
                     </div>
                 </ul>
-        <br>
-        <button class="crea" type="submit" name="crea" id="crea">
-            Crea
-            <div class="arrow-wrapper">
-                <div class="arrow"></div>
+                <br>
+                <button class="crea" type="submit" name="crea" id="crea">
+                    Crea
+                    <div class="arrow-wrapper">
+                        <div class="arrow"></div>
 
-            </div>
-        </button>
-        <!--<input type="submit" name="crea" id="crea" value="Crea">-->
-        </form>
+                    </div>
+                </button>
+                <!--<input type="submit" name="crea" id="crea" value="Crea">-->
+            </form>
         </div>
 
         <!--INSERIMENTO DI UNA NUOVA DOMANDA-->
@@ -510,8 +547,7 @@ inoltre, sulla home ho la lista dei sondaggi, clicco su un sondaggio e vado ad u
                         - ComponenteSondaggioDomanda
                         - Invito (se ci sono inviti e almeno uno non e' in sospeso, non mostra l'opzione, quindi la possibilità che rimuovendo un sondaggio vengano eliminati gli inviti non esiste)-->
                             <li class="item">
-                                <label class="titolo">
-                                    <!--<form action="script_php/elimina_sondaggio.php" method="POST">-->
+                                <label class="lista_scrollabile_orizzontalmente">
                                     <?php echo $sondaggio_creato['Titolo']; ?>
                                 </label>
 

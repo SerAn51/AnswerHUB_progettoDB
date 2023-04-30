@@ -6,7 +6,7 @@ $codice_sondaggio = $_GET['cod_sondaggio'];
 
 // controllo per evitare che si cambi url e si faccia l'accesso ad un sondaggio di un altro utente premium, al massimo se cambio url per il get del codice posso mettere il codice di un sondaggio da me (utente premium) gestito:
 try {
-    $check_sondaggio = $pdo->prepare("SELECT Codice FROM Sondaggio WHERE EmailUtentecreante = :email AND Codice = :codice");
+    $check_sondaggio = $pdo->prepare("SELECT * FROM Sondaggio WHERE EmailUtentecreante = :email AND Codice = :codice");
     $check_sondaggio->bindParam(':email', $_SESSION['email'], PDO::PARAM_STR);
     $check_sondaggio->bindParam(':codice', $codice_sondaggio, PDO::PARAM_INT);
     $check_sondaggio->execute();
@@ -59,12 +59,93 @@ try {
     <link rel="stylesheet" href="stile_css/bottone_opzioni.css">
     <link rel="stylesheet" href="stile_css/non_bottone_domanda_aperta.css">
     <link rel="stylesheet" href="stile_css/checkbox_invita_utente.css">
+
+    <style>
+        .lista_scrollabile {
+            line-height: 1.5em;
+            margin: 0 auto;
+            max-width: 400px;
+            max-height: 300px;
+            overflow: hidden;
+            border-color: #091d3e;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+
+        .lista_scrollabile::-webkit-scrollbar-vertical {
+            width: 5px;
+            height: 100%;
+        }
+
+        .lista_scrollabile::-webkit-scrollbar-thumb-vertical {
+            background-color: #091d3e;
+            border-radius: 30px;
+        }
+
+        .lista_scrollabile::-webkit-scrollbar-horizontal {
+            width: 100%;
+            height: 5px;
+        }
+
+        .lista_scrollabile::-webkit-scrollbar-thumb-horizontal {
+            background-color: #091d3e;
+            border-radius: 30px;
+        }
+
+        .lista_scrollabile li {
+            padding: 0px 20px 40px 20px;
+            margin: 0;
+        }
+
+        .lista_scrollabile li a {
+            text-decoration: none;
+        }
+
+        .lista_scrollabile_orizzontalmente {
+            margin-top: 0;
+            margin-left: 0;
+            height: auto;
+            width: 600px;
+            white-space: nowrap;
+            overflow-y: hidden;
+            overflow-x: scroll;
+            text-align: left;
+        }
+
+        .lista_scrollabile_orizzontalmente::-webkit-scrollbar {
+            width: 100%;
+            height: 5px;
+        }
+
+        .lista_scrollabile_orizzontalmente::-webkit-scrollbar-thumb {
+            background-color: #091d3e;
+            border-radius: 30px;
+        }
+
+        .lista_scrollabile_orizzontalmente ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .lista_scrollabile_orizzontalmente li {
+            padding: 10px;
+            margin: 0;
+        }
+
+        .lista_scrollabile_orizzontalmente li a {
+            text-decoration: none;
+        }
+    </style>
 </head>
 
 <body>
 
     <header class="header">
-        <h1>Risposte sondaggio</h1>
+        <h1 class="lista_scrollabile_orizzontalmente">
+            Risposte sondaggio
+            <?php echo $sondaggio['Titolo']; ?>
+        </h1>
         <a href="premium_home.php" class="home">
             <button class="logout_btn">
                 <p class="paragraph"> Home </p>
@@ -113,9 +194,12 @@ try {
                 <div class="titolo_immagine">
                     <!--Mostra domanda-->
                     <?php $id_domanda = $domanda_sondaggio['ID']; ?>
-                    <h1>
-                        <?php echo $domanda_sondaggio['Testo'] ?>
-                    </h1>
+                    <div class="lista_scrollabile">
+                        <h2>
+                            <?php echo $domanda_sondaggio['Testo'] ?>
+                        </h2>
+                    </div>
+
                     <!--Mostra la foto, se c'e'-->
                     <?php
                     if (isset($domanda_sondaggio["Foto"])) { ?>
@@ -155,7 +239,7 @@ try {
 
                 <div class="risposte_utenti">
                     <ul>
-                        <h3>Risposte utenti:</h3>
+                        <h2>Risposte utenti:</h2>
                         <!--Per ogni utente che ha risposto, se ne esistono,
             mostra la risposta specificando l'email dell'utente-->
                         <?php if (empty($utenti_che_hanno_risposto)) {
@@ -222,6 +306,10 @@ try {
             </div>
         <?php } ?>
     </main>
+
+    <section class="footer">
+        <h3 style="color: #f1f1fa"> Credits Andrea Serrano </h3>
+    </section>
 </body>
 
 </html>

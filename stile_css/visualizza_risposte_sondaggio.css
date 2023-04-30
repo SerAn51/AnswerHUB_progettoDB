@@ -38,7 +38,10 @@ body {
     order: 1;
 }
 
-.header .home,
+.header .home {
+    margin-right: 300px;
+}
+
 .header .logout {
     margin-right: 20px;
 }
@@ -85,7 +88,7 @@ body {
     display: flex;
     text-align: center;
     width: 60%;
-    height: 200px;
+    height: auto;
     padding: 10px;
     margin: 20px;
     text-align: left;
@@ -93,11 +96,16 @@ body {
 
 .space .titolo_immagine {
     width: 400px;
-    height: auto;
-    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    /*Divido il main in 3 colonne*/
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas:
+        "c1"
+        "c2";
 }
 
-.space .titolo_immagine h1 {
+.space .titolo_immagine h2 {
     margin: 0;
     padding: 0;
     display: flex;
@@ -105,23 +113,17 @@ body {
 }
 
 .space .titolo_immagine img {
-    width: 90%;
-    /* impostiamo la larghezza dell'immagine al 90% della larghezza del contenitore */
+    width: 100%;
     height: auto;
-    /* impostiamo l'altezza dell'immagine in modo che si adatti proporzionalmente */
-    position: absolute;
-    /* posizioniamo in modo assoluto l'immagine all'interno del contenitore */
+    position: relative;
     top: 50%;
-    /* posizioniamo l'immagine a metà altezza del contenitore */
     left: 50%;
-    /* posizioniamo l'immagine a metà larghezza del contenitore */
     transform: translate(-50%, -50%);
-    /* centrare l'immagine all'interno del contenitore */
     border-radius: 30px;
 }
 
 .space .risposte_utenti {
-    margin-left: 100px;
+    margin-left: 150px;
 }
 
 .space .risposte_utenti h3 {
@@ -140,39 +142,6 @@ ul {
     list-style: none;
     margin: 0;
     padding: 0;
-}
-
-.lista_scrollabile {
-    height: 20vh;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-
-.lista_scrollabile::-webkit-scrollbar {
-    width: 5px;
-    height: 100%;
-}
-
-.lista_scrollabile::-webkit-scrollbar-thumb {
-    background-color: #091d3e;
-    border-radius: 30px;
-}
-
-.lista_scrollabile ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.lista_scrollabile li {
-    padding: 20px;
-    margin: 0;
-    border-color: #091d3e;
-    border-radius: 30px;
-}
-
-.lista_scrollabile li a {
-    text-decoration: none;
 }
 
 .space_aggiungi_opzione form {
@@ -200,6 +169,16 @@ ul {
     margin-top: 25px;
 }
 
+.lista_scrollabile::-webkit-scrollbar {
+    width: 5px;
+    height: 100%;
+}
+
+.lista_scrollabile::-webkit-scrollbar-thumb {
+    background-color: #091d3e;
+    border-radius: 30px;
+}
+
 input,
 label,
 button {
@@ -222,17 +201,6 @@ button {
 
 .item .titolo {
     text-transform: uppercase;
-}
-
-.space_rimuovi_opzione .lista_scrollabile h3 {
-    flex: 1;
-    margin-right: 40px;
-    margin-top: 30px;
-}
-
-.space_rimuovi_opzione .lista_scrollabile button {
-    flex-shrink: 0;
-    margin-top: 25px;
 }
 
 input,

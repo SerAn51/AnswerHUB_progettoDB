@@ -52,6 +52,7 @@ if (!(empty($_SESSION["email"]))) {
         <link rel="stylesheet" href="stile_css/radio_seleziona_sondaggio.css">
         <link rel="stylesheet" href="stile_css/crea_sondaggio_inputs.css">
         <link rel="stylesheet" href="stile_css/crea_sondaggio_button.css">
+        <link rel="stylesheet" href="stile_css/upload_file.css">
         <link rel="stylesheet" href="stile_css/bottone_elimina_sondaggio.css">
         <link rel="stylesheet" href="stile_css/bottone_invita.css">
         <link rel="stylesheet" href="stile_css/bottone_logout.css">
@@ -180,8 +181,6 @@ if (!(empty($_SESSION["email"]))) {
                 /* Opzionale: allinea gli elementi in verticale */
                 align-items: center;
                 /* Allinea gli elementi in orizzontale */
-                justify-content: center;
-                /* Allinea gli elementi in verticale */
             }
 
             input,
@@ -242,59 +241,88 @@ if (!(empty($_SESSION["email"]))) {
         <!--INSERIMENTO DI UN NUOVO DOMINIO-->
         <div class="space">
             <form action="script_php/inserimento_dominio.php" method="POST">
-                <h2>Inserisci un nuovo dominio</h2>
+                <h1>Inserisci un nuovo dominio</h1>
                 <?php if (isset($_GET['error']) && ($_GET['error'] == 20)) {
                     echo "Errore, riprova";
                 } else if (isset($_GET['success']) && $_GET['success'] == 20) {
                     echo "Dominio inserito con successo";
                 }
                 ?>
-                <label for="parola_chiave">Parola Chiave</label>
-                <input type="text" name="parola_chiave" id="parola_chiave" required>
+                <div class="input-group">
+                    <input type="text" name="parola_chiave" id="parola_chiave" required autocomplete="off"
+                        class="input">
+                    <label class="user-label" for="parola_chiave">Parola chiave<label>
+                </div>
                 <br>
-                <label for="descrizione">Descrizione</label>
-                <input type="text" name="descrizione" id="descrizione" required>
+                <div class="input-group">
+                    <input type="text" name="descrizione" id="descrizione" required autocomplete="off" class="input">
+                    <label class="user-label" for="descrizione">Descrizione<label>
+                </div>
                 <br>
-                <input type="submit" name="inserisci" id="inserisci" value="Inserisci">
+                <button class="crea" type="submit" name="inserisci" id="inserisci">
+                    Inserisci
+                    <div class="arrow-wrapper">
+                        <div class="arrow"></div>
+
+                    </div>
+                </button>
             </form>
         </div>
 
         <!--LISTA DOMINI-->
-        <div class="space">
-            <?php
-            try {
-                $mostra_domini = $pdo->prepare("CALL MostraDomini()");
-                $mostra_domini->execute();
-                $domini = $mostra_domini->fetchAll(PDO::FETCH_ASSOC);
-                $mostra_domini->closeCursor();
-            } catch (PDOException $e) {
-                echo "Errore Stored Procedure: " . $e->getMessage();
-                header("Location: logout.php");
-                exit;
-            }
-            ?>
-            <?php if (empty($domini)) {
-                echo "Non ci sono domini";
-            } else { ?>
-                <ul>
-                    <h2>Domini</h2>
-                    <?php
-                    foreach ($domini as $dominio) {
-                        ?>
-                        <li>
-                            <?php echo $dominio['Parolachiave'] . ' ' . $dominio['Descrizione']; ?>
-                        </li>
-                        <?php
-                    }
-                    ?>
-                </ul>
-            <?php } ?>
+        <div class="space" id="domini">
+            <ul>
+                <h1>Domini</h1>
+                <?php
+                try {
+                    $mostra_domini = $pdo->prepare("CALL MostraDomini()");
+                    $mostra_domini->execute();
+                    $domini = $mostra_domini->fetchAll(PDO::FETCH_ASSOC);
+                    $mostra_domini->closeCursor();
+                } catch (PDOException $e) {
+                    echo "Errore Stored Procedure: " . $e->getMessage();
+                    header("Location: logout.php");
+                    exit;
+                }
+                ?>
+                <?php if (empty($domini)) {
+                    echo "Non ci sono domini";
+                } else { ?>
+                    <div class="elenco_premi">
+                        <div class="wrapper_premi">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Parola chiave</th>
+                                        <th>Descrizione</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    foreach ($domini as $dominio) {
+                                        ?>
+                                        <tr>
+                                            <td class="nome">
+                                                <?php echo $dominio["Parolachiave"] ?>
+                                            </td>
+                                            <td class="descrizione">
+                                                <?php echo $dominio["Descrizione"]; ?>
+                                            </td>
+                                        </tr>
+                                    <?php }
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                <?php } ?>
+            </ul>
         </div>
 
         <!--INSERIMENTO DI UN NUOVO PREMIO: due input, uno per chiedere l'altro di conferma, fa una insert in Premio-->
         <div class="space">
             <form action="script_php/inserimento_premio.php" method="POST" enctype="multipart/form-data">
-                <h2>Inserisci un nuovo premio</h2>
+                <h1>Inserisci un nuovo premio</h1>
                 <?php if (isset($_GET['error'])) {
                     if ($_GET['error'] == 10) {
                         echo "Formato non corretto, accettati: PNG, JPEG";
@@ -305,19 +333,31 @@ if (!(empty($_SESSION["email"]))) {
                     echo "Premio inserito con successo";
                 }
                 ?>
-                <label for="nome">Nome</label>
-                <input type="text" name="nome" id="nome" required>
+                <div class="input-group">
+                    <input type="text" name="nome" id="nome" required autocomplete="off" class="input">
+                    <label class="user-label" for="nome">Nome<label>
+                </div>
                 <br>
-                <label for="descrizione">Descrizione</label>
-                <input type="text" name="descrizione" id="descrizione" required>
+                <div class="input-group">
+                    <input type="text" name="descrizione" id="descrizione" required autocomplete="off" class="input">
+                    <label class="user-label" for="descrizione">Descrizione<label>
+                </div>
                 <br>
-                <label for="foto">Foto</label>
                 <input type="file" name="foto" id="foto" required>
                 <br>
-                <label for="punti_necessari">Punti necessari</label>
-                <input type="number" min="0" name="punti_necessari" id="punti_necessari" required>
+                <div class="input-group">
+                    <input type="number" min="0" name="punti_necessari" id="punti_necessari" required autocomplete="off"
+                        class="input">
+                    <label class="user-label" for="punti_necessari">Punti necessari<label>
+                </div>
                 <br>
-                <input type="submit" name="inserisci" id="inserisci" value="Inserisci">
+                <button class="crea" type="submit" name="inserisci" id="inserisci">
+                    Inserisci
+                    <div class="arrow-wrapper">
+                        <div class="arrow"></div>
+
+                    </div>
+                </button>
             </form>
         </div>
 

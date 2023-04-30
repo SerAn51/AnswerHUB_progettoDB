@@ -230,8 +230,11 @@ try {
                 <?php if (empty($domande_sondaggio)) {
                     echo "Non ci sono domande, inseriscine una!";
                 } else { ?>
-                    <p>Passa il mouse sulla domanda <br> per gestire le opzioni <br><br> Se la domanda e' aperta viene
-                        mostrato il massimo numero di caratteri per la risposta</p>
+                    <p>Passa il mouse sulla domanda
+                        <br> per gestire le opzioni
+                        <br><br>
+                        Se la domanda e' aperta viene mostrato il massimo numero di caratteri per la risposta
+                    </p>
                     <h3>Elenco domande:</h3>
                     <div class="lista_scrollabile">
                         <?php foreach ($domande_sondaggio as $domanda) { ?>
@@ -244,7 +247,9 @@ try {
                                             <div class="domanda_chiusa">
                                                 <span class="tooltip">Gestisci opzioni</span>
                                                 <span>
-                                                    <?php echo $domanda['Testo']; ?>
+                                                    <label class="lista_scrollabile_orizzontalmente">
+                                                        <?php echo $domanda['Testo']; ?>
+                                                    </label>
                                                 </span>
                                             </div>
                                         </a>

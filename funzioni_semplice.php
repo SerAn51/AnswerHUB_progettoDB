@@ -28,7 +28,19 @@
                 <?php foreach ($domini as $dominio) { ?>
                     <li>
                         <div class="testo">
-                            <?php echo $dominio['Parolachiave'] . ' | ' . $dominio['Descrizione']; ?>
+                            <div class="parola_chiave">
+                                <strong>Parola chiave:</strong>
+                                <label class="lista_scrollabile_orizzontalmente">
+                                    <?php echo $dominio['Parolachiave']; ?>
+                                </label>
+                            </div>
+                            <div class="descrizione">
+                                <strong>Descrizione:</strong>
+                                <label class="lista_scrollabile_orizzontalmente">
+                                    <?php echo $dominio['Descrizione']; ?>
+                                </label>
+                            </div>
+
                         </div>
                         <input class="switch" type="checkbox" name="domini_selezionati[]"
                             value="<?php echo $dominio['Parolachiave']; ?>" <?php
@@ -122,7 +134,7 @@
                         }
                         ?>
 
-                        <label <?php echo $sondaggio_completato == true ? 'for="visualizza_risposte"' : 'for="rispondi"'; ?>>
+                        <label>
                             <strong>Titolo:</strong>
                             <?php echo $sondaggio_accettato['Titolo']; ?>
                             <br>

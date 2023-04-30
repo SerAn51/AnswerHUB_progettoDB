@@ -28,7 +28,7 @@ body {
     border-radius: 30px;
     border-color: #091d3e;
     overflow-y: auto;
-    overflow-x: scroll;
+    overflow-x: auto;
 }
 
 .wrapper_premi::-webkit-scrollbar-vertical {

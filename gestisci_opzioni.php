@@ -93,7 +93,7 @@ try {
 
     <header class="header">
         <a href="premium_home.php" class="home">
-            <button class="logout_btn" onclick="return confirm('Confermi logout?')">
+            <button class="logout_btn">
                 <p class="paragraph"> Home </p>
                 <span class="logout_icon-wrapper">
                     <svg class="logout_icon" width="30px" height="30px" viewBox="0 0 1024 1024" class="icon"
@@ -233,8 +233,9 @@ try {
                         <li>
                             <form action="script_php/rimuovi_opzione.php" method="POST">
 
-                                <!--Etichetta per mostrare numero e nome dell'opzione-->
-                                <h3>
+                                <!--Etichetta per mostrare nome dell'opzione-->
+                                
+                                <h3 class="lista_scrollabile_orizzontalmente">
                                     <?php echo $opzione['Testo']; ?>
                                 </h3>
 

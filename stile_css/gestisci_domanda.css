@@ -178,6 +178,46 @@ ul {
     text-decoration: none;
 }
 
+.domanda_chiusa span {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+.lista_scrollabile_orizzontalmente {
+    height: auto;
+    width: 200px;
+    white-space: nowrap;
+    color: #f1f1fa;
+    overflow-y: hidden;
+    overflow-x: scroll;
+}
+
+.lista_scrollabile_orizzontalmente::-webkit-scrollbar {
+    width: 100%;
+    height: 5px;
+}
+
+.lista_scrollabile_orizzontalmente::-webkit-scrollbar-thumb {
+    background-color: #f1f1fa;
+    border-radius: 30px;
+}
+
+.lista_scrollabile_orizzontalmente ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.lista_scrollabile_orizzontalmente li {
+    padding: 10px;
+    margin: 0;
+}
+
+.lista_scrollabile_orizzontalmente li a {
+    text-decoration: none;
+}
+
 .space_inserisci_domanda form {
     display: flex;
     flex-direction: column;
@@ -204,6 +244,7 @@ ul {
     flex: 1;
     margin-right: 5px;
     margin-top: 40px;
+    width: 200px;
 }
 
 .space_domande button {
