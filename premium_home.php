@@ -398,7 +398,7 @@ try {
                 <div class="input-group">
                     <input type="date" name="data_chiusura" id="data_chiusura" required autocomplete="off"
                         class="input">
-                    <label class="user-label">Data di chiusura</label>
+                    <label class="user-label_data">Data di chiusura</label>
                 </div>
                 <br>
                 <ul>

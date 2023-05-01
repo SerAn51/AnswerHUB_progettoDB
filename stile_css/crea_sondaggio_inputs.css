@@ -21,6 +21,16 @@
     transition: 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.user-label_data {
+    position: absolute;
+    left: 25px;
+    color: #091d3e;
+    pointer-events: none;
+    transform: translateY(-50%) scale(0.8);
+    background-color: #ffffff;
+    padding: 0 .2em;
+}
+
 .input:focus,
 .input:valid {
     outline: none;
@@ -30,6 +40,13 @@
 .input:focus~label,
 .input:valid~label {
     transform: translateY(-50%) scale(0.8);
+    background-color: #ffffff;
+    padding: 0 .2em;
+    color: #1a73e8;
+}
+
+.input:focus~.user-label_data,
+.input:valid~.user-label_data {
     background-color: #ffffff;
     padding: 0 .2em;
     color: #1a73e8;

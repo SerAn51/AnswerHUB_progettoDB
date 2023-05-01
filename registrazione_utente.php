@@ -164,7 +164,7 @@ if (isset($_POST["submit"])) { // se submit avviene con successo
                                 <!--input box DataNascita-->
                                 <div class="inputbox">
                                     <input type="date" name="data_nascita" id="data_nascita" required>
-                                    <label for="data_nascita">Data di nascita</label>
+                                    <label class="data" for="data_nascita">Data di nascita</label>
                                 </div>
                                 <!--input box LuogoNascita-->
                                 <div class="inputbox">

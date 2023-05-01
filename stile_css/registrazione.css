@@ -68,8 +68,20 @@ h2 {
     transition: .3s;
 }
 
-input:focus~label,
-input:valid~label {
+.inputbox .data {
+    position: absolute;
+    top: 0%;
+    left: 5px;
+    transform: translateY(-50%);
+    color: #091d3e;
+    font-size: 1em;
+    font-weight: 550;
+    pointer-events: none;
+    transition: .3s;
+}
+
+input:focus~label:not(.data),
+input:valid~label:not(.data) {
     top: -5px;
 }
 
@@ -77,10 +89,9 @@ input:focus~label {
     color: #1a73e8;
 }
 
-input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(1);
+input:focus~.data {
+    color: #1a73e8;
 }
-
 
 .inputbox input {
     width: 100%;
@@ -194,7 +205,7 @@ button:not(:active) {
     grid-template-rows: 1fr;
     grid-template-areas:
         "c1 c2";
-        gap: 50px;
+    gap: 50px;
 }
 
 .struttura_registrazione:nth-child(1) {
@@ -204,4 +215,3 @@ button:not(:active) {
 .struttura_registrazione:nth-child(2) {
     grid-area: c2;
 }
- 
