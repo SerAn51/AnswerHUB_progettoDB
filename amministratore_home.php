@@ -124,7 +124,7 @@ if (!(empty($_SESSION["email"]))) {
                 display: grid;
                 grid-template-columns: 1fr 1fr 1fr;
                 /*Divido il main in 3 colonne*/
-                grid-template-rows: 1fr 1fr 1fr;
+                grid-template-rows: 1fr 1fr;
                 grid-template-areas:
                     "c1 c2 c3"
                     "c4 c5 c6";

@@ -15,6 +15,18 @@ if ((isset($_POST["rispondi"])) || (isset($_POST["visualizza_risposte"]))) {
         header("Location: index.php");
         exit;
     }
+
+    try {
+        $check_sondaggio = $pdo->prepare("SELECT * FROM Sondaggio WHERE Codice = :codice");
+        $check_sondaggio->bindParam(':codice', $codice_sondaggio, PDO::PARAM_INT);
+        $check_sondaggio->execute();
+        $sondaggio = $check_sondaggio->fetch(PDO::FETCH_ASSOC);
+        $check_sondaggio->closeCursor();
+    } catch (PDOException $e) {
+        echo "Errore Stored Procedure: " . $e->getMessage();
+        header("Location: index.php");
+        exit;
+    }
 }
 ?>
 
@@ -49,7 +61,11 @@ if ((isset($_POST["rispondi"])) || (isset($_POST["visualizza_risposte"]))) {
 <body>
     <header class="header">
         <h1 class="lista_scrollabile_orizzontalmente">
-            Rispondi al sondaggio
+            <?php if (isset($_POST["rispondi"])) { ?>
+                Rispondi: 
+            <?php } else if (isset($_POST["visualizza_risposte"])) { ?>
+                Visualizza risposte: 
+            <?php } ?>
             <?php echo $sondaggio['Titolo']; ?>
         </h1>
         <a href="index.php" class="home">
@@ -272,9 +288,9 @@ if ((isset($_POST["rispondi"])) || (isset($_POST["visualizza_risposte"]))) {
                                 $risposta = $mostra_risposta->fetch(PDO::FETCH_ASSOC);
                                 $mostra_risposta->closeCursor();
                                 //mostro la risposta alla domanda aperta
-                            ?>
-                            <textarea readonly><?php echo $risposta['Testo']; ?></textarea>
-                            <?php
+                                ?>
+                                <textarea readonly><?php echo $risposta['Testo']; ?></textarea>
+                                <?php
                             } catch (PDOException $e) {
                                 echo "Errore Stored Procedure: " . $e->getMessage();
                                 header("Location: index.php");
