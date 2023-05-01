@@ -1,25 +1,29 @@
 <?php
 require 'config_connessione.php'; // instaura la connessione con il db
 
-$email = $_SESSION["email"];
-// ora usa l'email passata tra una pagina e l'altra (salvato nella sessione) per fare una query sql
-try {
-    $query_sql = "SELECT * FROM Utente WHERE Email = ?";
-    $stmt = $pdo->prepare($query_sql);
-    $stmt->execute([$email]);
-    //estrazione della riga cosi' da poter usare i dati
-    $dati_utente = $stmt->fetch(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    echo "Errore Stored Procedure: " . $e->getMessage();
-    header("Location: logout.php");
-    exit;
-}
+if (!(empty($_SESSION["email"]))) {
+    $email = $_SESSION["email"];
+    // ora usa l'email passata tra una pagina e l'altra (salvato nella sessione) per fare una query sql
+    try {
+        $query_sql = "SELECT * FROM Utente WHERE Email = ?";
+        $stmt = $pdo->prepare($query_sql);
+        $stmt->execute([$email]);
+        //estrazione della riga cosi' da poter usare i dati
+        $dati_utente = $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        echo "Errore Stored Procedure: " . $e->getMessage();
+        header("Location: logout.php");
+        exit;
+    }
 
-//se sono amministratore/premium e cambio l'url per andare nella home dell'utente semplice, rimango sulla home amministratore/premium
-if ($dati_utente["PAS"] === "AMMINISTRATORE") {
-    header("Location: amministratore_home.php");
-} else if ($dati_utente["PAS"] === "PREMIUM") {
-    header("Location: premium_home.php");
+    //se sono amministratore/premium e cambio l'url per andare nella home dell'utente semplice, rimango sulla home amministratore/premium
+    if ($dati_utente["PAS"] === "AMMINISTRATORE") {
+        header("Location: amministratore_home.php");
+    } else if ($dati_utente["PAS"] === "PREMIUM") {
+        header("Location: premium_home.php");
+    }
+} else {
+    header("Location: login.php"); //inoltre, cosi' che se provo ad andare in index dall'url, mi rimanda al login
 }
 ?>
 
