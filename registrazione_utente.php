@@ -168,6 +168,7 @@ if (isset($_POST["submit"])) { // se submit avviene con successo
                                 </div>
                                 <!--input box LuogoNascita-->
                                 <div class="inputbox">
+                                    <ion-icon name="business-outline"></ion-icon>
                                     <input type="text" name="luogo_nascita" id="luogo_nascita" required>
                                     <label for="luogo_nascita">Luogo di nascita</label>
                                 </div>
