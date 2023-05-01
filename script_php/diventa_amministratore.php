@@ -9,7 +9,7 @@ function diventaAmministratore($pdo, $email)
         $diventa_amministratore->execute();
     } catch (PDOException $e) {
         echo "Errore Stored Procedure: " . $e->getMessage();
-        header("Location: logout.php");
+        header("Location: ../logout.php");
         exit;
     }
 }

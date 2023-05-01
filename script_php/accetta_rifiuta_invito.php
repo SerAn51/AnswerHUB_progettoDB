@@ -13,8 +13,7 @@ function accettaRifiutaInvito($pdo, $decisione, string $email, string $id_invito
         $prep_proc_accetta_rifiuta_invito->bindParam(':param3', $id_invito, PDO::PARAM_INT);
         $prep_proc_accetta_rifiuta_invito->execute();
     } catch (PDOException $e) {
-        echo "Errore Stored Procedure: " . $e->getMessage();
-        //header("Location: ../logout.php");
+        header("Location: ../logout.php");
         exit;
     }
 }
@@ -24,7 +23,7 @@ if (isset($_POST["invito_accettato"])) {
 } else {
     accettaRifiutaInvito($pdo, false, $_SESSION["email"], $_POST["invito_rifiutato"]);
 }
-//reindirizza alla pagina index.php
-header("Location: ../index.php");
+//reindirizza alla pagina da cui è stato chiamato questo file
+header('Location: ' . $_SERVER['HTTP_REFERER']);
 exit(); //termina l'esecuzione dello script dopo il reindirizzamento
 ?>

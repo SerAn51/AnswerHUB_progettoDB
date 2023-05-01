@@ -9,7 +9,7 @@ function eliminaSondaggio($pdo, $codice_sondaggio)
         $elimina_sondaggio->execute();
     } catch (PDOException $e) {
         echo "Errore Stored Procedure: " . $e->getMessage();
-        header("Location: logout.php");
+        header("Location: ../logout.php");
         exit;
     }
 }

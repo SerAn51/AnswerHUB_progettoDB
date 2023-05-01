@@ -47,7 +47,7 @@ if (isset($_POST["aggiungi_opzione"])) {
         $proc_mostra_opzioni->closeCursor();
     } catch (PDOException $e) {
         echo "Errore Stored Procedure: " . $e->getMessage();
-        header("Location: logout.php");
+        header("Location: ../logout.php");
         exit;
     }
     foreach ($opzioni as $opzione) {

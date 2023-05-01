@@ -15,7 +15,7 @@ function rimuoviInteresse($pdo, string $email, string $parola_chiave)
         $rimuovi_interesse->execute();
     } catch (PDOException $e) {
         echo "Errore Stored Procedure: " . $e->getMessage();
-        header("Location: logout.php");
+        header("Location: ../logout.php");
         exit;
     }
 }
@@ -30,7 +30,7 @@ function inserisciInteresse($pdo, string $email, string $parola_chiave, $collezi
         $inserisci_interesse->execute();
     } catch (PDOException $e) {
         echo "Errore Stored Procedure: " . $e->getMessage();
-        header("Location: logout.php");
+        header("Location: ../logout.php");
         exit;
     }
     // Informazione da inserire nella collezione di log
@@ -65,7 +65,7 @@ if (isset($_POST["invia"])) {
         $mostra_domini->closeCursor(); // chiude il cursore del set di risultati corrente
     } catch (PDOException $e) {
         echo "Errore Stored Procedure: " . $e->getMessage();
-        header("Location: logout.php");
+        header("Location: ../logout.php");
         exit;
     }
     $array_parolachiave_tutti_i_domini = array();

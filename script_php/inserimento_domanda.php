@@ -32,7 +32,7 @@ function inserisciDomanda($pdo, $testo, $foto, $punteggio, $aperta_chiusa, $cf_a
         $inserisci_domanda->execute();
     } catch (PDOException $e) {
         echo "Errore Stored Procedure: " . $e->getMessage();
-        header("Location: logout.php");
+        header("Location: ../logout.php");
         exit;
     }
     // Informazione da inserire nella collezione di log
@@ -71,7 +71,7 @@ if (isset($_POST["crea"])) {
         $proc_mostra_domande->closeCursor();
     } catch (PDOException $e) {
         echo "Errore Stored Procedure: " . $e->getMessage();
-        header("Location: logout.php");
+        header("Location: ../logout.php");
         exit;
     }
 

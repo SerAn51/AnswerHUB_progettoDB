@@ -16,7 +16,7 @@ function inserisciDominio($pdo, $parola_chiave, $descrizione, $collezione_log)
         $prep_proc_inserisci_dominio->execute();
     } catch (PDOException $e) {
         echo "Errore Stored Procedure: " . $e->getMessage();
-        header("Location: logout.php");
+        header("Location: ../logout.php");
         exit;
     }
 

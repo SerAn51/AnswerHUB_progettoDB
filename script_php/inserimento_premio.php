@@ -19,7 +19,7 @@ function inserisciPremio($pdo, $nome, $descrizione, $foto, $punti_necessari, $co
         $prep_proc_inserisci_premio->execute();
     } catch (PDOException $e) {
         echo "Errore Stored Procedure: " . $e->getMessage();
-        header("Location: logout.php");
+        header("Location: ../logout.php");
         exit;
     }
     // Informazione da inserire nella collezione di log

@@ -17,7 +17,7 @@ function inserisci_risposta($pdo, $testo, $id_domanda, $email_utente, $collezion
         $inserisci_risposta->closeCursor();
     } catch (PDOException $e) {
         echo "Errore Stored Procedure: " . $e->getMessage();
-        header("Location: logout.php");
+        header("Location: ../logout.php");
         exit;
     }
 
@@ -47,7 +47,7 @@ function inserisci_opzione($pdo, $email_utente, $id_domanda_chiusa, $numero_prog
         $inserisci_opzione->closeCursor();
     } catch (PDOException $e) {
         echo "Errore Stored Procedure: " . $e->getMessage();
-        header("Location: logout.php");
+        header("Location: ../logout.php");
         exit;
     }
 

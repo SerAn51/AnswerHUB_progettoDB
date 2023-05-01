@@ -18,7 +18,7 @@ function inserisci_invito_automaticamente($pdo, $email_utente, $codice_sondaggio
         $proc_inserisci_invito->execute();
     } catch (PDOException $e) {
         echo "Errore Stored Procedure: " . $e->getMessage();
-        header("Location: logout.php");
+        header("Location: ../logout.php");
         exit;
     }
 
@@ -65,7 +65,7 @@ if (isset($_POST["invita"])) {
         $check_domande_chiuse->closeCursor();
     } catch (PDOException $e) {
         echo "Errore Stored Procedure: " . $e->getMessage();
-        header("Location: logout.php");
+        header("Location: ../logout.php");
         exit;
     }
     //Controlla se esistono domande per il sondaggio, altrimenti notifica l'utente e non rendere disponibile l'invio di inviti
@@ -88,7 +88,7 @@ if (isset($_POST["invita"])) {
                     $check_opzioni_domanda->closeCursor();
                 } catch (PDOException $e) {
                     echo "Errore Stored Procedure: " . $e->getMessage();
-                    header("Location: logout.php");
+                    header("Location: ../logout.php");
                     exit;
                 }
                 if (empty($opzioni_domanda)) {
@@ -117,7 +117,7 @@ if (isset($_POST["invita"])) {
                     $mostra_max_utenti->closeCursor();
                 } catch (PDOException $e) {
                     echo "Errore Stored Procedure: " . $e->getMessage();
-                    header("Location: logout.php");
+                    header("Location: ../logout.php");
                     exit;
                 }
                 $max_utenti = $riga_max_utenti['MaxUtenti']; //salva l'intero

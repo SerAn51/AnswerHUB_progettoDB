@@ -16,7 +16,7 @@ function inserisci_invito($pdo, $email_utente, $codice_sondaggio, $email_utente_
         $proc_inserisci_invito->execute();
     } catch (PDOException $e) {
         echo "Errore Stored Procedure: " . $e->getMessage();
-        header("Location: logout.php");
+        header("Location: ../logout.php");
         exit;
     }
     // Informazione da inserire nella collezione di log
@@ -61,7 +61,7 @@ if (isset($_POST['invita'])) {
         $numero_utenti_invitati = $riga_numero_utenti_invitati['NumUtentiInvitati'];
     } catch (PDOException $e) {
         echo "Errore Stored Procedure: " . $e->getMessage();
-        header("Location: logout.php");
+        header("Location: ../logout.php");
         exit;
     }
     $max_utenti_selezionabili = $max_utenti_sondaggio - $numero_utenti_invitati;

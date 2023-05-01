@@ -9,7 +9,7 @@ function rimuoviDomanda($pdo, $id_domanda)
         $rimuovi_domanda->execute();
     } catch (PDOException $e) {
         echo "Errore Stored Procedure: " . $e->getMessage();
-        header("Location: logout.php");
+        header("Location: ../logout.php");
         exit;
     }
 }

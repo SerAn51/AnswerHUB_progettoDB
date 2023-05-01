@@ -29,7 +29,7 @@ function crea_sondaggio($pdo, $titolo, $max_utenti, $data_chiusura, $dominio, $c
         $proc_crea_sondaggio->execute();
     } catch (PDOException $e) {
         echo "Errore Stored Procedure: " . $e->getMessage();
-        header("Location: logout.php");
+        header("Location: ../logout.php");
         exit;
     }
 
@@ -94,7 +94,7 @@ if (isset($_POST["crea"])) {
         $proc_mostra_sondaggi->closeCursor();
     } catch (PDOException $e) {
         echo "Errore Stored Procedure: " . $e->getMessage();
-        header("Location: logout.php");
+        header("Location: ../logout.php");
         exit;
     }
     
