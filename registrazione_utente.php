@@ -136,89 +136,73 @@ if (isset($_POST["submit"])) { // se submit avviene con successo
     <link rel="stylesheet" href="stile_css/registrazione.css">
 
 </head>
-<!--
-<body>
-    <h2>Registration</h2>
-    <form action="" method="POST">
-        <label for="nome">Nome: </label>
-        <input class="campo_inserimento" type="text" name="nome" id="nome" required> <br>
-
-        <label for="cognome">Cognome: </label>
-        <input class="campo_inserimento" type="text" name="cognome" id="cognome" required> <br>
-
-        <label for="email">Email: </label>
-        <input class="campo_inserimento" type="email" name="email" id="email" required> <br>
-
-        <label for="password">Password: </label>
-        <input class="campo_inserimento" type="password" name="password" id="password" required> <br>
-
-        <label for="conferma_password">Conferma password: </label>
-        <input class="campo_inserimento" type="password" name="conferma_password" id="conferma_password" required> <br>
-
-        <input class="submit" type="submit" name="submit" id="submit" value="invia">
-    </form>
-    <br>
-    <a href="login.php">Login</a>
-</body>
-    -->
 
 <body>
     <section>
         <div class="login-box">
-            <img src="images/logo.png" alt="Logo AnswerHUB" type="image/png" class="img-logo">
+            <img src="images/logo_senza_sfondo.png" alt="Logo AnswerHUB" type="image/png" class="img-logo">
             <div class="form-box">
                 <div class="form-value">
                     <form action="" method="POST">
-                        <h2>Registrazione</h2>
+                        <h2>Registrazione utente</h2>
                         <!--Eventuale messaggio-->
                         <div class="message <?php echo $tipo_messaggio; ?>"><?php echo isset($messaggio) ? $messaggio : ''; ?></div>
-                        <!--input box Nome-->
-                        <div class="inputbox">
-                            <input type="text" name="nome" id="nome" required>
-                            <label for="nome">Nome<label>
+                        <div class="struttura_registrazione">
+                            <div class="prima_parte">
+                                <!--input box Nome-->
+                                <div class="inputbox">
+                                    <ion-icon name="person-outline"></ion-icon>
+                                    <input type="text" name="nome" id="nome" required>
+                                    <label for="nome">Nome<label>
+                                </div>
+                                <!--input box Cognome-->
+                                <div class="inputbox">
+                                    <ion-icon name="person-outline"></ion-icon>
+                                    <input type="text" name="cognome" id="cognome" required>
+                                    <label for="cognome">Cognome</label>
+                                </div>
+                                <!--input box DataNascita-->
+                                <div class="inputbox">
+                                    <input type="date" name="data_nascita" id="data_nascita" required>
+                                    <label for="data_nascita">Data di nascita</label>
+                                </div>
+                                <!--input box LuogoNascita-->
+                                <div class="inputbox">
+                                    <input type="text" name="luogo_nascita" id="luogo_nascita" required>
+                                    <label for="luogo_nascita">Luogo di nascita</label>
+                                </div>
+                            </div>
+                            <div class="seconda_parte">
+                                <!--input box Email-->
+                                <div class="inputbox">
+                                    <ion-icon name="mail-outline"></ion-icon>
+                                    <input type="email" name="email" id="email" required>
+                                    <label for="email">Email</label>
+                                </div>
+                                <!--input box Password-->
+                                <div class="inputbox">
+                                    <ion-icon name="lock-closed-outline"></ion-icon>
+                                    <input type="password" name="password" id="password" required>
+                                    <label for="passowrd">Password</label>
+                                </div>
+                                <!--input box Conferma Password-->
+                                <div class="inputbox">
+                                    <ion-icon name="lock-closed-outline"></ion-icon>
+                                    <input type="password" name="conferma_password" id="conferma_password" required>
+                                    <label for="conferma_password">Conferma Password</label>
+                                </div>
+                                <!--checkbox per inserire codice amministratore-->
+                                <label name="label_checkbox_codice_amm" id="label_checkbox_codice_amm"
+                                    for="checkbox_codice_amm">Spunta per registrarti come amministratore</label>
+                                <input type="checkbox" name="checkbox_codice_amm" id="checkbox_codice_amm">
+                                <!--input box Codice amministratore-->
+                                <div name="inputbox_codice_amm" id="inputbox_codice_amm" class="inputbox">
+                                    <input type="text" name="codice_amm" id="codice_amm">
+                                    <label for="codice_amm">Codice fornito</label>
+                                </div>
+                            </div>
                         </div>
-                        <!--input box Cognome-->
-                        <div class="inputbox">
-                            <input type="text" name="cognome" id="cognome" required>
-                            <label for="cognome">Cognome</label>
-                        </div>
-                        <!--input box DataNascita-->
-                        <div class="inputbox">
-                            <input type="date" name="data_nascita" id="data_nascita" required>
-                            <label for="data_nascita">Data di nascita</label>
-                        </div>
-                        <!--input box LuogoNascita-->
-                        <div class="inputbox">
-                            <input type="text" name="luogo_nascita" id="luogo_nascita" required>
-                            <label for="luogo_nascita">Luogo di nascita</label>
-                        </div>
-                        <!--input box Email-->
-                        <div class="inputbox">
-                            <ion-icon name="mail-outline"></ion-icon>
-                            <input type="email" name="email" id="email" required>
-                            <label for="email">Email</label>
-                        </div>
-                        <!--input box Password-->
-                        <div class="inputbox">
-                            <ion-icon name="lock-closed-outline"></ion-icon>
-                            <input type="password" name="password" id="password" required>
-                            <label for="passowrd">Password</label>
-                        </div>
-                        <!--input box Conferma Password-->
-                        <div class="inputbox">
-                            <ion-icon name="lock-closed-outline"></ion-icon>
-                            <input type="password" name="conferma_password" id="conferma_password" required>
-                            <label for="conferma_password">Conferma Password</label>
-                        </div>
-                        <!--checkbox per inserire codice amministratore-->
-                        <label name="label_checkbox_codice_amm" id="label_checkbox_codice_amm"
-                            for="checkbox_codice_amm">Spunta per registrarti come amministratore</label>
-                        <input type="checkbox" name="checkbox_codice_amm" id="checkbox_codice_amm">
-                        <!--input box Codice amministratore-->
-                        <div name="inputbox_codice_amm" id="inputbox_codice_amm" class="inputbox">
-                            <input type="text" name="codice_amm" id="codice_amm">
-                            <label for="codice_amm">Codice fornito</label>
-                        </div>
+
                         <!--bottone registrati-->
                         <button class="submit" type="submit" name="submit" id="submit"> Registrati
                             <svg viewBox="0 0 16 16" class="bi bi-arrow-right" height="20" width="20"

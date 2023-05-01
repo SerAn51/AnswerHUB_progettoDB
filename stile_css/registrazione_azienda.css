@@ -5,7 +5,7 @@
 }
 
 body {
-    background-image: url("../images/login_background_2.jpg");
+    background-image: url("../images/login_background.jpg");
     background-repeat: no-repeat;
     background-size: 100%;
 }
@@ -27,14 +27,14 @@ section {
 
 .login-box img {
     position: absolute;
-    width: 100%;
+    width: 50%;
     top: -150px;
 }
 
 .form-box {
     position: relative;
-    width: 450px;
-    height: 750px;
+    width: 1000px;
+    height: 500px;
     background: transparent;
     border-radius: 30px;
     backdrop-filter: blur(25px);
@@ -45,7 +45,7 @@ section {
 
 h2 {
     font-size: 2em;
-    color: #f3f7f9;
+    color: #091d3e;
     text-align: center;
 }
 
@@ -53,7 +53,7 @@ h2 {
     position: relative;
     margin: 30px 0;
     width: 310px;
-    border-bottom: 2px solid #fff;
+    border-bottom: 2px solid #091d3e;
 }
 
 .inputbox label {
@@ -61,7 +61,7 @@ h2 {
     top: 50%;
     left: 5px;
     transform: translateY(-50%);
-    color: #fff;
+    color: #091d3e;
     font-size: 1em;
     font-weight: 550;
     pointer-events: none;
@@ -74,7 +74,7 @@ input:valid~label {
 }
 
 input:focus~label {
-    color: #00f2fe;
+    color: #1a73e8;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
@@ -90,42 +90,27 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     outline: none;
     font-size: 1em;
     padding: 0 35px 0 5px;
-    color: #fff
+    color: #091d3e
 }
 
 .inputbox ion-icon {
     position: absolute;
     right: 8px;
-    color: #fff;
+    color: #091d3e;
     font-size: 1.2em;
     top: 20px;
 }
 
-/*
-        .submit {
-            width: 100%;
-            height: 40px;
-            border-radius: 30px;
-            background: #00f2fe;
-            color: #0c2840;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: 600;
-        }
-        */
-
 .access {
     font-size: .9em;
-    color: #fff;
+    color: #091d3e;
     text-align: center;
     margin: 25px 0 10px;
 }
 
 .access p a {
     text-decoration: none;
-    color: #00f2fe;
+    color: #1a73e8;
     font-weight: 600;
 }
 
@@ -200,5 +185,22 @@ button:not(:active) {
 
 /*stile checkbox per inserire il codice amministratore*/
 #label_checkbox_codice_amm {
-    color: #f3f7f9;
+    color: #091d3e;
+}
+
+.struttura_registrazione {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+    grid-template-areas:
+        "c1 c2";
+    gap: 50px;
+}
+
+.struttura_registrazione:nth-child(1) {
+    grid-area: c1;
+}
+
+.struttura_registrazione:nth-child(2) {
+    grid-area: c2;
 }

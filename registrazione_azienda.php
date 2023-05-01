@@ -108,48 +108,54 @@ if (isset($_POST["submit"])) { // se submit avviene con successo
 <body>
     <section>
         <div class="login-box">
-            <img src="images/logo.png" alt="Logo AnswerHUB" type="image/png" class="img-logo">
+            <img src="images/logo_senza_sfondo.png" alt="Logo AnswerHUB" type="image/png" class="img-logo">
             <div class="form-box">
                 <div class="form-value">
                     <form action="" method="POST">
-                        <h2>Registrazione</h2>
+                        <h2>Registrazione azienda</h2>
                         <!--Eventuale messaggio-->
                         <div class="message <?php echo $tipo_messaggio; ?>"><?php echo isset($messaggio) ? $messaggio : ''; ?></div>
-                        <!--input box CF Azienda-->
-                        <div class="inputbox">
-                            <ion-icon name="card-outline"></ion-icon>
-                            <input type="text" name="cf_azienda" id="cf_azienda" maxlength="16" required>
-                            <label for="cf_azienda">CF Azienda<label>
-                        </div>
-                        <!--input box Email-->
-                        <div class="inputbox">
-                            <ion-icon name="mail-outline"></ion-icon>
-                            <input type="email" name="email" id="email" required>
-                            <label for="email">Email</label>
-                        </div>
-                        <!--input box Nome azienda-->
-                        <div class="inputbox">
-                            <ion-icon name="pencil-outline"></ion-icon>
-                            <input type="text" name="nome" id="nome" required>
-                            <label for="nome">Nome azienda</label>
-                        </div>
-                        <!--input box Sede azienda-->
-                        <div class="inputbox">
-                            <ion-icon name="home-outline"></ion-icon>
-                            <input type="text" name="sede" id="sede" required>
-                            <label for="sede">Sede azienda</label>
-                        </div>
-                        <!--input box Password-->
-                        <div class="inputbox">
-                            <ion-icon name="lock-closed-outline"></ion-icon>
-                            <input type="password" name="password" id="password" required>
-                            <label for="passowrd">Password</label>
-                        </div>
-                        <!--input box Conferma Password-->
-                        <div class="inputbox">
-                            <ion-icon name="lock-closed-outline"></ion-icon>
-                            <input type="password" name="conferma_password" id="conferma_password" required>
-                            <label for="conferma_password">Conferma Password</label>
+                        <div class="struttura_registrazione">
+                            <div class="prima_parte">
+                                <!--input box CF Azienda-->
+                                <div class="inputbox">
+                                    <ion-icon name="card-outline"></ion-icon>
+                                    <input type="text" name="cf_azienda" id="cf_azienda" maxlength="16" required>
+                                    <label for="cf_azienda">CF Azienda<label>
+                                </div>
+                                <!--input box Email-->
+                                <div class="inputbox">
+                                    <ion-icon name="mail-outline"></ion-icon>
+                                    <input type="email" name="email" id="email" required>
+                                    <label for="email">Email</label>
+                                </div>
+                                <!--input box Nome azienda-->
+                                <div class="inputbox">
+                                    <ion-icon name="pencil-outline"></ion-icon>
+                                    <input type="text" name="nome" id="nome" required>
+                                    <label for="nome">Nome azienda</label>
+                                </div>
+                            </div>
+                            <div class="seconda_parte">
+                                <!--input box Sede azienda-->
+                                <div class="inputbox">
+                                    <ion-icon name="home-outline"></ion-icon>
+                                    <input type="text" name="sede" id="sede" required>
+                                    <label for="sede">Sede azienda</label>
+                                </div>
+                                <!--input box Password-->
+                                <div class="inputbox">
+                                    <ion-icon name="lock-closed-outline"></ion-icon>
+                                    <input type="password" name="password" id="password" required>
+                                    <label for="passowrd">Password</label>
+                                </div>
+                                <!--input box Conferma Password-->
+                                <div class="inputbox">
+                                    <ion-icon name="lock-closed-outline"></ion-icon>
+                                    <input type="password" name="conferma_password" id="conferma_password" required>
+                                    <label for="conferma_password">Conferma Password</label>
+                                </div>
+                            </div>
                         </div>
                         <!--bottone registrati-->
                         <button class="submit" type="submit" name="submit" id="submit"> Registrati

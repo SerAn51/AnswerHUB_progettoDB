@@ -5,8 +5,7 @@
 }
 
 body {
-    /*background: #0c2840;*/
-    background-image: url("../images/login_background_2.jpg");
+    background-image: url("../images/login_background.jpg");
     background-repeat: no-repeat;
     background-size: 100%;
 }
@@ -37,7 +36,6 @@ section {
     width: 400px;
     height: 450px;
     background: transparent;
-    /*border: 2px solid rgba(255, 255, 255, 0.5);*/
     border-radius: 30px;
     backdrop-filter: blur(25px);
     display: flex;
@@ -47,12 +45,12 @@ section {
 
 h2 {
     font-size: 2em;
-    color: #f3f7f9;
+    color: #091d3e;
     text-align: center;
 }
 
 .checkbox {
-    color: #f3f7f9;
+    color: #091d3e;
     text-align: center;
 }
 
@@ -60,7 +58,7 @@ h2 {
     position: relative;
     margin: 30px 0;
     width: 310px;
-    border-bottom: 2px solid #fff;
+    border-bottom: 2px solid #091d3e;
 }
 
 .inputbox label {
@@ -68,7 +66,7 @@ h2 {
     top: 50%;
     left: 5px;
     transform: translateY(-50%);
-    color: #fff;
+    color: #091d3e;
     font-size: 1em;
     font-weight: bold;
     pointer-events: none;
@@ -81,7 +79,7 @@ input:valid~label {
 }
 
 input:focus~label {
-    color: #00f2fe;
+    color: #1a73e8;
 }
 
 .inputbox input {
@@ -92,41 +90,27 @@ input:focus~label {
     outline: none;
     font-size: 1em;
     padding: 0 35px 0 5px;
-    color: #fff
+    color: #091d3e
 }
 
 .inputbox ion-icon {
     position: absolute;
     right: 8px;
-    color: #fff;
+    color: #091d3e;
     font-size: 1.2em;
     top: 20px;
 }
 
-/*
-.submit {
-    
-    height: 40px;
-    border-radius: 30px;
-    background: #00f2fe;
-    color: #0c2840;
-    border: none;
-    outline: none;
-    cursor: pointer;
-    font-size: 1em;
-    font-weight: 600;
-}
-*/
 .register {
     font-size: .9em;
-    color: #fff;
+    color: #091d3e;
     text-align: center;
     margin: 25px 0 10px;
 }
 
 .register p a {
     text-decoration: none;
-    color: #00f2fe;
+    color: #1a73e8;
     font-weight: 600;
 }
 
@@ -161,7 +145,7 @@ button {
     outline: 0;
     font-size: 18px;
     background: #00f2fe;
-    color: #0c2840;
+    color: #091d3e;
     cursor: pointer;
     font-size: 1em;
     font-weight: 600;
@@ -191,7 +175,7 @@ button:not(:active) {
 
 /*Alla spunta della checkbox, nascondi l'inputbox per l'email dell'utente e mostra quello per il CF dell'azienda*/
 #label_checkbox_accesso_azienda {
-    color: #f3f7f9;
+    color: #091d3e;
 }
 
 #registrazione_utente {

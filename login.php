@@ -102,7 +102,7 @@ try {
 <body>
     <section>
         <div class="login-box">
-            <img src="images/logo.png" alt="Logo AnswerHUB" type="image/png" class="img-logo">
+            <img src="images/logo_senza_sfondo.png" alt="Logo AnswerHUB" type="image/png" class="img-logo">
             <div class="form-box">
                 <div class="form-value">
                     <form action="" method="POST">
